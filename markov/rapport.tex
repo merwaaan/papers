@@ -1,0 +1,362 @@
+\documentclass[12pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel}
+\usepackage{amsmath}
+\usepackage{float}
+\usepackage{tikz}
+\usepackage{url}
+
+\usetikzlibrary{arrows, positioning}
+
+\title{Chaînes de Markov} \author{Merwan Achibet\\Université du Havre}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Concept}
+
+\subsection{Généralités}
+
+Une chaîne de Markov est un processus aléatoire à états pour lequel la
+propriété de Markov est vérifiée.
+
+\subsubsection{Processus aléatoire à états}
+
+Un processus aléatoire à états prend la forme d'un vecteur $X$
+représentant une liste d'états parcourus, chaque état possible
+appartenant à un ensemble d'états $S = \{x_0, \dots, x_n \}$. \`A
+intervalle régulier (on parle alors de processus temporellement
+homogène), on peut soit rester dans le même état soit passer à un
+nouvel état.
+
+Un exemple classique pour illustrer le principe des chaînes de Markov
+est celui de la marche aléatoire \cite{ocone} : on veut modéliser
+discrètement le déplacement d'un individu dans un environnement à une
+dimension, typiquement de gauche à droite. L'ensemble des états peut
+ici correspondre à l'indice de la position courante, ainsi $S = \{1,
+2, 3, 4, 5\}$ pour 5 positions différentes. Prenons arbitrairement
+$X_0 = 2$; l'individu se trouve donc au départ sur la seconde position
+à partir de la gauche. \`A chaque étape, l'individu doit se déplacer
+vers une position voisine, ce qui revient à lui proposer deux choix
+(gauche ou droite), sauf lorsqu'il est à l'une des extrêmités de
+l'environnement, cas dans lequel il n'a qu'un seul choix (il va à
+droite s'il est à l'extrêmité gauche, et \textit{vice versa}).
+
+\begin{figure}[H]
+\centering
+
+\begin{tikzpicture}[node distance=1cm, auto]
+
+  \node[circle, draw] (1) {1};
+  \node[circle, draw, right=of 1] (2) {2};
+  \node[circle, draw, right=of 2] (3) {3};
+  \node[circle, draw, right=of 3] (4) {4};
+  \node[circle, draw, right=of 4] (5) {5};
+
+  \draw[->, thick] (1) to[bend left=60] node[midway] {1} (2);
+  \draw[->, thick] (2) to[bend left=60] node[midway] {0.5} (3);
+  \draw[->, thick] (3) to[bend left=60] node[midway] {0.5} (4);
+  \draw[->, thick] (4) to[bend left=60] node[midway] {0.5} (5);
+
+  \draw[->, thick] (5) to[bend left=60] node[midway] {1} (4);
+  \draw[->, thick] (4) to[bend left=60] node[midway] {0.5} (3);
+  \draw[->, thick] (3) to[bend left=60] node[midway] {0.5} (2);
+  \draw[->, thick] (2) to[bend left=60] node[midway] {0.5} (1);
+
+\end{tikzpicture}
+
+\caption{Représentation du problème de la marche aléatoire.}
+
+\end{figure}
+
+Usuellement, on se base sur une matrice de transition $T$ pour décrire
+les probabilités de passer d'un état précis à un autre. Pour cet
+exemple, la matrice de transition est la suivante :
+
+$$
+T = \bordermatrix{
+    & 1 & 2 & 3 & 4 & 5 \cr
+  1 & 0 & 1 & 0 & 0 & 0 \cr
+  2 & 0.5 & 0 & 0.5 & 0 & 0 \cr
+  3 & 0 & 0.5 & 0 & 0.5 & 0 \cr
+  4 & 0 & 0 & 0.5 & 0 & 0.5 \cr
+  5 & 0 & 0 & 0 & 1 & 0 \cr
+}
+$$
+\vspace{0.5cm}
+
+On remarque que tous les $T_{ii}$ avec $i \in \{1, \dots, 5\}$ valent
+0, car l'individu ne peut pas rester à la même position pendant deux
+étapes successives. La probabilité de rester dans le même état est
+donc nulle. De plus les probabilités de passer à un état représentant
+une position non voisine de la position actuelle sont elles aussi
+nulles, car l'individu est limité à des déplacements vers les
+positions adjacentes.
+
+\`A partir de $T$, et si l'on veut prévoir la position de l'individu à
+la deuxième étape (on cherche donc $X_1$), on remarque que seules les
+transitions $2 \rightarrow 1$ et $2 \rightarrow 3$ sont
+envisageables. Si l'on dispose d'un générateur de valeurs aléatoires,
+on peut alors simuler la décision de l'individu et choisir en
+conséquence son état à l'étape suivante. Puisque $P(X_1 = 1 | X_0 = 2)
+= 0.5$ et que $P(X_1 = 3 | X_0 = 2) = 0.5$, l'individu a une chance
+sur deux d'aller vers la position 1 et une chance sur deux d'aller
+vers la position 3.
+
+\subsubsection{Propriété de Markov}
+
+Maintenant que la notion de processus aléatoire à états est présentée,
+il faut préciser la propriété de Markov à laquelle une chaîne de
+Markov se doit d'obéir.
+
+Concrètement, cette propriété énonce que dans le cadre d'un processus
+aléatoire à états, l'état futur dépend uniquement de l'état présent et
+non de tous les états précédents.
+
+Plus formellement, si le processus en question a atteint sa $t$-ième étape
+:
+
+$$
+P(X_{t+1} | X_{t}, X_{t-1}, \dots, X_0) = P(X_{t+1} | X_t)
+$$
+
+Autrement dit, seul l'état courant du système nous importe. Cette
+propriété est intéressante, car dans l'exemple de la marche aléatoire,
+un processus à états basique peut se servir de la matrice de
+transition pour déterminer $X_1$ à partir de $X_0$ alors qu'une chaîne
+de Markov peut s'en servir déterminer $X_{t+1}$ à partir de n'importe
+quel $X_t$.
+
+\subsection{Interêts pour la modélisation}
+
+Un système peut être modélisé par un large choix de formalismes. Parmi
+les modélisations envisageables, on pense notamment à la modélisation
+individu-centré, ou bien à l'application de lois logistiques ou à
+l'utilisation de systèmes d'équations. Un avantage des chaînes de
+Markov pour réprésenter un problème est l'éventail de possibilités de
+quantification et d'analyse qu'elles offrent.
+
+\subsubsection{Prévision}
+
+Comme énoncé précédemment, la propriété de Markov permet de prévoir
+l'état suivant d'une chaîne quel que soit le numéro de l'étape
+actuelle. Autrement dit, que l'on en soit à l'étape initial ou cent
+étapes plus tard, on peut évaluer la possibilité de prendre un certain
+état à l'étape suivante.
+
+En conséquence, il est aussi possible de calculer la possibilité
+d'atteindre un état $j$ à partir d'un état $i$ au bout d'un certain
+nombre d'étapes. Reprenons l'exemple de la marche aléatoire, pour
+lequel $X_0 = 2$. On veut déterminer la probabilité que l'individu
+soit encore à la position 2 à la 3-éme étape, soit deux étapes plus
+tard. Autrement dit, on veut calculer $P(X_2 = 2 | X_0 = 2)$. On note
+cette probabilité $p^{(2)}_{2,2}$.
+
+On peut représenter conceptuellement toutes les issues possibles de
+cette situation par un arbre dans lequel chaque niveau correpond à une
+étape (figure \ref{arbre}). On remarque que dans deux cas sur trois,
+on atteint l'état 2 à partir de l'état 2.
+
+\begin{figure}[H]
+\centering
+
+\begin{tikzpicture}[level/.style={sibling distance=60mm/#1}]
+
+  \tikzstyle{n}=[circle, draw]
+  \tikzstyle{p}=[rectangle, draw=none, fill=gray!30]
+
+  \node[n] (a) {$2$}
+  child {
+    node[n] (b) {$1$}
+    child {
+      node[n] (c) {$2$}
+    }
+  }
+  child {
+    node [circle,draw] (d) {$3$}
+    child {
+      node[n] (e) {$2$}
+    }
+    child {
+      node[n] (f) {$4$}
+      child[grow=right] {
+        node {$t_2$} edge from parent[draw=none]
+        child[grow=up] {
+          node {$t_1$} edge from parent[draw=none]
+          child[grow=up] {
+            node {$t_0$} edge from parent[draw=none]
+          }
+        }
+      }
+    }
+  };
+
+  \draw (a) to node[p, midway] {0.5} (b);
+  \draw (b) to node[p, midway] {1} (c);
+  \draw (a) to node[p, midway] {0.5} (d);
+  \draw (d) to node[p, midway] {0.5} (e);
+  \draw (d) to node[p, midway] {0.5} (f);
+
+\end{tikzpicture}
+
+\caption{Arbre représentant les états atteignables après deux étapes
+  et en partant de la position 2.}
+\label{arbre}
+
+\end{figure}
+
+Pour calculer manuellement $p^{(2)}_{2,2}$, on évalue la probabilité
+de chaque branche valide par rapport à toutes les issues possibles :
+
+$$
+p^{(2)}_{2,2}
+= \frac{p_{2,1} p_{1,2} + p_{2,3} p_{3,2}}{p_{2,1} p_{1,2} + p_{2,3} p_{3,2} + p_{2,3} p_{3,4}}
+= \frac{0.5 \times 1 + 0.5 \times 0.5}{0.5 \times 1 + 0.5 \times 0.5 + 0.5 \times 0.5}
+= 0.75
+$$
+\vspace{0.5cm}
+
+Ce calcul, ici simple, se révélera plus fastidieux lorsque la
+différence temporelle entre les deux étapes considérées s'agrandira,
+car le nombre de branches augmentera exponentiellement.
+
+Heureusement, ce même résultat peut être obtenu en exploitant la
+matrice de transition. Plus généralement, la probabilité d'être en
+l'état $j$ à partir de l'état $i$ après $n$ étape est $p^{(n)}_{ij} =
+T^n_{ij}$ \cite{snell}.
+
+$$
+T^2 = \bordermatrix{
+    & 1 & 2 & 3 & 4 & 5 \cr
+  1 & 0.5 & 0 & 0.5 & 0 & 0 \cr
+  2 & 0 & 0.75 & 0 & 0.25 & 0 \cr
+  3 & 0.25 & 0 & 0.5 & 0 & 0.25 \cr
+  4 & 0 & 0.25 & 0 & 0.75 & 0 \cr
+  5 & 0 & 0 & 0.5 & 0 & 0.5 \cr
+}
+$$
+\vspace{0.5cm}
+
+Dans ce cas, on retrouve bien $T^2_{2,2} = 0.75$. On note que cette
+opération fournit les probabilités de transition projetées pour tous
+les états et à partir de tous les états, contrairement au calcul
+manuel utilisé plus tôt.
+
+\subsubsection{Absorption}
+
+Un état absorbant est un état duquel on ne peut sortir une fois
+atteint. Une chaîne de Markov absorbante est une chaîne de Markov
+possédant au moins un état absorbant.
+
+\cite{snell} utilise une variante de la marche aléatoire pour
+illustrer le principe des chaînes de Markov absorbantes : l'individu a
+un peu trop bu et la position 1 correspond à son domicile tandis que
+la position 5 correspond à un bar. S'il atteint un de ces états, il
+n'en sort plus, ce sont les états absorbants. Lorsqu'un état absorbant
+est atteint, on dit que la chaîne est absorbée.
+
+La nouvelle matrice de transition est :
+
+$$
+T = \bordermatrix{
+    & 1 & 2 & 3 & 4 & 5 \cr
+  1 & 1 & 0 & 0 & 0 & 0 \cr
+  2 & 0.5 & 0 & 0.5 & 0 & 0 \cr
+  3 & 0 & 0.5 & 0 & 0.5 & 0 \cr
+  4 & 0 & 0 & 0.5 & 0 & 0.5 \cr
+  5 & 0 & 0 & 0 & 0 & 1 \cr
+}
+$$
+\vspace{0.5cm}
+
+Grâce au principe des chaînes de Markov et à des opérations de base
+sur la matrice de transition $T$, si l'on dispose d'une chaîne
+absorbante, on peut répondre à des questions telles que :
+
+\begin{enumerate}
+  \item{Quelle est la probabilité pour que l'individu finisse par être
+    bloqué ?}
+  \item{Au bout de combien de déplacements l'individu sera-t-il
+    bloqué ?}
+  \item{Combien de fois l'individu va-t-il passer par chaque position ?}
+\end{enumerate}
+
+Pour répondre à ces questions, il est nécessaire de passer la matrice de
+transition sous forme canonique. Ce passage s'opère par permutation
+des lignes de la matrice de transition de façon à ce que les entrées
+valant 1 des états absorbants forment une matrice identité.
+
+$$
+T = \bordermatrix{
+    & 2 & 3 & 4 & 1 & 5 \cr
+  2 & 0 & 0.5 & 0 & 0.5 & 0 \cr
+  3 & 0.5 & 0 & 0.5 & 0 & 0 \cr
+  4 & 0 & .5 & 0 & 0 & 0.5 \cr
+  1 & 0 & 0 & 0 & 1 & 0 \cr
+  5 & 0 & 0 & 0 & 0 & 1 \cr
+}
+=
+\begin{pmatrix}
+  Q & * \\
+  0 & I
+\end{pmatrix}
+$$
+\vspace{0.5cm}
+
+$$
+Q =
+\begin{pmatrix}
+  0 & 0.5 & 0 \\
+  0.5 & 0 & 0.5 \\
+  0 & 0.5 & 0
+\end{pmatrix}
+I =
+\begin{pmatrix}
+  1 & 0 \\
+  0 & 1
+\end{pmatrix}
+$$
+\vspace{0.5cm}
+
+Si l'on souhaite par exemple estimer le nombre de passage par chaque
+état avant l'absorption de la chaîne, on calcule la matrice
+fondamentale $N$ telle que :
+
+$$
+N = (I - Q)^{-1}
+$$
+
+Chaque ligne de $N$ correspond au nombre de passage attendu par chaque
+autre état en ayant pris l'état de la ligne comme point de
+départ. Dans le cas de la marche aléatoire alcoolisée, on prévoit que
+l'individu commençant son trajet à la position 3 y passera deux fois
+avant l'absorption.
+
+$$
+N =
+\bordermatrix{
+  & 2 & 3 & 4 \cr
+  2 & 1.5 & 1 & 0.5 \cr
+  3 & 1 & 2 & 1 \cr
+  4 & 0.5 & 1 & 1.5
+}
+$$
+
+\section{Exemple d'application}
+
+\subsection{Modèle}
+
+\subsection{implémentation}
+
+\subsection{Analyse}
+
+\cite{izq}
+\cite{green}
+
+\bibliographystyle{alpha}
+\bibliography{sources}
+
+\end{document}
