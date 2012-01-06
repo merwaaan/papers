@@ -94,7 +94,8 @@ On remarque que tous les $T_{ii}$ avec $i \in \{1, \dots, 5\}$ valent
 donc nulle. De plus les probabilités de passer à un état représentant
 une position non voisine de la position actuelle sont elles aussi
 nulles, car l'individu est limité à des déplacements vers les
-positions adjacentes.
+positions adjacentes. Bien sûr, $\forall i \in \{1, \dots, 5\}$,
+$\sum_{j=1}^5 T_{ij} = 1$
 
 \`A partir de $T$, et si l'on veut prévoir la position de l'individu à
 la deuxième étape (on cherche donc $X_1$), on remarque que seules les
@@ -134,10 +135,15 @@ quel $X_t$.
 
 Un système peut être modélisé par un large choix de formalismes. Parmi
 les modélisations envisageables, on pense notamment à la modélisation
-individu-centré, ou bien à l'application de lois logistiques ou à
+individu-centrée, ou bien à l'application de lois logistiques ou à
 l'utilisation de systèmes d'équations. Un avantage des chaînes de
 Markov pour réprésenter un problème est l'éventail de possibilités de
-quantification et d'analyse qu'elles offrent.
+quantification et d'analyse qu'elles offrent \cite{izq}.
+
+Contrairement à une modélisation individu-centrée, de laquelle on ne
+peut extraire des analyses qu'à partir des résultats opérationnels, de
+nombreux aspects d'un modèle de type chaîne de Markov peuvent être
+évalués avant toute éxecution, à partir de la matrice de transition.
 
 \subsubsection{Prévision}
 
@@ -153,7 +159,7 @@ nombre d'étapes. Reprenons l'exemple de la marche aléatoire, pour
 lequel $X_0 = 2$. On veut déterminer la probabilité que l'individu
 soit encore à la position 2 à la 3-éme étape, soit deux étapes plus
 tard. Autrement dit, on veut calculer $P(X_2 = 2 | X_0 = 2)$. On note
-cette probabilité $p^{(2)}_{2,2}$.
+cette probabilité $p^{(2)}_{2,2}$ \cite{green}.
 
 On peut représenter conceptuellement toutes les issues possibles de
 cette situation par un arbre dans lequel chaque niveau correpond à une
@@ -249,7 +255,8 @@ manuel utilisé plus tôt.
 
 Un état absorbant est un état duquel on ne peut sortir une fois
 atteint. Une chaîne de Markov absorbante est une chaîne de Markov
-possédant au moins un état absorbant.
+possédant au moins un état absorbant. Ce type de chaîne de Markov
+autorise plusieurs facilités d'analyse.
 
 \cite{snell} utilise une variante de la marche aléatoire pour
 illustrer le principe des chaînes de Markov absorbantes : l'individu a
@@ -287,7 +294,8 @@ absorbante, on peut répondre à des questions telles que :
 Pour répondre à ces questions, il est nécessaire de passer la matrice de
 transition sous forme canonique. Ce passage s'opère par permutation
 des lignes de la matrice de transition de façon à ce que les entrées
-valant 1 des états absorbants forment une matrice identité.
+valant 1 des états absorbants forment une matrice identité de taille
+$n \times n$ avec $n$ le nombre d'états absorbants.
 
 $$
 T = \bordermatrix{
@@ -306,6 +314,8 @@ T = \bordermatrix{
 $$
 \vspace{0.5cm}
 
+On décompose donc $T$ en :
+
 $$
 Q =
 \begin{pmatrix}
@@ -313,6 +323,7 @@ Q =
   0.5 & 0 & 0.5 \\
   0 & 0.5 & 0
 \end{pmatrix}
+\;\;\;\;\;
 I =
 \begin{pmatrix}
   1 & 0 \\
@@ -321,7 +332,7 @@ I =
 $$
 \vspace{0.5cm}
 
-Si l'on souhaite par exemple estimer le nombre de passage par chaque
+Si l'on souhaite par exemple estimer le nombre de passages par chaque
 état avant l'absorption de la chaîne, on calcule la matrice
 fondamentale $N$ telle que :
 
@@ -352,9 +363,6 @@ $$
 \subsection{implémentation}
 
 \subsection{Analyse}
-
-\cite{izq}
-\cite{green}
 
 \bibliographystyle{alpha}
 \bibliography{sources}
