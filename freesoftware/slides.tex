@@ -1,10 +1,11 @@
 \documentclass{beamer}
 
+\usepackage[utf8]{inputenc}
 \usepackage{multirow}
 
 \title{Are large software companies bound to adopt the free software
   model?}
-\author{Merwan Achibet}
+\author{Merwan Achibet\\Université du Havre}
 
 \usetheme{Warsaw}
 
@@ -20,6 +21,11 @@
 
 \maketitle
 
+\begin{frame}
+  \frametitle{Table of Contents}
+  \tableofcontents
+\end{frame}
+
 \section{Free software}
 
 \subsection{Definition}
@@ -29,14 +35,20 @@
   \frametitle{What is free software?}
 
   \begin{itemize}
-    \item{Distributed with its source code}
-    \item{Modifiable}
-    \item{Redistribuable}
+    \item<1->{Distributed with its source code}
+    \item<2->{Modifiable}
+    \item<3->{Redistribuable}
   \end{itemize}
 
-  \begin{block}{Beware}
-    Free software $\neq$ open source
-  \end{block}
+  \pause
+
+  \vfill
+
+  \only<4>{
+    \begin{block}{}
+      Free software $\neq$ open source
+    \end{block}
+  }
 
 \end{frame}
 
@@ -46,58 +58,105 @@
 
   \frametitle{Historically speaking...}
 
-  \begin{block}{1950}
-    Computer science is academic, sharing is the norm
+  \begin{block}{1950s}
+    \begin{center}Softwares are academic, sharing is the norm.\end{center}
   \end{block}
 
-  $\downarrow$
+  \begin{center} $\downarrow$ \end{center}
 
-  \begin{block}{1990}
-    Softwares become commercial products
+  \begin{block}{1970s}
+    \begin{center}Softwares are commercial products.\end{center}
   \end{block}
 
-  $\downarrow$
+  \begin{center} $\downarrow$ \end{center}
 
   \begin{block}{Near future}
-    ?
+    \begin{center}?\end{center}
   \end{block}
 
 \end{frame}
 
-\section{Interest for the software companies}
+\section{Software companies and free software}
 
-\subsection{Advantages and downsides}
+\subsection{Advantages}
 
 \begin{frame}
 
-  \frametitle{Advantages and disadvantages}
+  \frametitle{Advantages}
 
-  \begin{tabular}{cl}
+  \begin{columns}
 
-    \multirow{6}{*}{\Huge{\textbf{+}}} & Reputation \\
-    & Trust \\
-    & Patenting \\
-    & Legal \\
-    & Built on other free softwares \\
-    & User participation (debugging, enhancement) \\
+    \column{.2\textwidth}
+    \Huge{\textbf{+}}
 
-    & \\
+    \column{.8\textwidth}
+    \begin{itemize}
+      \item<2->{Reputation}
+      \item<3->{Trust}
+      \item<4->{No patenting fees}
+      \item<5->{No legal fees}
+      \item<6->{Built on other free softwares}
+      \item<7>{User contribution}
+    \end{itemize}
 
-    \multirow{3}{*}{\Huge{\textbf{-}}} & Intimidating \\
-    & Potentially free = not as good \\
-    & No secret
+  \end{columns}
 
-  \end{tabular}
+\end{frame}
+
+\subsection{Disadvantages}
+
+\begin{frame}
+
+  \frametitle{Disadvantages}
+
+  \begin{columns}
+
+    \column{.2\textwidth}
+    \Huge{\textbf{-}}
+
+    \column{.8\textwidth}
+    \begin{itemize}
+      \item<2->{Intimidating to the user}
+      \item<3->{Potentially free $=$ not as good}
+      \item<4>{No secret}
+    \end{itemize}
+
+  \end{columns}
 
 \end{frame}
 
 \section{Different business models}
 
+\begin{frame}
+
+  \begin{block}{Question}
+    Free software as many advantages but is it economically viable?
+  \end{block}
+
+  \vfill
+
+
+
+
+\end{frame}
+
 \subsection{Ubuntu}
 
 \begin{frame}
 
-  \frametitle{The Ubuntu Foundation - Ubuntu}
+  \frametitle{Ubuntu Foundation - Ubuntu}
+
+  \begin{block}{Their product}
+    A Linux-based operating system.
+  \end{block}
+
+  \vfill
+
+  \begin{itemize}
+    \item<2>{Deployment}
+    \item<3>{Maintenance}
+    \item<4>{Training}
+  \end{itemize}
 
 \end{frame}
 
@@ -105,7 +164,18 @@
 
 \begin{frame}
 
-  \frametitle{The Mozilla Foundation - Firefox}
+  \frametitle{Mozilla Foundation - Firefox}
+
+  \begin{block}{Their product}
+    A famous internet browser.
+  \end{block}
+
+  \vfill
+
+  \begin{itemize}
+    \item<2>{Donations}
+    \item<3>{Google partnership}
+  \end{itemize}
 
 \end{frame}
 
@@ -114,6 +184,31 @@
 \begin{frame}
 
   \frametitle{Google - Chrome}
+
+  \begin{block}{Their product}
+    An internet browser.
+  \end{block}
+
+  \vfill
+
+  \begin{itemize}
+    \item<2>{Zero revenue}
+    \item<3>{The real product is advertising}
+    \item<4>{Chrome lets people access Google more easily}
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Conclusion}
+
+  \begin{block}{}
+    \begin{center}Are large software companies bound to adopt the free software
+    model?\end{center}
+  \end{block}
+
+
 
 \end{frame}
 
