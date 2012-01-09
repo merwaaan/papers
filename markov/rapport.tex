@@ -9,7 +9,8 @@
 
 \usetikzlibrary{arrows, positioning}
 
-\title{Chaînes de Markov} \author{Merwan Achibet\\Université du Havre}
+\title{Chaînes de Markov}
+\author{Merwan Achibet\\Université du Havre}
 \date{}
 
 \begin{document}
@@ -117,8 +118,8 @@ Concrètement, cette propriété énonce que dans le cadre d'un processus
 aléatoire à états, l'état futur dépend uniquement de l'état présent et
 non de tous les états précédents.
 
-Plus formellement, si le processus en question a atteint sa $t$-ième étape
-:
+Plus formellement, si le processus en question a atteint sa
+$t$\textsuperscript{ème} étape :
 
 $$
 P(X_{t+1} | X_{t}, X_{t-1}, \dots, X_0) = P(X_{t+1} | X_t)
@@ -141,9 +142,14 @@ Markov pour réprésenter un problème est l'éventail de possibilités de
 quantification et d'analyse qu'elles offrent \cite{izq}.
 
 Contrairement à une modélisation individu-centrée, de laquelle on ne
-peut extraire des analyses qu'à partir des résultats opérationnels, de
-nombreux aspects d'un modèle de type chaîne de Markov peuvent être
-évalués avant toute éxecution, à partir de la matrice de transition.
+peut extraire des analyses qu'à partir des résultats opérationnels,
+plusieurs aspects d'un modèle de type chaîne de Markov peuvent être
+évalués avant toute éxecution, à partir de la matrice de
+transition. On peut évidemment prévoir l'état suivant d'une chaîne
+mais aussi faire des prévisions sur l'état qui sera atteint au bout de
+$x$ étapes. Il est de plus possible d'étudier la périodicité d'une
+chaîne (si le modèle admet des cycles dans sa progression) et sa
+récurrence (le nombre de fois qu'un état particulier est pris).
 
 \subsubsection{Prévision}
 
@@ -157,9 +163,9 @@ En conséquence, il est aussi possible de calculer la possibilité
 d'atteindre un état $j$ à partir d'un état $i$ au bout d'un certain
 nombre d'étapes. Reprenons l'exemple de la marche aléatoire, pour
 lequel $X_0 = 2$. On veut déterminer la probabilité que l'individu
-soit encore à la position 2 à la 3-éme étape, soit deux étapes plus
-tard. Autrement dit, on veut calculer $P(X_2 = 2 | X_0 = 2)$. On note
-cette probabilité $p^{(2)}_{2,2}$ \cite{green}.
+soit encore à la position 2 à la 3\textsuperscript{ème} étape, soit
+deux étapes plus tard. Autrement dit, on veut calculer $P(X_2 = 2 |
+X_0 = 2)$. On note cette probabilité $p^{(2)}_{2,2}$ \cite{green}.
 
 On peut représenter conceptuellement toutes les issues possibles de
 cette situation par un arbre dans lequel chaque niveau correpond à une
@@ -247,13 +253,13 @@ $$
 \vspace{0.5cm}
 
 Dans ce cas, on retrouve bien $T^2_{2,2} = 0.75$. On note que cette
-opération fournit les probabilités de transition projetées pour tous
+opération fournit les probabilités de transition projetées vers tous
 les états et à partir de tous les états, contrairement au calcul
 manuel utilisé plus tôt.
 
 \subsubsection{Absorption}
 
-Un état absorbant est un état duquel on ne peut sortir une fois
+Un état absorbant est un état duquel on ne peut pas sortir une fois
 atteint. Une chaîne de Markov absorbante est une chaîne de Markov
 possédant au moins un état absorbant. Ce type de chaîne de Markov
 autorise plusieurs facilités d'analyse.
@@ -291,25 +297,25 @@ absorbante, on peut répondre à des questions telles que :
   \item{Combien de fois l'individu va-t-il passer par chaque position ?}
 \end{enumerate}
 
-Pour répondre à ces questions, il est nécessaire de passer la matrice de
-transition sous forme canonique. Ce passage s'opère par permutation
-des lignes de la matrice de transition de façon à ce que les entrées
-valant 1 des états absorbants forment une matrice identité de taille
-$n \times n$ avec $n$ le nombre d'états absorbants.
+Pour répondre à ces questions, il est nécessaire de passer la matrice
+de transition sous forme canonique. Ce passage s'opère par permutation
+des lignes et des colonnes de la matrice de transition de façon à ce
+que les entrées des états absorbants valant 1 forment une matrice
+identité de taille $n \times n$ avec $n$ le nombre d'états absorbants.
 
 $$
 T = \bordermatrix{
     & 2 & 3 & 4 & 1 & 5 \cr
-  2 & 0 & 0.5 & 0 & 0.5 & 0 \cr
-  3 & 0.5 & 0 & 0.5 & 0 & 0 \cr
-  4 & 0 & .5 & 0 & 0 & 0.5 \cr
-  1 & 0 & 0 & 0 & 1 & 0 \cr
-  5 & 0 & 0 & 0 & 0 & 1 \cr
+  2 & \color{red}0 & \color{red}0.5 & \color{red}0 & 0.5 & 0 \cr
+  3 & \color{red}0.5 & \color{red}0 & \color{red}0.5 & 0 & 0 \cr
+  4 & \color{red}0 & \color{red}0.5 & \color{red}0 & 0 & 0.5 \cr
+  1 & 0 & 0 & 0 & \color{blue}1 & \color{blue}0 \cr
+  5 & 0 & 0 & 0 & \color{blue}0 & \color{blue}1 \cr
 }
 =
 \begin{pmatrix}
-  Q & * \\
-  0 & I
+  \color{red}Q & * \\
+  0 & \color{blue}I
 \end{pmatrix}
 $$
 \vspace{0.5cm}
@@ -343,8 +349,8 @@ $$
 Chaque ligne de $N$ correspond au nombre de passage attendu par chaque
 autre état en ayant pris l'état de la ligne comme point de
 départ. Dans le cas de la marche aléatoire alcoolisée, on prévoit que
-l'individu commençant son trajet à la position 3 y passera deux fois
-avant l'absorption.
+l'individu commençant son trajet à la position 3 passera en moyenne
+une fois sur la position 2 avant absorption.
 
 $$
 N =
