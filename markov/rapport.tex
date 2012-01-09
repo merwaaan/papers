@@ -6,6 +6,7 @@
 \usepackage{float}
 \usepackage{tikz}
 \usepackage{url}
+\usepackage{verbatim}
 
 \usetikzlibrary{arrows, positioning}
 
@@ -362,28 +363,107 @@ N =
 }
 $$
 
-\section{Application : noms de la mythologie grecque}
+\section{Application : Noms de la mythologie grecque}
 
 Les chaînes de Markov sont couramment utilisées pour générer du texte
-de façon aléatoire à partir d'un corpus. Nous allons ainsi implémenter
-un générateur de noms inspiré de ceux des protagonistes de la
-mythologie grecque.
+de façon aléatoire. En considérant qu'un état est un symbole (lettre,
+syllabe, mot ou phrase) et que la succession d'états parcourus par la
+chaîne forme un mot, on peut obtenir des textes donnant une impression
+d'authenticité. Pour obtenir un résultat satisfaisant, il sera bien
+sûr nécessaire d'utiliser une matrice de transition
+adaptée. Typiquement, elle sera calculée à partir de l'étude
+statistique d'un corpus contenant les textes à imiter.
+
+Nous allons implémenter un générateur de noms inspiré de ceux des
+protagonistes de la mythologie grecque. Il prendra en entrée un corpus
+de noms grecs et générera un nouveau nom adoptant les mêmes
+caractéristique structurelles que ceux du corpus.
 
 \subsection{Modèle}
 
-Une chaîne de Markov correspond ici à un nom soit un mot. Un mot est
-composé de lettres, chacun correspondant à un état. Ici l'ensemble des
-états est $S = \{a, b, c, \dots, z, \xi \}$
+La chaîne de Markov correspond ici à un nom, soit un mot. Un mot est
+composé de lettres, chacune correspondant à un état. Ici l'ensemble
+des états est donc $S = \{a, b, c, \dots, z, \xi \}$, avec $\xi$ le
+symbole de fin de mot.
+
+L'état initial $X_0$ sera tiré au hasard parmi cet alphabet, en
+ignorant $\xi$. On passe ensuite d'état en état pour construire
+progressivement le mot, jusqu'à ce que l'on atteigne l'état $\xi$ ou
+que la chaîne ait atteint une taille limite maximale. $\xi$ fait ici
+office d'état absorbant puisqu'on ne peut plus en sortir une fois
+qu'il est atteint.
+
+L'opération se déroulera en deux phases principales. Tout d'abord, la
+matrice de transition $T$, qui nous permet de déterminer quel parcours
+suivre, doit être calculée. Pour cela, on se basera sur un corpus de
+noms de divinités grecques que nous allons parcourir afin de relever
+les relations de succession entre les différentes lettres de notre
+alphabet. Une fois $T$ obtenue, il reste à construire la chaîne de
+Markov de façon classique. La succession d'états parcourus formera le
+nouveau nom.
 
 \subsection{Implémentation}
 
+Cette implémentation a été réalisée en Javascript blabla
+
 \subsubsection{Apprentissage}
 
+Un corpus de noms grecs est fourni à notre programme.
+
+\verbatiminput{corpus.txt}
+
+On note que le symbole de fin de mot n'est pas explicitement précisé
+dans le corpus mais \textit{demether} est bien égal à
+\textit{demether}$\xi$.
+
+Il est nécessaire d'analyser chacune des entrées de ce dictionnaire
+pour comptabiliser les relations de succession entre lettres
+voisines. Dans un premier temps, on part d'une matrice de dimensions
+$27 \times 27$ (26 lettres et le symbole de fin de mot) dont toutes
+les cases sont nulles. On parcourt chaque mot et à chaque succession
+de la lettre $i$ par la lettre $j$, on incrémente $T_{ij}$.
+
+Il est ensuite nécessaire de normaliser chaque ligne de la matrice
+afin que la somme des éléments de chaque ligne donne 1, on note cette
+matrice normalisée $T'$ et on a :
+
+$$
+{T'}_{ij} = \frac{T_{ij}}{\sum_{k \in S} T_{ik}}
+$$
 
 \subsubsection{Génération}
 
+classique
+
+extrait arbre
 
 \subsection{Résultats}
+
+diaetheron
+therisethe
+ponthymeph
+omeneus
+iophemion
+usthypios
+crymiarene
+phyostalal
+erapithes
+arito
+zethetus
+anurysthes
+nepadion
+tallonyx
+bolemeprio
+hopheleus
+onthonophe
+phaleria
+bonus
+stionys
+mitheron
+
+zeusthethe
+memememese
+chrthellyx
 
 \bibliographystyle{alpha}
 \bibliography{sources}

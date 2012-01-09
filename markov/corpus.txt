@@ -1,0 +1,17 @@
+var corpus = [
+	'aergia',
+	'aether',
+	'agrius',
+	'alcyoneus',
+	'aphrodite',
+	'apollo',
+	'ares',
+	'artemis',
+	'asteria',
+	'athena',
+	'chronos',
+	'clymene',
+	'cronus',
+	'demether',
+   ...
+]
