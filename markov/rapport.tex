@@ -49,7 +49,7 @@ l'environnement, cas dans lequel il n'a qu'un seul choix (il va à
 droite s'il est à l'extrêmité gauche, et \textit{vice versa}). Lorsque
 les deux choix sont possibles, la probabilité que chacun d'entre eux
 soit choisi est égale. La figure \ref{marche} illustre cet exemple et
-les probabilités de transition entre états.
+les probabilités de transition entre états voisins.
 
 \begin{figure}[H]
   \centering
@@ -133,12 +133,12 @@ $$
 P(X_{t+1} | X_{t}, X_{t-1}, \dots, X_0) = P(X_{t+1} | X_t)
 $$
 
-Autrement dit, seul l'état courant du système nous importe. Cette
-propriété est intéressante, car dans l'exemple de la marche aléatoire,
-un processus aléatoire à états basique peut se servir de la matrice de
+Autrement dit, seul l'état courant du système importe. Cette propriété
+est intéressante, car dans l'exemple de la marche aléatoire, un
+processus aléatoire à états basique peut se servir de la matrice de
 transition pour déterminer $X_1$ à partir de $X_0$ alors qu'une chaîne
-de Markov peut s'en servir déterminer $X_{t+1}$ à partir de n'importe
-quel $X_t$.
+de Markov peut s'en servir pour déterminer $X_{t+1}$ à partir de
+n'importe quel $X_t$.
 
 \subsection{Interêts pour la modélisation}
 
@@ -152,12 +152,14 @@ quantification et d'analyse qu'elles offrent \cite{izq}.
 Contrairement à une modélisation individu-centrée, de laquelle on ne
 peut extraire des analyses qu'à partir des résultats opérationnels,
 plusieurs aspects d'un modèle de type chaîne de Markov peuvent être
-évalués avant toute éxecution, à partir de la matrice de
-transition. On peut évidemment prévoir l'état suivant d'une chaîne
-mais aussi faire des prévisions sur l'état qui sera atteint au bout de
-$n$ étapes. Il est de plus possible d'étudier la périodicité d'une
-chaîne (si le modèle admet des cycles dans sa progression) et sa
-récurrence (le nombre de fois qu'un état particulier est pris).
+évalués avant toute éxecution à partir de la matrice de transition. On
+peut évidemment prévoir l'état suivant d'une chaîne mais aussi faire
+des prévisions sur l'état qui sera atteint au bout de $n$ étapes. Il
+est de plus possible d'étudier la périodicité d'une chaîne (si le
+modèle admet des cycles dans sa progression) et sa récurrence (le
+nombre de fois qu'un état particulier est pris). Nous présentons par
+la suite les méthodes de prévision ainsi qu'une classe particulière de
+chaînes de Markov, les chaînes absorbantes.
 
 \subsubsection{Prévision}
 
@@ -373,7 +375,7 @@ N =
 }
 $$
 
-\section{Application : Noms de la mythologie grecque}
+\section{Application : D'Artémis à Zeus}
 
 Les chaînes de Markov sont couramment utilisées pour générer du texte
 de façon aléatoire. En considérant qu'un état est un symbole (lettre,
@@ -398,12 +400,12 @@ soit un mot. Un mot est composé de lettres, chacune correspondant à un
 
 L'état initial $X_0$ sera tiré au hasard parmi cet alphabet, en
 ignorant $\xi$. On passe ensuite d'état en état pour construire
-progressivement le mot, jusqu'à ce que l'on atteigne l'état
-$\xi$. $\xi$ fait ici office d'état absorbant puisqu'on ne peut plus
-en sortir une fois qu'il est atteint. Ce symbole de fin de mot est
-nécessaire à la génération de noms convaincants puisque que c'est le
-passage vers l'état le représentant qui déterminera l'arrêt de la
-construction et donc la longueur du mot.
+progressivement le mot, jusqu'à ce que l'on atteigne $\xi$. Cet état
+fait ici office d'état absorbant puisqu'on ne peut plus en sortir une
+fois qu'il est atteint. Ce symbole de fin de mot est nécessaire à la
+génération de noms convaincants puisque que c'est le passage vers
+l'état le représentant qui déterminera l'arrêt de la construction et
+donc la longueur du mot.
 
 L'opération se déroulera en deux phases principales. Tout d'abord, la
 matrice de transition $T$, qui nous permet de déterminer quel parcours
@@ -423,12 +425,12 @@ corpus utilisé est une sélection de noms issus de
 \url{http://en.wikipedia.org/wiki/List_of_Greek_mythological_figures}
 
 Le corpus, contenant 45 noms grecs, est fourni à notre programme. Le
-processus d'apprentissage permet à la matrice de transition de
-comptabiliser les relations de succession entre chaque symbole et donc
-de permettre par la suite la génération de noms structurellement
-équivalents. Plus la taille du corpus est élevée et plus les noms
-produits seront convaincants car le poids des relations entre les
-symboles formant des syllabes caractéristiques en seront renforcés.
+processus d'apprentissage comptabilise les relations de succession
+entre chaque symbole et permet par la suite la génération de noms
+structurellement équivalents. Plus la taille du corpus est élevée et
+plus les noms produits seront convaincants car le poids des relations
+entre les symboles formant des syllabes caractéristiques en seront
+renforcés.
 
 \verbatiminput{corpus.txt}
 
@@ -437,12 +439,12 @@ dans le corpus mais \textit{demether} est bien égal à
 \textit{demether}$\xi$.
 
 On commence par parcourir chacune des entrées de ce dictionnaire pour
-comptabiliser les relations de succession entre lettres voisines. On
-dispose au départ d'une matrice de dimensions $27 \times 27$ (26
-lettres et le symbole de fin de mot) dont toutes les cases sont
-nulles. \`A chaque succession de la lettre $i$ par la lettre $j$, on
-incrémente $T_{ij}$. On obtient à la fin de ce traitement une matrice
-équivalente à :
+compter les relations de succession entre lettres voisines. On dispose
+au départ d'une matrice de dimensions $27 \times 27$ (26 lettres et le
+symbole de fin de mot) dont toutes les cases sont nulles. \`A chaque
+succession de la lettre $i$ par la lettre $j$, on incrémente
+$T_{ij}$. On obtient à la fin de ce traitement une matrice équivalente
+à :
 
 $$
 T = \bordermatrix{
@@ -456,7 +458,7 @@ $$
 \vspace{0.5cm}
 
 Il est ensuite nécessaire d'en normaliser ces valeurs afin que la
-somme des éléments de chaque ligne donne 1, on note cette matrice
+somme des éléments de chaque ligne donne 1. On note cette matrice
 normalisée $T'$ et on la calcule telle que :
 
 $$
@@ -478,8 +480,10 @@ $$
 \vspace{0.5cm}
 
 Une fois la matrice de transition calculée, la génération se fait de
-façon classique. Un état initial est choisi aléatoirement parmi $S$ et
-on passe d'état en état jusqu'à atteindre l'état absorbant $\xi$.
+façon classique. Un état initial est choisi aléatoirement dans $S$ et
+on passe d'état en état jusqu'à atteindre l'état absorbant $\xi$. La
+sélection de chaque lettre est effectuée par une fonction utilisant
+l'algorithme de la roue de la fortune.
 
 \subsection{Résultats}
 
@@ -489,13 +493,13 @@ ont été ajoutées en fin de traitement à des fins de présentation car
 nos états représentent tous des lettres en minuscule.
 
 Les résultats sont satisfaisants et on s'imagine facilement les
-épopées de Erapithes, Tallonyx et Mitheron.
+épopées de Tallonyx, Erapithes et Mitheron.
 
 \begin{table}[H]
   \centering
 
   \begin{tabular}{l|l|l}
-    Diaetheron & Therisethe & Tonthymeph \\
+    Diaetheron & Therisethe & Temes \\
     Omeneus & Iophemion & Usthypios \\
     Crymiarene & Phyostalal & Erapithes \\
     Arito & Zethetus & Anurysthes \\
@@ -511,8 +515,8 @@ Les résultats sont satisfaisants et on s'imagine facilement les
 
 Cependant d'autres résultats semblent moins réalistes et on se rend
 compte des faiblesses des chaînes de markov en observant le tableau
-\ref{pasbons}. On y retrouve des noms trop courts, beaucoup trop
-longs, répétitif ou bien difficilement prononçables.
+\ref{pasbons}. On y retrouve des noms trop courts, trop longs,
+répétitif ou bien difficilement prononçables.
 
 \begin{table}[H]
   \centering
@@ -529,12 +533,12 @@ longs, répétitif ou bien difficilement prononçables.
 \end{table}
 
 Les longueurs innapropriées de certains noms sont inévitables à moins
-d'ajouter des limites minimale et maximales dures à notre
-programme. Ce problème est en fait lié à la propriété de Markov :
-puisqu'une chaîne ne se soucie que de l'état présent, elle n'a aucune
-connaissance des états précédents et ne s'en soucie pas. En
-conséquence, nous ne disposons pas d'une vue d'ensemble du nom pendant
-sa construction et il peut finir soit très tôt soit très tard.
+d'ajouter des limites minimale et maximale dures à notre programme. Ce
+problème est en fait lié à la propriété de Markov : puisqu'une chaîne
+ne se soucie que de l'état présent, elle n'a aucune connaissance des
+états précédents. En conséquence, nous ne disposons pas d'une vue
+d'ensemble du nom pendant sa construction et il peut finir soit très
+tôt soit très tard.
 
 Les noms composées d'une unique lettre peuvent découler du problème
 décrit précedemment mais aussi d'un corpus trop réduit. On obtient par
@@ -545,16 +549,16 @@ terminé ! pour réduire les occurrences de ce problème, il faudra
 agrandir le corpus afin d'éviter les caractères disposant de peu
 de successeurs.
 
-Autre soucis, certains noms sont imprononçables ! En effet, la
-propriété de Markov pose encore une limite puisque on a aucune
-visibilité sur la syllabe courant pendant la construction. Pour
-résoudre ce problème, on pourrait imaginer utiliser des syllabes comme
-état plutôt que des lettres. L'isolation de syllabes serait une tâche
-complexe mais on pourrait plus généralement utiliser des blocs de
-lettres de longueur $n$ comme état. De cette façon, on réduirait les
-morceaux de noms sans cohérences mais un corpus beaucoup plus
-important serait nécessaire pour contrebalancer le fait que le nombre
-d'états augmenterait considérablement.
+Autre soucis, certains noms sont imprononçables. En effet, la
+propriété de Markov pose encore une limite puisque la chaîne ne
+considère que les lettres voisines. Pour résoudre ce problème, on
+pourrait imaginer utiliser des syllabes comme état plutôt que des
+lettres. L'isolation de syllabes est une tâche complexe mais on
+pourrait, plus généralement, utiliser des blocs de lettres de longueur
+$n$ comme état. De cette façon, on réduirait le nombre de syllabes
+incohérentes. Un corpus beaucoup plus important serait néanmoins
+nécessaire pour contrebalancer le fait que le nombre d'états
+augmenterait considérablement.
 
 \bibliographystyle{alpha}
 \bibliography{sources}
