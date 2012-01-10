@@ -1,5 +1,6 @@
 $(function() {
 
+	// Generate 1000 names and display them on the page.
 	for(var i = 0; i < 1000; ++i)
 		$('body').append(generateName()+'<br/>');
 });
@@ -66,15 +67,16 @@ function generateName() {
 
 	var name = '';
 
-	// Choose a starting letter.
+	// Choose a starting character.
 	currentChar = alphabet[Math.floor(Math.random() * alphabet.length)];
-	name += currentChar;
 
+	// Select an appropriate successor.
 	do {
-		currentChar = roulette(currentChar);
 		name += currentChar;
+		currentChar = roulette(currentChar);
 	} while(currentChar !== '')
 
+	// Return the capitalized name.
 	return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
@@ -82,9 +84,11 @@ function generateAlphabet() {
 
 	alphabet = [];
 
+	// Add all characters between 'a' and 'z'.
 	for(var i = 97; i < 123; ++i)
 		alphabet.push(String.fromCharCode(i));
 
+	// Add the empty character.
 	alphabet.push('');
 
 	return alphabet;
@@ -94,6 +98,7 @@ function generateTransitionMatrix() {
 
 	matrix = {};
 
+	// Build an empty matrix.
 	for(var i = 0; i < alphabet.length; ++i) {
 
 		matrix[alphabet[i]] = {};
@@ -102,7 +107,7 @@ function generateTransitionMatrix() {
 			matrix[alphabet[i]][alphabet[j]] = 0;
 	}
 
-	// Count.
+	// Count the successions.
 	for(var i = 0; i < corpus.length; ++i)
 		for(var j = 0; j < corpus[i].length; ++j) {
 
@@ -112,7 +117,7 @@ function generateTransitionMatrix() {
 			matrix[currentChar][nextChar] += 1;
 		}
 
-	// Normalize.
+	// Normalize the values.
 	for(var i in matrix) {
 
 		var count = 0;
@@ -133,6 +138,7 @@ function roulette(char) {
 
 	var transitions = matrix[char];
 
+	// Build an array of possible successors.
 	var chars = [];
 	var count = 0;
 	for(var i in transitions) {
@@ -144,6 +150,7 @@ function roulette(char) {
 	if(count == 0)
 		return '';
 
+	// Build a fortune wheel.
 	var wheel = [];
 	for(var i = 0; i < chars.length; ++i) {
 		wheel[i] = transitions[chars[i]];
@@ -151,6 +158,7 @@ function roulette(char) {
 			wheel[i] += wheel[i - 1];
 	}
 
+	// Pick a random value and return the corresponding letter.
 	var x = Math.random();
 
 	for(var i = 0; i < wheel.length; ++i)
