@@ -4,7 +4,6 @@ $(function() {
 		$('body').append(generateName()+'<br/>');
 });
 
-var size = 1;
 var alphabet = null;
 var matrix = null;
 
@@ -36,6 +35,7 @@ var corpus = [
 	'hestia',
 	'hyperion',
 	'leto',
+	'megapenthes',
 	'pallas',
 	'perses',
 	'pontus',
@@ -70,19 +70,12 @@ function generateName() {
 	currentChar = alphabet[Math.floor(Math.random() * alphabet.length)];
 	name += currentChar;
 
-	while(name.length < 10) {
-
+	do {
 		currentChar = roulette(currentChar);
 		name += currentChar;
+	} while(currentChar !== '')
 
-		if(currentChar === '')
-			break;
-	}
-
-	console.log('transition matrix', matrix);
-	console.log('name', name);
-
-	return name;
+	return name.charAt(0).toUpperCase() + name.slice(1);
 }
 
 function generateAlphabet() {
@@ -130,6 +123,8 @@ function generateTransitionMatrix() {
 			for(var j in matrix[i])
 				matrix[i][j] /= count;
 	}
+
+	console.log('transition matrix >', matrix);
 
 	return matrix;
 }

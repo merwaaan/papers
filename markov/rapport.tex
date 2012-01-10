@@ -7,6 +7,7 @@
 \usepackage{tikz}
 \usepackage{url}
 \usepackage{verbatim}
+\usepackage{float}
 
 \usetikzlibrary{arrows, positioning}
 
@@ -45,38 +46,44 @@ $X_0 = 2$; l'individu se trouve donc au départ sur la seconde position
 vers une position voisine, ce qui revient à lui proposer deux choix
 (gauche ou droite), sauf lorsqu'il est à l'une des extrêmités de
 l'environnement, cas dans lequel il n'a qu'un seul choix (il va à
-droite s'il est à l'extrêmité gauche, et \textit{vice versa}).
+droite s'il est à l'extrêmité gauche, et \textit{vice versa}). Lorsque
+les deux choix sont possibles, la probabilité que chacun d'entre eux
+soit choisi est égale. La figure \ref{marche} illustre cet exemple et
+les probabilités de transition entre états.
 
 \begin{figure}[H]
-\centering
+  \centering
 
-\begin{tikzpicture}[node distance=1cm, auto]
+  \begin{tikzpicture}[node distance=1cm, auto]
 
-  \node[circle, draw] (1) {1};
-  \node[circle, draw, right=of 1] (2) {2};
-  \node[circle, draw, right=of 2] (3) {3};
-  \node[circle, draw, right=of 3] (4) {4};
-  \node[circle, draw, right=of 4] (5) {5};
+    \tikzstyle{n}=[circle, draw]
 
-  \draw[->, thick] (1) to[bend left=60] node[midway] {1} (2);
-  \draw[->, thick] (2) to[bend left=60] node[midway] {0.5} (3);
-  \draw[->, thick] (3) to[bend left=60] node[midway] {0.5} (4);
-  \draw[->, thick] (4) to[bend left=60] node[midway] {0.5} (5);
+    \node[n] (1) {1};
+    \node[n, right=of 1] (2) {2};
+    \node[n, right=of 2] (3) {3};
+    \node[n, right=of 3] (4) {4};
+    \node[n, right=of 4] (5) {5};
 
-  \draw[->, thick] (5) to[bend left=60] node[midway] {1} (4);
-  \draw[->, thick] (4) to[bend left=60] node[midway] {0.5} (3);
-  \draw[->, thick] (3) to[bend left=60] node[midway] {0.5} (2);
-  \draw[->, thick] (2) to[bend left=60] node[midway] {0.5} (1);
+    \draw[->, thick] (1) to[bend left=60] node[midway] {1} (2);
+    \draw[->, thick] (2) to[bend left=60] node[midway] {0.5} (3);
+    \draw[->, thick] (3) to[bend left=60] node[midway] {0.5} (4);
+    \draw[->, thick] (4) to[bend left=60] node[midway] {0.5} (5);
 
-\end{tikzpicture}
+    \draw[->, thick] (5) to[bend left=60] node[midway] {1} (4);
+    \draw[->, thick] (4) to[bend left=60] node[midway] {0.5} (3);
+    \draw[->, thick] (3) to[bend left=60] node[midway] {0.5} (2);
+    \draw[->, thick] (2) to[bend left=60] node[midway] {0.5} (1);
 
-\caption{Représentation du problème de la marche aléatoire.}
+  \end{tikzpicture}
+
+  \caption{Représentation du problème de la marche aléatoire.}
+  \label{marche}
 
 \end{figure}
 
 Usuellement, on se base sur une matrice de transition $T$ pour décrire
-les probabilités de passer d'un état précis à un autre. Pour cet
-exemple, la matrice de transition est la suivante :
+les probabilités de passer d'un état précis à un autre. Ici, la
+matrice de transition est la suivante :
 
 $$
 T = \bordermatrix{
@@ -92,8 +99,8 @@ $$
 
 On remarque que tous les $T_{ii}$ avec $i \in \{1, \dots, 5\}$ valent
 0, car l'individu ne peut pas rester à la même position pendant deux
-étapes successives. La probabilité de rester dans le même état est
-donc nulle. De plus les probabilités de passer à un état représentant
+étapes successives; la probabilité de rester dans le même état est
+donc nulle. De plus, les probabilités de passer à un état représentant
 une position non voisine de la position actuelle sont elles aussi
 nulles, car l'individu est limité à des déplacements vers les
 positions adjacentes. Bien sûr, $\forall i \in \{1, \dots, 5\}$,
@@ -128,7 +135,7 @@ $$
 
 Autrement dit, seul l'état courant du système nous importe. Cette
 propriété est intéressante, car dans l'exemple de la marche aléatoire,
-un processus à états basique peut se servir de la matrice de
+un processus aléatoire à états basique peut se servir de la matrice de
 transition pour déterminer $X_1$ à partir de $X_0$ alors qu'une chaîne
 de Markov peut s'en servir déterminer $X_{t+1}$ à partir de n'importe
 quel $X_t$.
@@ -148,7 +155,7 @@ plusieurs aspects d'un modèle de type chaîne de Markov peuvent être
 évalués avant toute éxecution, à partir de la matrice de
 transition. On peut évidemment prévoir l'état suivant d'une chaîne
 mais aussi faire des prévisions sur l'état qui sera atteint au bout de
-$x$ étapes. Il est de plus possible d'étudier la périodicité d'une
+$n$ étapes. Il est de plus possible d'étudier la périodicité d'une
 chaîne (si le modèle admet des cycles dans sa progression) et sa
 récurrence (le nombre de fois qu'un état particulier est pris).
 
@@ -174,50 +181,50 @@ cette situation par un arbre dans lequel chaque niveau correpond à une
 on atteint l'état 2 à partir de l'état 2.
 
 \begin{figure}[H]
-\centering
+  \centering
 
-\begin{tikzpicture}[level/.style={sibling distance=60mm/#1}]
+  \begin{tikzpicture}[level/.style={sibling distance=60mm/#1}]
 
-  \tikzstyle{n}=[circle, draw]
-  \tikzstyle{p}=[rectangle, draw=none, fill=gray!30]
+    \tikzstyle{n}=[circle, draw]
+    \tikzstyle{p}=[rectangle, draw=none, fill=gray!30]
 
-  \node[n] (a) {$2$}
-  child {
-    node[n] (b) {$1$}
+    \node[n] (a) {$2$}
     child {
-      node[n] (c) {$2$}
-    }
-  }
-  child {
-    node [circle,draw] (d) {$3$}
-    child {
-      node[n] (e) {$2$}
+      node[n] (b) {$1$}
+      child {
+        node[n] (c) {$2$}
+      }
     }
     child {
-      node[n] (f) {$4$}
-      child[grow=right] {
-        node {$t_2$} edge from parent[draw=none]
-        child[grow=up] {
-          node {$t_1$} edge from parent[draw=none]
+      node [n] (d) {$3$}
+      child {
+        node[n] (e) {$2$}
+      }
+      child {
+        node[n] (f) {$4$}
+        child[grow=right] {
+          node {$t_2$} edge from parent[draw=none]
           child[grow=up] {
-            node {$t_0$} edge from parent[draw=none]
+            node {$t_1$} edge from parent[draw=none]
+            child[grow=up] {
+              node {$t_0$} edge from parent[draw=none]
+            }
           }
         }
       }
-    }
-  };
+    };
 
-  \draw (a) to node[p, midway] {0.5} (b);
-  \draw (b) to node[p, midway] {1} (c);
-  \draw (a) to node[p, midway] {0.5} (d);
-  \draw (d) to node[p, midway] {0.5} (e);
-  \draw (d) to node[p, midway] {0.5} (f);
+    \draw (a) to node[p, midway] {0.5} (b);
+    \draw (b) to node[p, midway] {1} (c);
+    \draw (a) to node[p, midway] {0.5} (d);
+    \draw (d) to node[p, midway] {0.5} (e);
+    \draw (d) to node[p, midway] {0.5} (f);
 
-\end{tikzpicture}
+  \end{tikzpicture}
 
-\caption{Arbre représentant les états atteignables après deux étapes
-  et en partant de la position 2.}
-\label{arbre}
+  \caption{Arbre représentant les états atteignables après deux étapes
+    et en partant de la position 2.}
+  \label{arbre}
 
 \end{figure}
 
@@ -234,7 +241,7 @@ $$
 
 Ce calcul, ici simple, se révélera plus fastidieux lorsque la
 différence temporelle entre les deux étapes considérées s'agrandira,
-car le nombre de branches augmentera exponentiellement.
+car le nombre de feuilles de l'arbre augmentera exponentiellement.
 
 Heureusement, ce même résultat peut être obtenu en exploitant la
 matrice de transition. Plus généralement, la probabilité d'être en
@@ -260,10 +267,13 @@ manuel utilisé plus tôt.
 
 \subsubsection{Absorption}
 
+Parmi les différentes classes de chaînes de Markov, on trouve les
+chaînes absorbantes. Cette variante permet des facilités d'analyse si
+le modèle associé est adéquat.
+
 Un état absorbant est un état duquel on ne peut pas sortir une fois
 atteint. Une chaîne de Markov absorbante est une chaîne de Markov
-possédant au moins un état absorbant. Ce type de chaîne de Markov
-autorise plusieurs facilités d'analyse.
+possédant au moins un état absorbant.
 
 \cite{snell} utilise une variante de la marche aléatoire pour
 illustrer le principe des chaînes de Markov absorbantes : l'individu a
@@ -339,8 +349,8 @@ I =
 $$
 \vspace{0.5cm}
 
-Si l'on souhaite par exemple estimer le nombre de passages par chaque
-état avant l'absorption de la chaîne, on calcule la matrice
+Si l'on souhaite par exemple estimer le nombre moyen de passages par
+chaque état avant l'absorption de la chaîne, on calcule la matrice
 fondamentale $N$ telle que :
 
 $$
@@ -368,30 +378,32 @@ $$
 Les chaînes de Markov sont couramment utilisées pour générer du texte
 de façon aléatoire. En considérant qu'un état est un symbole (lettre,
 syllabe, mot ou phrase) et que la succession d'états parcourus par la
-chaîne forme un mot, on peut obtenir des textes donnant une impression
-d'authenticité. Pour obtenir un résultat satisfaisant, il sera bien
-sûr nécessaire d'utiliser une matrice de transition
-adaptée. Typiquement, elle sera calculée à partir de l'étude
-statistique d'un corpus contenant les textes à imiter.
+chaîne forme une composition de symboles, on peut obtenir des textes
+donnant une impression d'authenticité. Pour obtenir un résultat
+satisfaisant, il sera bien sûr nécessaire d'utiliser une matrice de
+transition adaptée. Typiquement, elle sera calculée à partir de
+l'étude statistique d'un corpus contenant les textes à imiter.
 
 Nous allons implémenter un générateur de noms inspiré de ceux des
 protagonistes de la mythologie grecque. Il prendra en entrée un corpus
 de noms grecs et générera un nouveau nom adoptant les mêmes
-caractéristique structurelles que ceux du corpus.
+caractéristique structurelles.
 
 \subsection{Modèle}
 
-La chaîne de Markov correspond ici à un nom, soit un mot. Un mot est
-composé de lettres, chacune correspondant à un état. Ici l'ensemble
-des états est donc $S = \{a, b, c, \dots, z, \xi \}$, avec $\xi$ le
-symbole de fin de mot.
+Dans le cadre de cet exemple, la chaîne de Markov correspond à un nom,
+soit un mot. Un mot est composé de lettres, chacune correspondant à un
+état. Ici, l'ensemble des états est donc $S = \{a, b, c, \dots, z, \xi
+\}$, avec $\xi$ le symbole de fin de mot.
 
 L'état initial $X_0$ sera tiré au hasard parmi cet alphabet, en
 ignorant $\xi$. On passe ensuite d'état en état pour construire
-progressivement le mot, jusqu'à ce que l'on atteigne l'état $\xi$ ou
-que la chaîne ait atteint une taille limite maximale. $\xi$ fait ici
-office d'état absorbant puisqu'on ne peut plus en sortir une fois
-qu'il est atteint.
+progressivement le mot, jusqu'à ce que l'on atteigne l'état
+$\xi$. $\xi$ fait ici office d'état absorbant puisqu'on ne peut plus
+en sortir une fois qu'il est atteint. Ce symbole de fin de mot est
+nécessaire à la génération de noms convaincants puisque que c'est le
+passage vers l'état le représentant qui déterminera l'arrêt de la
+construction et donc la longueur du mot.
 
 L'opération se déroulera en deux phases principales. Tout d'abord, la
 matrice de transition $T$, qui nous permet de déterminer quel parcours
@@ -404,11 +416,19 @@ nouveau nom.
 
 \subsection{Implémentation}
 
-Cette implémentation a été réalisée en Javascript blabla
+Cette implémentation a été réalisée en Javascript\footnote{Sources
+  consultables sur
+  \url{http://github.com/merwaaan/papers/blob/master/markov/markov.js}}. Le
+corpus utilisé est une sélection de noms issus de
+\url{http://en.wikipedia.org/wiki/List_of_Greek_mythological_figures}
 
-\subsubsection{Apprentissage}
-
-Un corpus de noms grecs est fourni à notre programme.
+Le corpus, contenant 45 noms grecs, est fourni à notre programme. Le
+processus d'apprentissage permet à la matrice de transition de
+comptabiliser les relations de succession entre chaque symbole et donc
+de permettre par la suite la génération de noms structurellement
+équivalents. Plus la taille du corpus est élevée et plus les noms
+produits seront convaincants car le poids des relations entre les
+symboles formant des syllabes caractéristiques en seront renforcés.
 
 \verbatiminput{corpus.txt}
 
@@ -416,54 +436,124 @@ On note que le symbole de fin de mot n'est pas explicitement précisé
 dans le corpus mais \textit{demether} est bien égal à
 \textit{demether}$\xi$.
 
-Il est nécessaire d'analyser chacune des entrées de ce dictionnaire
-pour comptabiliser les relations de succession entre lettres
-voisines. Dans un premier temps, on part d'une matrice de dimensions
-$27 \times 27$ (26 lettres et le symbole de fin de mot) dont toutes
-les cases sont nulles. On parcourt chaque mot et à chaque succession
-de la lettre $i$ par la lettre $j$, on incrémente $T_{ij}$.
-
-Il est ensuite nécessaire de normaliser chaque ligne de la matrice
-afin que la somme des éléments de chaque ligne donne 1, on note cette
-matrice normalisée $T'$ et on a :
+On commence par parcourir chacune des entrées de ce dictionnaire pour
+comptabiliser les relations de succession entre lettres voisines. On
+dispose au départ d'une matrice de dimensions $27 \times 27$ (26
+lettres et le symbole de fin de mot) dont toutes les cases sont
+nulles. \`A chaque succession de la lettre $i$ par la lettre $j$, on
+incrémente $T_{ij}$. On obtient à la fin de ce traitement une matrice
+équivalente à :
 
 $$
-{T'}_{ij} = \frac{T_{ij}}{\sum_{k \in S} T_{ik}}
+T = \bordermatrix{
+    & a & b & c & \dots \cr
+  a & 0 & 1 & 3 & \dots \cr
+  b & 1 & 0 & 0 & \dots \cr
+  c & 4 & 0 & 0 & \dots \cr
+  \vdots & \vdots & \vdots & \vdots & \ddots \cr
+}
 $$
+\vspace{0.5cm}
 
-\subsubsection{Génération}
+Il est ensuite nécessaire d'en normaliser ces valeurs afin que la
+somme des éléments de chaque ligne donne 1, on note cette matrice
+normalisée $T'$ et on la calcule telle que :
 
-classique
+$$
+\forall i, j \in S,\;\;\;\;\; {T'}_{ij} = \frac{T_{ij}}{\sum_{k \in S} T_{ik}}
+$$
+\vspace{0.5cm}
 
-extrait arbre
+On obtient au final une matrice $T'$ équivalente à :
+
+$$
+T' = \bordermatrix{
+    & a & b & c & \dots \cr
+  a & 0 & 0.0153 & 0.054 & \dots \cr
+  b & 0.12 & 0 & 0 & \dots \cr
+  c & 0.32 & 0 & 0 & \dots \cr
+  \vdots & \vdots & \vdots & \vdots & \ddots \cr
+}
+$$
+\vspace{0.5cm}
+
+Une fois la matrice de transition calculée, la génération se fait de
+façon classique. Un état initial est choisi aléatoirement parmi $S$ et
+on passe d'état en état jusqu'à atteindre l'état absorbant $\xi$.
 
 \subsection{Résultats}
 
-diaetheron
-therisethe
-ponthymeph
-omeneus
-iophemion
-usthypios
-crymiarene
-phyostalal
-erapithes
-arito
-zethetus
-anurysthes
-nepadion
-tallonyx
-bolemeprio
-hopheleus
-onthonophe
-phaleria
-bonus
-stionys
-mitheron
+La table \ref{bons} contient une sélection de noms générés par notre
+programme utilisant les chaînes de Markov. On note que les majuscules
+ont été ajoutées en fin de traitement à des fins de présentation car
+nos états représentent tous des lettres en minuscule.
 
-zeusthethe
-memememese
-chrthellyx
+Les résultats sont satisfaisants et on s'imagine facilement les
+épopées de Erapithes, Tallonyx et Mitheron.
+
+\begin{table}[H]
+  \centering
+
+  \begin{tabular}{l|l|l}
+    Diaetheron & Therisethe & Tonthymeph \\
+    Omeneus & Iophemion & Usthypios \\
+    Crymiarene & Phyostalal & Erapithes \\
+    Arito & Zethetus & Anurysthes \\
+    Nepadion & Tallonyx & Bolemeprio \\
+    Hopheleus & Onthonophe & Phaleria \\
+    Bonus & Stionys & Mitheron
+  \end{tabular}
+
+  \caption{Liste de noms générés convaincants.}
+  \label{bons}
+
+\end{table}
+
+Cependant d'autres résultats semblent moins réalistes et on se rend
+compte des faiblesses des chaînes de markov en observant le tableau
+\ref{pasbons}. On y retrouve des noms trop courts, beaucoup trop
+longs, répétitif ou bien difficilement prononçables.
+
+\begin{table}[H]
+  \centering
+
+  \begin{tabular}{l|l|l}
+    R & La & Chrthellyx \\
+    Pen & Memememese & Bonysteidianataeronetisus \\
+    Ymiodiollclllchete & Crme & X
+  \end{tabular}
+
+  \caption{Liste de noms générés moins convaincants.}
+  \label{pasbons}
+
+\end{table}
+
+Les longueurs innapropriées de certains noms sont inévitables à moins
+d'ajouter des limites minimale et maximales dures à notre
+programme. Ce problème est en fait lié à la propriété de Markov :
+puisqu'une chaîne ne se soucie que de l'état présent, elle n'a aucune
+connaissance des états précédents et ne s'en soucie pas. En
+conséquence, nous ne disposons pas d'une vue d'ensemble du nom pendant
+sa construction et il peut finir soit très tôt soit très tard.
+
+Les noms composées d'une unique lettre peuvent découler du problème
+décrit précedemment mais aussi d'un corpus trop réduit. On obtient par
+exemple le nom X à cause du fait que le symbole $x$ est uniquement
+présent dans l'entrée \textit{styx} du corpus. Ainsi ${T'}_{x\xi} = 1$
+et si le premier état choisi aléatoirement est $x$, le mot est déjà
+terminé ! pour réduire les occurrences de ce problème, il faudra
+agrandir le corpus.
+
+Autre soucis, certains noms sont imprononçables ! En effet, la
+propriété de Markov pose encore une limite puisque on a aucune
+visibilité sur la syllabe courant pendant la construction. Pour
+résoudre ce problème, on pourrait imaginer utiliser des syllabes comme
+état plutôt que des lettres. L'isolation de syllabes serait une tâche
+complexe mais on pourrait plus généralement utiliser des blocs de
+lettres de longueur $n$ comme état. De cette façon, on réduirait les
+morceaux de noms sans cohérences mais un corpus beaucoup plus
+important serait nécessaire pour contrebalancer le fait que le nombre
+d'états augmenterait considérablement.
 
 \bibliographystyle{alpha}
 \bibliography{sources}
