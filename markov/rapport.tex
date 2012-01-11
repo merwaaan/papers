@@ -122,7 +122,7 @@ Maintenant que la notion de processus aléatoire à états est présentée,
 il faut préciser la propriété de Markov à laquelle une chaîne de
 Markov se doit d'obéir.
 
-Concrètement, cette propriété énonce que dans le cadre d'un processus
+Concrètement, cette propriété énonce que, dans le cadre d'un processus
 aléatoire à états, l'état futur dépend uniquement de l'état présent et
 non de tous les états précédents.
 
@@ -164,8 +164,8 @@ chaînes de Markov, les chaînes absorbantes.
 \subsubsection{Prévision}
 
 Comme énoncé précédemment, la propriété de Markov permet de prévoir
-l'état suivant d'une chaîne quel que soit le numéro de l'étape
-actuelle. Autrement dit, que l'on en soit à l'étape initial ou cent
+l'état suivant d'une chaîne, quel que soit le numéro de l'étape
+actuelle. Autrement dit, que l'on en soit à l'étape initiale ou cent
 étapes plus tard, on peut évaluer la possibilité de prendre un certain
 état à l'étape suivante.
 
@@ -378,13 +378,14 @@ $$
 \section{Application : D'Artémis à Zeus}
 
 Les chaînes de Markov sont couramment utilisées pour générer du texte
-de façon aléatoire. En considérant qu'un état est un symbole (lettre,
-syllabe, mot ou phrase) et que la succession d'états parcourus par la
-chaîne forme une composition de symboles, on peut obtenir des textes
-donnant une impression d'authenticité. Pour obtenir un résultat
-satisfaisant, il sera bien sûr nécessaire d'utiliser une matrice de
-transition adaptée. Typiquement, elle sera calculée à partir de
-l'étude statistique d'un corpus contenant les textes à imiter.
+de façon aléatoire \cite{shan}, ou même de la musique \cite{conk}. En
+considérant qu'un état est un symbole (lettre, syllabe, mot ou phrase)
+et que la succession d'états parcourus par la chaîne forme une
+composition de symboles, on peut obtenir des textes donnant une
+impression d'authenticité. Pour obtenir un résultat satisfaisant, il
+sera bien sûr nécessaire d'utiliser une matrice de transition
+adaptée. Typiquement, elle sera calculée à partir de l'étude
+statistique d'un corpus contenant les textes à imiter.
 
 Nous allons implémenter un générateur de noms inspiré de ceux des
 protagonistes de la mythologie grecque. Il prendra en entrée un corpus
@@ -457,7 +458,7 @@ T = \bordermatrix{
 $$
 \vspace{0.5cm}
 
-Il est ensuite nécessaire d'en normaliser ces valeurs afin que la
+Il est ensuite nécessaire d'en normaliser les valeurs afin que la
 somme des éléments de chaque ligne donne 1. On note cette matrice
 normalisée $T'$ et on la calcule telle que :
 
@@ -482,8 +483,8 @@ $$
 Une fois la matrice de transition calculée, la génération se fait de
 façon classique. Un état initial est choisi aléatoirement dans $S$ et
 on passe d'état en état jusqu'à atteindre l'état absorbant $\xi$. La
-sélection de chaque lettre est effectuée par une fonction utilisant
-l'algorithme de la roue de la fortune.
+sélection de chaque lettre est effectuée par une fonction utilisant un
+algorithme de roue de la fortune.
 
 \subsection{Résultats}
 
@@ -508,7 +509,7 @@ Les résultats sont satisfaisants et on s'imagine facilement les
     Bonus & Stionys & Mitheron
   \end{tabular}
 
-  \caption{Liste de noms générés convaincants.}
+  \caption{Liste de noms générés et convaincants.}
   \label{bons}
 
 \end{table}
@@ -516,7 +517,7 @@ Les résultats sont satisfaisants et on s'imagine facilement les
 Cependant d'autres résultats semblent moins réalistes et on se rend
 compte des faiblesses des chaînes de markov en observant le tableau
 \ref{pasbons}. On y retrouve des noms trop courts, trop longs,
-répétitif ou bien difficilement prononçables.
+répétitifs ou bien difficilement prononçables.
 
 \begin{table}[H]
   \centering
@@ -551,14 +552,14 @@ de successeurs.
 
 Autre soucis, certains noms sont imprononçables. En effet, la
 propriété de Markov pose encore une limite puisque la chaîne ne
-considère que les lettres voisines. Pour résoudre ce problème, on
-pourrait imaginer utiliser des syllabes comme état plutôt que des
-lettres. L'isolation de syllabes est une tâche complexe mais on
-pourrait, plus généralement, utiliser des blocs de lettres de longueur
-$n$ comme état. De cette façon, on réduirait le nombre de syllabes
-incohérentes. Un corpus beaucoup plus important serait néanmoins
-nécessaire pour contrebalancer le fait que le nombre d'états
-augmenterait considérablement.
+considère que les lettres voisines et non les syllabes dans leur
+ensemble. Pour résoudre ce problème, on pourrait imaginer utiliser des
+syllabes comme état plutôt que des lettres. L'isolation de syllabes
+est une tâche complexe mais on pourrait, plus généralement, utiliser
+des blocs de lettres de longueur $n$ comme état. De cette façon, on
+réduirait le nombre de syllabes incohérentes. Un corpus beaucoup plus
+important serait néanmoins nécessaire pour contrebalancer le fait que
+le nombre d'états augmenterait considérablement.
 
 \bibliographystyle{alpha}
 \bibliography{sources}
