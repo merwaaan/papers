@@ -62,13 +62,13 @@
 
   \vfill
 
-  \only<4->{
+  \uncover<4->{
     \begin{block}{}
       Free software $\neq$ open source
     \end{block}
   }
 
-  \only<5>{
+  \uncover<5->{
     \begin{block}{}
       Free software $\neq$ free of charge
     \end{block}
@@ -86,17 +86,19 @@
     \begin{center}Softwares are academic, sharing is the norm.\end{center}
   \end{block}
 
-  \begin{center} $\downarrow$ \end{center}
+  \uncover<2->{
+    \begin{center} $\downarrow$ \end{center}
+    \begin{block}{1970s - Today}
+      \begin{center}Softwares are commercial products.\end{center}
+    \end{block}
+  }
 
-  \begin{block}{1970s - Today}
-    \begin{center}Softwares are commercial products.\end{center}
-  \end{block}
-
-  \begin{center} $\downarrow$ \end{center}
-
-  \begin{block}{Near future}
-    \begin{center}?\end{center}
-  \end{block}
+  \uncover<3->{
+    \begin{center} $\downarrow$ \end{center}
+    \begin{block}{Near future}
+      \begin{center}?\end{center}
+    \end{block}
+  }
 
 \end{frame}
 
@@ -111,7 +113,9 @@
   \begin{columns}
 
     \column{.2\textwidth}
-    \Huge{\textbf{+}}
+    \begin{center}
+      \Huge{\textbf{+}}
+    \end{center}
 
     \column{.8\textwidth}
     \begin{itemize}
@@ -134,12 +138,14 @@
   \begin{columns}
 
     \column{.2\textwidth}
-    \Huge{\textbf{-}}
+    \begin{center}
+      \Huge{\textbf{-}}
+    \end{center}
 
     \column{.8\textwidth}
     \begin{itemize}
       \item<2->{Intimidating to the user}
-      \item<3->{Potentially free $=$ not as good}
+      \item<3->{``Potentially free $=$ not as good''}
       \item<4>{No secret}
     \end{itemize}
 
@@ -148,6 +154,8 @@
 \end{frame}
 
 \begin{frame}
+
+  \frametitle{Free software seems to be a solid option}
 
   \begin{block}{Many advantages}
     \begin{itemize}
@@ -159,9 +167,11 @@
 
   \vfill
 
-  \begin{block}{But...}
-    Is it economically viable?
-  \end{block}
+  \uncover<2->{
+    \begin{block}{But...}
+      Is it economically viable?
+    \end{block}
+  }
 
 \end{frame}
 
@@ -169,13 +179,17 @@
 
 \begin{frame}
 
-  \frametitle{Ubuntu Foundation - Ubuntu}
+  \frametitle{Canonical - Ubuntu}
 
   \begin{block}{Their product}
     \begin{columns}[c]
 
       \column{.7\textwidth}
-      A Linux-based operating system.
+      A Linux-based operating system
+      \begin{itemize}
+        \item{$\approx 20$M users}
+        \item{$\approx 400$ employees}
+      \end{itemize}
 
       \column{.2\textwidth}
       \includegraphics[width=2cm]{logo_ubuntu.png}
@@ -185,23 +199,30 @@
 
   \vfill
 
-  \begin{itemize}
-    \item<2->{Deployment}
-    \item<3->{Maintenance}
-    \item<4>{Training}
-  \end{itemize}
+  \uncover<2->{
+    They sell support:
+    \begin{itemize}
+    \item{Deployment}
+    \item{Maintenance}
+    \item{Training}
+    \end{itemize}
+  }
 
 \end{frame}
 
 \begin{frame}
 
-  \frametitle{Mozilla Foundation - Firefox}
+  \frametitle{Mozilla - Firefox}
 
   \begin{block}{Their product}
     \begin{columns}[c]
 
       \column{.7\textwidth}
-      An internet browser.
+      An internet browser
+      \begin{itemize}
+        \item{$\approx 300$M users}
+        \item{$\approx 600$ employees}
+      \end{itemize}
 
       \column{.2\textwidth}
       \includegraphics[width=2cm]{logo_firefox.png}
@@ -226,7 +247,11 @@
     \begin{columns}[c]
 
       \column{.7\textwidth}
-      An internet browser.
+      An internet browser
+      \begin{itemize}
+        \item{$\approx 20$M users}
+        \item{Reputed for its speed}
+      \end{itemize}
 
       \column{.2\textwidth}
       \includegraphics[width=2cm]{logo_chromium.png}
@@ -248,22 +273,26 @@
 
 \begin{frame}
 
+  \frametitle{Present state}
+
   \begin{block}{In theory}
     Many advantages
   \end{block}
 
-  \begin{block}{In practice}
-    No
-  \end{block}
+  \vfill
 
-  Why?
-  To keep innovation
+  \begin{block}{In practice}
+    \begin{itemize}
+      \item<2->{Every company publicly endorses FS}
+      \item<3->{But definitions differ}
+    \end{itemize}
+  \end{block}
 
 \end{frame}
 
 \begin{frame}
 
-  \frametitle{The refusing}
+  \frametitle{The reluctant ones}
 
   Microsoft
 
@@ -271,7 +300,7 @@
 
 \begin{frame}
 
-  \frametitle{The conflicted}
+  \frametitle{The conflicted ones}
 
   Apple, Oracle
 
