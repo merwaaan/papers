@@ -2,6 +2,9 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{url}
+\usepackage{xcolor}
+
+\definecolor{bg}{RGB}{85,98,112}
 
 \renewcommand{\baselinestretch}{1.5}
 
@@ -38,10 +41,6 @@ Free software, open source, proprietary software, software companies
 \tableofcontents
 
 \newpage
-
-\section*{Introduction}
-
-TODO
 
 \section{Context}
 
@@ -226,17 +225,66 @@ users in the making of their softwares.
 
 \section*{Glossary}
 
-\begin{description}
-  \item[Free software]{An open software, usable, modifiable and
-    redistributable by all}
-  \item[Open source]{An open software, everyone can read its source
-    code but it can still be subject to copyright restrictions}
-  \item[Proprietary software]{A closed software whose usage and
-    accessibility to show the source code is restricted}
-  \item[Free Software Foundation]{Organization founded by Richard
-    Stallman whose goal is to promote the use and creation of free
-    software}
-\end{description}
+\subsection*{Free software}
+
+{\color{bg}Software that everyone is free to copy, redistribute and
+  modify. That implies free software must be available as source code,
+  hence ``free open source software'' - ``FOSS''. It is usually also free
+  of charge, though anyone can sell free software so long as they
+  don't impose any new restrictions on its redistribution or use
+  \textemdash $\;$ dictionnary.reference.com }
+
+Logiciel que chacun est libre de copier, redistribuer et
+modifier. Cela signifie qu'un logiciel libre doit être disponible sous
+forme de code source, d'o\`u l'appellation de \textit{logiciel libre
+  et open source}. Il est habituellement gratuit, cependant n'importe
+qui peut vendre un logiciel libre tant qu'aucune nouvelle
+restriction d'utilisation et de redistribution ne sont imposées.
+
+\subsection*{Open source}
+
+{\color{bg}Generically, open source refers to a program in which the
+  source code is available to the general public for use and/or
+  modification from its original design free of charge \textemdash
+  $\;$ Webopedia.com }
+
+Généralement, le terme open source fait référence à un logiciel donc
+le source code est délivré au public pour l'utiliser et/ou le modifier
+et ce, de façon gratuite.
+
+\subsection*{Proprietary software}
+
+{\color{bg}Refers to any computer software that has restrictions on
+  any combination of the usage, modification, copying or distributing
+  modified versions of the software. Proprietary software may also be
+  called closed-source software \textemdash $\;$ Webopedia.com }
+
+Fait référence à tout logiciel informatique soumis à des restrictions
+quant à son usage, sa modification, la copie ou la distribution de
+versions modifiées ou toute combinaison de ces actions. Les logiciels
+propriétaires peuvent aussi être appelés \textit{closed source} (en
+opposition à \textit{open source}).
+
+\subsection*{Operating system}
+
+{\color{bg}Software that controls the operation of a computer and
+  directs the processing of programs (as by assigning storage space in
+  memory and controlling input and output functions) \textemdash $\;$
+  Merriam-Webster }
+
+Logiciel contrôlant les opérations d'un ordinateur et dirigeant les
+calculs nécessaires aux programmes (en assignant de l'espace de
+stockage en mémoire et en contrôlant les fonctions d'entrée et de
+sortie par exemple).
+
+\subsection*{Browser}
+
+{\color{bg}A computer program used for accessing sites or information
+  on a network (as the World Wide Web) \textemdash $\;$
+  Merriam-Webster }
+
+Un programme informatique utilisé pour accéder à des sites ou des
+information sur un réseau (le réseau Internet par exemple).
 
 \section*{Sources}
 
@@ -244,3 +292,6 @@ users in the making of their softwares.
 \bibliography{sources}
 
 \end{document}
+
+def dico / trad
+commentaires sources
