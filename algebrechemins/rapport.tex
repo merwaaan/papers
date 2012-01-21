@@ -1,0 +1,117 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel}
+\usepackage{amsmath}
+\usepackage{tikz}
+
+\title{Algèbre de chemins}
+\author{Merwan Achibet}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Semi-anneau}
+
+On veut démontrer que $(R^+, \operatorname{max}, \operatorname{min}, 0, \infty)$ est
+un semi-anneau idempotent. Pour ce faire, on doit prouver que :
+
+\begin{enumerate}
+  \item{$(R^+, \operatorname{max}, 0)$ est un monoïde commutatif}
+  \item{$(R^+, \operatorname{min}, \infty)$ est un monoïde}
+  \item{l'opération $\operatorname{min}$ est distributive par rapport à $\operatorname{max}$}
+  \item{l'élément $0$ est absorbant pour l'opération $\operatorname{min}$}
+\end{enumerate}
+
+Pour les démonstrations qui suivent, on prend $a, b, c \in R^+$.
+
+\subsection{$(R^+, \operatorname{max}, 0)$ est un monoïde commutatif}
+
+$$
+\operatorname{max}(a, b) = \operatorname{max}(b, a)
+$$
+
+et
+
+$$
+\operatorname{max}(a, 0) = \operatorname{max}(0, a) = a
+$$
+
+donc il s'agit bien d'un monoïde commutatif.
+
+\subsection{$(R^+, \operatorname{min}, \infty)$ est un monoïde}
+
+$$
+\operatorname{min}(a, \infty) = \operatorname{min}(\infty, a) = a
+$$
+
+donc il s'agit bien d'un monoïde
+
+\subsection{l'opération $\operatorname{min}$ est distributive par rapport à $\operatorname{max}$}
+
+Pour que cette opération soit distributive, il faut que
+
+$$
+\operatorname{min}(a, \operatorname{max}(b,c))
+=
+\operatorname{max}(\operatorname{min}(a,b),\operatorname{min}(a,c))
+$$
+
+et que
+
+$$
+\operatorname{min}(\operatorname{max}(a,b),c)
+=
+\operatorname{max}(\operatorname{min}(a,c),\operatorname{min}(a,b))
+$$
+
+On étudie les six cas de figure possibles.
+
+\subsubsection{$a \geq b \geq c$}
+\subsubsection{$a \geq c \geq b$}
+\subsubsection{$b \geq a \geq c$}
+\subsubsection{$b \geq c \geq a$}
+\subsubsection{$c \geq a \geq b$}
+\subsubsection{$c \geq b \geq a$}
+
+\subsection{l'élément  $0$ est absorbant pour l'opération $\operatorname{min}$}
+
+$$
+\operatorname{min}(a,0) = \operatorname{min}(0,a) = 0
+$$
+
+L'élément $0$ est donc absorbant pour $\operatorname{min}$.
+
+Les quatres conditions précedemment citées sont validées, $(R^+,
+\operatorname{max}, \operatorname{min}, 0, \infty)$ est donc un
+semi-anneau idempotent.
+
+\subsection{Matrice d'adjacence}
+
+$$
+T = \bordermatrix{
+    & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \cr
+  1 & 0 & 12 & 14 & 10 & \infty & \infty & \infty & \infty \cr
+  2 & 12 & 0 & \infty & 17 & 8 & \infty & \infty & \infty \cr
+  3 & 14 & \infty & 0 & 5 & \infty & 3 & \infty & \infty \cr
+  4 & 10 & 17 & 5 & 0 & 11 & 6 & 15 & \infty \cr
+  5 & \infty & 8 & \infty & 11 & 0 & \infty & 18 & 11 \cr
+  6 & \infty & \infty & 3 & 6 & \infty & 0 & 4 & 15 \cr
+  7 & \infty & \infty & \infty & 15 & 18 & 4 & 0 & 9 \cr
+  8 & \infty & \infty & \infty & \infty & 11 & 15 & 9 & 0
+}
+$$
+
+\section{Warshall}
+
+\section{A*}
+
+\section{Dijkstra}
+
+\section{Jacobi}
+
+\section{Jacobi amélioré}
+
+\end{document}
