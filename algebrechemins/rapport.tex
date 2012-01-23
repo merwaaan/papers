@@ -5,66 +5,66 @@
 \usepackage{amsmath}
 \usepackage{tikz}
 
+\usetikzlibrary{calc}
+
 \title{Algèbre de chemins}
 \author{Merwan Achibet}
 \date{}
 
 \begin{document}
 
+\newcommand{\mmin}{\ensuremath{\operatorname{min}}}
+\newcommand{\mmax}{\ensuremath{\operatorname{max}}}
+\newcommand{\mMIN}{\ensuremath{\operatorname{MAX}}}
+\newcommand{\mMAX}{\ensuremath{\operatorname{MAX}}}
+
 \maketitle
 
-\section{Semi-anneau}
+\section{Montrer que $(R^+, \mmax, \mmin, 0,
+  \infty)$ est un semi-anneau idempotent}
 
-On veut démontrer que $(R^+, \operatorname{max}, \operatorname{min}, 0, \infty)$ est
-un semi-anneau idempotent. Pour ce faire, on doit prouver que :
+On veut démontrer que $(R^+, \mmax, \mmin, 0, \infty)$ est un
+semi-anneau idempotent. Pour ce faire, on doit prouver que :
 
 \begin{enumerate}
-  \item{$(R^+, \operatorname{max}, 0)$ est un monoïde commutatif}
-  \item{$(R^+, \operatorname{min}, \infty)$ est un monoïde}
-  \item{l'opération $\operatorname{min}$ est distributive par rapport à $\operatorname{max}$}
-  \item{l'élément $0$ est absorbant pour l'opération $\operatorname{min}$}
+  \item{$(R^+, \mmax, 0)$ est un monoïde commutatif}
+  \item{$(R^+, \mmin, \infty)$ est un monoïde}
+  \item{l'opération $\mmin$ est distributive par rapport à $\mmax$}
+  \item{l'élément $0$ est absorbant pour l'opération $\mmin$}
 \end{enumerate}
 
 Pour les démonstrations qui suivent, on prend $a, b, c \in R^+$.
 
-\subsection{$(R^+, \operatorname{max}, 0)$ est un monoïde commutatif}
+\subsection{$(R^+, \mmax, 0)$ est un monoïde commutatif}
 
-$$
-\operatorname{max}(a, b) = \operatorname{max}(b, a)
-$$
+$$ \mmax(a, b) = \mmax(b, a)$$
+\begin{center}et\end{center}
+$$ \mmax(a, 0) = \mmax(0, a) = a $$
 
-et
+$(R^+, \mmax, 0)$ est donc un monoïde commutatif.
 
-$$
-\operatorname{max}(a, 0) = \operatorname{max}(0, a) = a
-$$
+\subsection{$(R^+, \mmin, \infty)$ est un monoïde}
 
-donc il s'agit bien d'un monoïde commutatif.
+$$ \mmin(a, \infty) = \mmin(\infty, a) = a$$
 
-\subsection{$(R^+, \operatorname{min}, \infty)$ est un monoïde}
+$(R^+, \mmin, \infty)$ est donc un monoïde.
 
-$$
-\operatorname{min}(a, \infty) = \operatorname{min}(\infty, a) = a
-$$
-
-donc il s'agit bien d'un monoïde
-
-\subsection{l'opération $\operatorname{min}$ est distributive par rapport à $\operatorname{max}$}
+\subsection{l'opération $\mmin$ est distributive par rapport à $\mmax$}
 
 Pour que cette opération soit distributive, il faut que
 
 $$
-\operatorname{min}(a, \operatorname{max}(b,c))
+\mmin(a, \mmax(b,c))
 =
-\operatorname{max}(\operatorname{min}(a,b),\operatorname{min}(a,c))
+\mmax(\mmin(a,b),\mmin(a,c))
 $$
 
 et que
 
 $$
-\operatorname{min}(\operatorname{max}(a,b),c)
+\mmin(\mmax(a,b),c)
 =
-\operatorname{max}(\operatorname{min}(a,c),\operatorname{min}(a,b))
+\mmax(\mmin(a,c),\mmin(a,b))
 $$
 
 On étudie les six cas de figure possibles.
@@ -76,39 +76,185 @@ On étudie les six cas de figure possibles.
 \subsubsection{$c \geq a \geq b$}
 \subsubsection{$c \geq b \geq a$}
 
-\subsection{l'élément  $0$ est absorbant pour l'opération $\operatorname{min}$}
+\subsection{l'élément  $0$ est absorbant pour l'opération $\mmin$}
 
 $$
-\operatorname{min}(a,0) = \operatorname{min}(0,a) = 0
+\mmin(a,0) = \mmin(0,a) = 0
 $$
 
-L'élément $0$ est donc absorbant pour $\operatorname{min}$.
+L'élément $0$ est donc absorbant pour $\mmin$.
 
 Les quatres conditions précedemment citées sont validées, $(R^+,
-\operatorname{max}, \operatorname{min}, 0, \infty)$ est donc un
+\mmax, \mmin, 0, \infty)$ est donc un
 semi-anneau idempotent.
 
-\subsection{Matrice d'adjacence}
+La matrice d'adjacence est la suivante. On considère que pour tout $i
+\in \{1,\dots,8\}$, $A_{ii} = \infty$ puisque la capacité
 
 $$
-T = \bordermatrix{
+A = \bordermatrix{
     & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \cr
-  1 & 0 & 12 & 14 & 10 & \infty & \infty & \infty & \infty \cr
-  2 & 12 & 0 & \infty & 17 & 8 & \infty & \infty & \infty \cr
-  3 & 14 & \infty & 0 & 5 & \infty & 3 & \infty & \infty \cr
-  4 & 10 & 17 & 5 & 0 & 11 & 6 & 15 & \infty \cr
-  5 & \infty & 8 & \infty & 11 & 0 & \infty & 18 & 11 \cr
-  6 & \infty & \infty & 3 & 6 & \infty & 0 & 4 & 15 \cr
-  7 & \infty & \infty & \infty & 15 & 18 & 4 & 0 & 9 \cr
-  8 & \infty & \infty & \infty & \infty & 11 & 15 & 9 & 0
+  1 & \infty & 12 & 14 & 10 & 0 & 0 & 0 & 0 \cr
+  2 & 12 & \infty & 0 & 17 & 8 & 0 & 0 & 0 \cr
+  3 & 14 & 0 & \infty & 5 & 0 & 3 & 0 & 0 \cr
+  4 & 10 & 17 & 5 & \infty & 11 & 6 & 15 & 0 \cr
+  5 & 0 & 8 & 0 & 11 & \infty & 0 & 18 & 11 \cr
+  6 & 0 & 0 & 3 & 6 & 0 & \infty & 4 & 15 \cr
+  7 & 0 & 0 & 0 & 15 & 18 & 4 & \infty & 9 \cr
+  8 & 0 & 0 & 0 & 0 & 11 & 15 & 9 & \infty
 }
 $$
 
-\section{Warshall}
+\section{Appliquer l'algorithme de Warshall pour calculer $A^*$}
 
-\section{A*}
+$$
+A^* = \bordermatrix{
+    & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 \cr
+  1 & \infty & 12 & 14 & 12 & 12 & 11 & 12 & 11 \cr
+  2 & 12 & \infty & 12 & 17 & 15 & 11 & 15 & 11 \cr
+  3 & 14 & 12 & \infty & 12 & 12 & 11 & 12 & 11 \cr
+  4 & 12 & 17 & 12 & \infty & 15 & 11 & 15 & 11 \cr
+  5 & 12 & 15 & 12 & 15 & \infty & 11 & 18 & 11 \cr
+  6 & 11 & 11 & 11 & 11 & 11 & \infty & 11 & 15 \cr
+  7 & 12 & 15 & 12 & 15 & 18 & 11 & \infty & 11 \cr
+  8 & 11 & 11 & 11 & 11 & 11 & 15 & 11 & \infty
+}
+$$
 
-\section{Dijkstra}
+\section{Graphe de $A^*$}
+
+\begin{tikzpicture}
+
+  \centering
+
+  \tikzstyle{arete}=[draw,circle]
+  \tikzstyle{capa}=[draw,rectangle,fill=white]
+
+  \foreach \i in {1,...,8} {
+    \node[circle, draw] at ({\i*(360/8)+45}:5cm) (\i) {\i};
+    \coordinate (c\i) at ({\i*(360/8)+45}:5cm);
+  }
+
+  \newcommand{\link}[4]{
+    \draw (#1) -- (#2);
+    \node[draw,#4] at ($(1,1)+(3,3)$) {#3}; % TODO: partway
+  }
+
+  \link{1}{2}{12}{blue}
+  \link{1}{3}{14}{red}
+  \link{1}{4}{12}{blue}
+  \link{1}{5}{12}{blue}
+  \link{1}{6}{11}{blue}
+  \link{1}{7}{12}{blue}
+  \link{1}{8}{11}{blue}
+
+  \link{2}{3}{12}{blue}
+  \link{2}{4}{17}{blue}
+  \link{2}{5}{15}{blue}
+  \link{2}{6}{11}{blue}
+  \link{2}{7}{15}{blue}
+  \link{2}{8}{11}{blue}
+
+  \link{3}{4}{12}{blue}
+  \link{3}{5}{12}{blue}
+  \link{3}{6}{11}{blue}
+  \link{3}{7}{12}{blue}
+  \link{3}{8}{11}{blue}
+
+  \link{4}{5}{15}{blue}
+  \link{4}{6}{11}{blue}
+  \link{4}{7}{15}{blue}
+  \link{4}{8}{11}{blue}
+
+  \link{5}{6}{11}{blue}
+  \link{5}{6}{18}{blue}
+  \link{5}{6}{11}{blue}
+
+  \link{6}{7}{11}{blue}
+  \link{6}{8}{15}{blue}
+
+  \link{7}{8}{11}{blue}
+
+\end{tikzpicture}
+
+\section{Appliquer l'algorithme de Dijkstra }
+
+On applique manuellement l'algorithme de Dijkstra :
+
+Initialisation
+
+$ \pi(1) = \infty $\\
+$ \pi(2) = \dots = \pi(8) = 0$\\
+$ T = \{1,2,3,4,5,6,7,8\}$
+
+Execution
+
+1/
+$\forall j \in T$, $i = \mMAX(\pi_j) = 1$\\
+$ T = \{2,3,4,5,6,7,8\}$
+
+$\pi(2) = \mmax(\pi(2), \mmin(\pi(1), A_{12})) = \mmax(0, \mmin(\infty,12)) = 12$\\
+$\pi(3) = \mmax(\pi(3), \mmin(\pi(1), A_{13})) = \mmax(0, \mmin(\infty,14)) = 14$\\
+$\pi(4) = \mmax(\pi(4), \mmin(\pi(1), A_{14})) = \mmax(0, \mmin(\infty,10)) = 10$\\
+$\pi(5) = \mmax(\pi(5), \mmin(\pi(1), A_{15})) = \mmax(0, \mmin(\infty,0)) = 0$\\
+$\pi(6) = \mmax(\pi(6), \mmin(\pi(1), A_{16})) = \mmax(0, \mmin(\infty,0)) = 0$\\
+$\pi(7) = \mmax(\pi(7), \mmin(\pi(1), A_{17})) = \mmax(0, \mmin(\infty,0)) = 0$\\
+$\pi(8) = \mmax(\pi(8), \mmin(\pi(1), A_{18})) = \mmax(0, \mmin(\infty,0)) = 0$
+
+2/
+$\forall j \in T$, $i = \mMAX(\pi_j) = 3$\\
+$ T = \{2,4,5,6,7,8\}$
+
+$\pi(2) = \mmax(\pi(2), \mmin(\pi(3), A_{32})) = \mmax(12, \mmin(14,0)) = 12$\\
+$\pi(4) = \mmax(\pi(4), \mmin(\pi(3), A_{34})) = \mmax(10, \mmin(14,5)) = 10$\\
+$\pi(5) = \mmax(\pi(5), \mmin(\pi(3), A_{35})) = \mmax(0, \mmin(14,0)) = 0$\\
+$\pi(6) = \mmax(\pi(6), \mmin(\pi(3), A_{36})) = \mmax(0, \mmin(14,3)) = 3$\\
+$\pi(7) = \mmax(\pi(7), \mmin(\pi(3), A_{37})) = \mmax(0, \mmin(14,0)) = 0$\\
+$\pi(8) = \mmax(\pi(8), \mmin(\pi(3), A_{38})) = \mmax(0, \mmin(14,0)) = 0$
+
+3/
+$\forall j \in T$, $i = \mMAX(\pi_j) = 2$\\
+$ T = \{4,5,6,7,8\}$
+
+$\pi(4) = \mmax(\pi(4), \mmin(\pi(2), A_{24})) = \mmax(10, \mmin(12,17)) = 12$\\
+$\pi(5) = \mmax(\pi(5), \mmin(\pi(2), A_{25})) = \mmax(0, \mmin(12,8)) = 8$\\
+$\pi(6) = \mmax(\pi(6), \mmin(\pi(2), A_{26})) = \mmax(3, \mmin(12,0)) = 3$\\
+$\pi(7) = \mmax(\pi(7), \mmin(\pi(2), A_{27})) = \mmax(0, \mmin(12,0)) = 0$\\
+$\pi(8) = \mmax(\pi(8), \mmin(\pi(2), A_{28})) = \mmax(0, \mmin(12,0)) = 0$
+
+4/
+$\forall j \in T$, $i = \mMAX(\pi_j) = 4$\\
+$ T = \{5,6,7,8\}$
+
+$\pi(5) = \mmax(\pi(5), \mmin(\pi(4), A_{45})) = \mmax(8, \mmin(12,11)) = 11$\\
+$\pi(6) = \mmax(\pi(6), \mmin(\pi(4), A_{46})) = \mmax(3, \mmin(12,6)) = 6$\\
+$\pi(7) = \mmax(\pi(7), \mmin(\pi(4), A_{47})) = \mmax(0, \mmin(12,15)) = 12$\\
+$\pi(8) = \mmax(\pi(8), \mmin(\pi(4), A_{48})) = \mmax(0, \mmin(12,0)) = 0$
+
+5/
+$\forall j \in T$, $i = \mMAX(\pi_j) = 7$\\
+$ T = \{5,6,8\}$
+
+$\pi(5) = \mmax(\pi(5), \mmin(\pi(7), A_{75})) = \mmax(11, \mmin(12,18)) = 12$\\
+$\pi(6) = \mmax(\pi(6), \mmin(\pi(7), A_{76})) = \mmax(6, \mmin(12,4)) = 6$\\
+$\pi(8) = \mmax(\pi(8), \mmin(\pi(7), A_{78})) = \mmax(0, \mmin(12,9)) = 9$
+
+6/
+$\forall j \in T$, $i = \mMAX(\pi_j) = 5$\\
+$ T = \{6,8\}$
+
+$\pi(6) = \mmax(\pi(6), \mmin(\pi(5), A_{56})) = \mmax(6, \mmin(12,0)) = 6$\\
+$\pi(8) = \mmax(\pi(8), \mmin(\pi(5), A_{58})) = \mmax(9, \mmin(12,11)) = 11$
+
+7/
+$\forall j \in T$, $i = \mMAX(\pi_j) = 8$\\
+$ T = \{6\}$
+
+$\pi(6) = \mmax(\pi(6), \mmin(\pi(8), A_{86})) = \mmax(6, \mmin(11,15)) = 11$\\
+
+$T = \emptyset$ alors on a terminé.
+
+BLABLA
 
 \section{Jacobi}
 
