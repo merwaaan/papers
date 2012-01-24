@@ -63,50 +63,53 @@ On étudie les six cas de figure possibles.
 
 $$\mmin(a, \mmax(b, c)) = \mmin(a, b) = b = \mmax(b,c) = \mmax(\mmin(a, b),\mmin(a,c))$$
 \begin{center}et\end{center}
+$$\mmin(\mmax(a,b),c) = \mmin(a,c) = c = \mmax(c,c) = \mmax(\mmin(a,c),\mmin(b,c))$$
 
 \subsubsection{$a \geq c \geq b$}
 
 $$\mmin(a, \mmax(b, c)) = \mmin(a, c) = c = \mmax(b,c) = \mmax(\mmin(a, b),\mmin(a,c))$$
 \begin{center}et\end{center}
+$$\mmin(\mmax(a,b),c) = \mmin(a,c) = c = \mmax(c,c) = \mmax(\mmin(a,c),\mmin(b,c))$$
 
 \subsubsection{$b \geq a \geq c$}
 
 $$\mmin(a, \mmax(b, c)) = \mmin(a, b) = a = \mmax(a,c) = \mmax(\mmin(a, b),\mmin(a,c))$$
 \begin{center}et\end{center}
+$$\mmin(\mmax(a,b),c) = \mmin(b,c) = c = \mmax(c,c) = \mmax(\mmin(a,c),\mmin(b,c))$$
 
 \subsubsection{$b \geq c \geq a$}
 
 $$\mmin(a, \mmax(b, c)) = \mmin(a, b) = a = \mmax(a,a) = \mmax(\mmin(a, b),\mmin(a,c))$$
 \begin{center}et\end{center}
+$$\mmin(\mmax(a,b),c) = \mmin(b,c) = c = \mmax(a,c) = \mmax(\mmin(a,c),\mmin(b,c))$$
 
 \subsubsection{$c \geq a \geq b$}
 
 $$\mmin(a, \mmax(b, c)) = \mmin(a,c) = a = \mmax(b,a) = \mmax(\mmin(a, b),\mmin(a,c))$$
 \begin{center}et\end{center}
+$$\mmin(\mmax(a,b),c) = \mmin(a,c) = a = \mmax(a,b) = \mmax(\mmin(a,c),\mmin(b,c))$$
 
 \subsubsection{$c \geq b \geq a$}
 
 $$\mmin(a, \mmax(b, c)) = \mmin(a,c) = a = \mmax(a,a) = \mmax(\mmin(a, b),\mmin(a,c))$$
 \begin{center}et\end{center}
+$$\mmin(\mmax(a,b),c) = \mmin(b,c) = b = \mmax(a,b) = \mmax(\mmin(a,c),\mmin(b,c))$$\\
 
 Chaque cas de figure est vérifié, \mmin\; est donc distributive par rapport à \mmax.
 
 \subsection{l'élément  $0$ est absorbant pour l'opération $\mmin$}
 
-$$
-\mmin(a,0) = \mmin(0,a) = 0
-$$
+$$ \mmin(a,0) = \mmin(0,a) = 0$$\\
 
 L'élément $0$ est donc absorbant pour $\mmin$.\\
 
 Les quatres conditions précedemment citées sont validées, $(R^+,
-\mmax, \mmin, 0, \infty)$ est donc un
-semi-anneau idempotent.
+\mmax, \mmin, 0, \infty)$ est donc un semi-anneau idempotent.
 
 \subsection{Matrice d'adjacence}
 
 La matrice d'adjacence est la suivante. On considère dans le cadre de
-ce problème que pour tout $i \in \{1,\dots,8\}$, $A_{ii} = \infty$.
+ce problème que pour tout $i \in \{1,\dots,8\}$, $A_{ii} = \infty$.\\
 
 $$
 A = \bordermatrix{
@@ -125,7 +128,7 @@ $$
 \section{Appliquer l'algorithme de Warshall pour calculer $A^*$}
 
 Après avoir adapté l'algorithme fourni, on obtient la matrice $A^*$
-suivante.
+suivante.\\
 
 $$
 A^* = \bordermatrix{
@@ -148,7 +151,7 @@ $$
   \centering
 
   \foreach \i in {1,...,8} {
-    \node[circle, draw] at ({\i*(360/8)+45}:6cm) (\i) {\i};
+    \node[circle,draw,fill=green!20] at ({\i*(360/8)+45}:6cm) (\i) {\i};
     \coordinate (c\i) at ({\i*(360/8)+45}:6cm);
   }
 
@@ -171,7 +174,7 @@ $$
   \link{2}{5}{15}{0.5}
   \link{2}{6}{11}{0.2}
   \link{2}{7}{15}{0.5}
-  \link{2}{8}{11}{0.47}
+  \link{2}{8}{11}{0.46}
 
   \link{3}{4}{12}{0.5}
   \link{3}{5}{12}{0.35}
@@ -200,7 +203,9 @@ $$
 On déroule manuellement l'algorithme de Dijkstra. On utilise ici sa
 version améliorée afin de bénéficier d'une liste contenant le
 prédecesseur de chaque n\oe ud dans le meilleur parcours. On s'en
-servira typiquement pour reconstruire les chemins.\\
+servira typiquement pour reconstruire les chemins.
+
+\newpage
 
 \underline{Initialisation}
 
@@ -376,8 +381,103 @@ liste $P$ des prédecesseurs. Il s'agit de :
   &8 \rightarrow 5 \rightarrow 7 \rightarrow 4 \rightarrow 2 \rightarrow 1
 \end{align*}
 
-\section{Jacobi}
+\section{Appliquer l'algorithme de Jacobi}
 
-\section{Jacobi amélioré}
+Nous allons maintenant utiliser l'algorithme de Jacobi pour déterminer
+les chemins de capacité maximale partant de 1.\\
+
+\underline{Initialisation}
+
+\begin{align*}
+  y^0 = b^T = (\infty, 0, 0, 0, 0, 0, 0, 0)
+\end{align*}
+
+\underline{Itération 1}
+
+\begin{align*}
+  y^1 &= y^0 \otimes A \oplus b^T = \mmax(\mmin(y^0,A),b^T)
+\end{align*}
+
+\begin{align*}
+  \mmin(y^0,A) &= \mmin((\infty,0,0,0,0,0,0,0),
+  \begin{pmatrix}
+      \infty & 12 & 14 & 10 & 0 & 0 & 0 & 0 \\
+      12 & \infty & 0 & 17 & 8 & 0 & 0 & 0 \\
+      14 & 0 & \infty & 5 & 0 & 3 & 0 & 0 \\
+      10 & 17 & 5 & \infty & 11 & 6 & 15 & 0 \\
+      0 & 8 & 0 & 11 & \infty & 0 & 18 & 11 \\
+      0 & 0 & 3 & 6 & 0 & \infty & 4 & 15 \\
+      0 & 0 & 0 & 15 & 18 & 4 & \infty & 9 \\
+      0 & 0 & 0 & 0 & 11 & 15 & 9 & \infty
+  \end{pmatrix})\\
+  &= (\infty,12,14,10,0,0,0,0)
+\end{align*}
+
+\begin{align*}
+  y^1 &= \mmax(\mmin(y^0,A),b^T)\\
+  &= \mmax((\infty, 12,14,10,0,0,0,0), (\infty,0,0,0,0,0,0,0))\\
+  &= (\infty, 12,14,10,0,0,0,0)
+\end{align*}
+
+\underline{Itération 2}
+
+\begin{align*}
+  y^2 &= y^1 \otimes A \oplus b^T = \mmax(\mmin(y^1,A),b^T)
+\end{align*}
+
+\begin{align*}
+  \mmin(y^1,A) &= \mmin((\infty,12,14,10,0,0,0,0),
+  \begin{pmatrix}
+      \infty & 12 & 14 & 10 & 0 & 0 & 0 & 0 \\
+      12 & \infty & 0 & 17 & 8 & 0 & 0 & 0 \\
+      14 & 0 & \infty & 5 & 0 & 3 & 0 & 0 \\
+      10 & 17 & 5 & \infty & 11 & 6 & 15 & 0 \\
+      0 & 8 & 0 & 11 & \infty & 0 & 18 & 11 \\
+      0 & 0 & 3 & 6 & 0 & \infty & 4 & 15 \\
+      0 & 0 & 0 & 15 & 18 & 4 & \infty & 9 \\
+      0 & 0 & 0 & 0 & 11 & 15 & 9 & \infty
+  \end{pmatrix})\\
+  &= (\infty, 12,14,12,10,6,10,0)
+\end{align*}
+
+\begin{align*}
+  y^2 &= \mmax(\mmin(y^0,A),b^T)\\
+  &= \mmax((\infty, 12,14,12,10,6,10,0), (\infty,0,0,0,0,0,0,0))\\
+  &= (\infty, 12,14,12,10,6,10,0)
+\end{align*}
+
+\underline{Itération 3}\\
+
+On procède la même façon pour les itérations suivantes.
+
+\begin{align*}
+  y^3 = (\infty,12,14,12,11,10,12,10)
+\end{align*}
+
+\underline{Itération 4}\\
+
+\begin{align*}
+  y^4 = (\infty,12,14,12,12,10,12,11)
+\end{align*}
+
+\underline{Itération 5}\\
+
+\begin{align*}
+  y^5 = (\infty,12,14,12,12,11,12,11)
+\end{align*}
+
+\underline{Itération 6}\\
+
+\begin{align*}
+  y^6 = (\infty,12,14,12,12,11,12,11)
+\end{align*}\\
+
+On a $y^5 = y^6$ donc on est arrivé à la fin de l'algorithme. Les
+résultats fournis par l'algorithme de Jacobi correspondent à ceux
+déterminés par l'algorithme de Disjkstra.
+
+\section{Améliorer l'algorithme de Jacobi}
+
+
 
 \end{document}
