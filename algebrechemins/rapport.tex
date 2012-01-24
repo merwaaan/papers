@@ -9,7 +9,7 @@
 \usetikzlibrary{calc}
 
 \title{Algèbre de chemins}
-\author{Merwan Achibet}
+\author{Merwan Achibet\\Université du Havre}
 \date{}
 
 \begin{document}
@@ -17,6 +17,8 @@
 \newcommand{\mmin}{\ensuremath{\operatorname{min}}}
 \newcommand{\mmax}{\ensuremath{\operatorname{max}}}
 \newcommand{\mMAX}{\ensuremath{\operatorname{MAX}}}
+\newcommand{\msi}{\ensuremath{\operatorname{si}}}
+\newcommand{\malors}{\ensuremath{\operatorname{alors}}}
 
 \maketitle
 
@@ -127,8 +129,9 @@ $$
 
 \section{Appliquer l'algorithme de Warshall pour calculer $A^*$}
 
-Après avoir adapté l'algorithme fourni, on obtient la matrice $A^*$
-suivante.\\
+Après avoir adapté l'algorithme fourni, afin qu'il prenne en compte
+les chemins de capacité maximum et non les plus courts chemins, on
+obtient la matrice $A^*$ suivante.\\
 
 $$
 A^* = \bordermatrix{
@@ -210,16 +213,16 @@ servira typiquement pour reconstruire les chemins.
 \underline{Initialisation}
 
 \begin{align*}
-  &T = \{1,2,3,4,5,6,7,8\} \\
-  &\pi = \{\infty, 0,0,0,0,0,0,0\} \\
-  &P = \{\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon\}
+  &T = (1,2,3,4,5,6,7,8) \\
+  &\pi = (\infty, 0,0,0,0,0,0,0) \\
+  &P = (\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon)
 \end{align*}
 
 \underline{Itération 1}
 
 \begin{align*}
   &i = \mMAX_{\forall j \in T}(\pi_j) = 1\\
-  &T = \{2,3,4,5,6,7,8\}
+  &T = (2,3,4,5,6,7,8)
 \end{align*}
 
 \begin{align*}
@@ -233,15 +236,15 @@ servira typiquement pour reconstruire les chemins.
 \end{align*}
 
 \begin{align*}
-  \pi &= \{\infty,12,14,10,0,0,0,0\}\\
-  P &= \{\varepsilon, 1, 1, 1, \varepsilon, \varepsilon, \varepsilon, \varepsilon\}
+  \pi &= (\infty,12,14,10,0,0,0,0)\\
+  P &= (\varepsilon, 1, 1, 1, \varepsilon, \varepsilon, \varepsilon, \varepsilon)
 \end{align*}
 
 \underline{Itération 2}
 
 \begin{align*}
   &i = \mMAX_{\forall j \in T}(\pi_j) = 3\\
-  &T = \{2,4,5,6,7,8\}
+  &T = (2,4,5,6,7,8)
 \end{align*}
 
 \begin{align*}
@@ -254,15 +257,15 @@ servira typiquement pour reconstruire les chemins.
 \end{align*}
 
 \begin{align*}
-  \pi &= \{\infty,12,14,10,0,3,0,0\}\\
-  P &= \{\varepsilon, 1, 1, 1, \varepsilon, 3, \varepsilon, \varepsilon\}
+  \pi &= (\infty,12,14,10,0,3,0,0)\\
+  P &= (\varepsilon, 1, 1, 1, \varepsilon, 3, \varepsilon, \varepsilon)
 \end{align*}
 
 \underline{Itération 3}
 
 \begin{align*}
   &i = \mMAX_{\forall j \in T}(\pi_j) = 2\\
-  &T = \{4,5,6,7,8\}
+  &T = (4,5,6,7,8)
 \end{align*}
 
 \begin{align*}
@@ -274,15 +277,15 @@ servira typiquement pour reconstruire les chemins.
 \end{align*}
 
 \begin{align*}
-  \pi &= \{\infty,12,14,12,8,3,0,0\}\\
-  P &= \{\varepsilon, 1, 1, 2, 2, 3, \varepsilon, \varepsilon\}
+  \pi &= (\infty,12,14,12,8,3,0,0)\\
+  P &= (\varepsilon, 1, 1, 2, 2, 3, \varepsilon, \varepsilon)
 \end{align*}
 
 \underline{Itération 4}
 
 \begin{align*}
   &i = \mMAX_{\forall j \in T}(\pi_j) = 4\\
-  &T = \{5,6,7,8\}
+  &T = (5,6,7,8)
 \end{align*}
 
 \begin{align*}
@@ -293,15 +296,15 @@ servira typiquement pour reconstruire les chemins.
 \end{align*}
 
 \begin{align*}
-  \pi &= \{\infty,12,14,12,11,6,12,0\}\\
-  P &= \{\varepsilon, 1, 1, 2, 4, 4, 4, \varepsilon\}
+  \pi &= (\infty,12,14,12,11,6,12,0)\\
+  P &= (\varepsilon, 1, 1, 2, 4, 4, 4, \varepsilon)
 \end{align*}
 
 \underline{Itération 5}
 
 \begin{align*}
   &i = \mMAX_{\forall j \in T}(\pi_j) = 7\\
-  &T = \{5,6,8\}
+  &T = (5,6,8)
 \end{align*}
 
 \begin{align*}
@@ -311,15 +314,15 @@ servira typiquement pour reconstruire les chemins.
 \end{align*}
 
 \begin{align*}
-  \pi &= \{\infty,12,14,12,12,6,12,9\}\\
-  P &= \{\varepsilon, 1, 1, 2, 7, 4, 4, 7\}
+  \pi &= (\infty,12,14,12,12,6,12,9)\\
+  P &= (\varepsilon, 1, 1, 2, 7, 4, 4, 7)
 \end{align*}
 
 \underline{Itération 6}
 
 \begin{align*}
   &i = \mMAX_{\forall j \in T}(\pi_j) = 5\\
-  &T = \{6,8\}
+  &T = (6,8)
 \end{align*}
 
 \begin{align*}
@@ -328,15 +331,15 @@ servira typiquement pour reconstruire les chemins.
 \end{align*}
 
 \begin{align*}
-  \pi &= \{\infty,12,14,12,12,6,12,11\}\\
-  P &= \{\varepsilon, 1, 1, 2, 7, 4, 4, 5\}
+  \pi &= (\infty,12,14,12,12,6,12,11)\\
+  P &= (\varepsilon, 1, 1, 2, 7, 4, 4, 5)
 \end{align*}
 
 \underline{Itération 7}
 
 \begin{align*}
   &i = \mMAX_{\forall j \in T}(\pi_j) = 8\\
-  &T = \{6\}
+  &T = (6)
 \end{align*}
 
 \begin{align*}
@@ -344,8 +347,8 @@ servira typiquement pour reconstruire les chemins.
 \end{align*}
 
 \begin{align*}
-  \pi &= \{\infty,12,14,12,12,11,12,11\}\\
-  P &= \{\varepsilon, 1, 1, 2, 7, 8, 4, 5\}
+  \pi &= (\infty,12,14,12,12,11,12,11)\\
+  P &= (\varepsilon, 1, 1, 2, 7, 8, 4, 5)
 \end{align*}
 
 \underline{Itération 8}
@@ -374,7 +377,7 @@ exécution et on obtient :
 
 Prenons l'exemple du chemin de capacité maximum reliant 1 à 8. On sait
 que sa capacité vaut 11 et on peut le reconstruire à l'aide de la
-liste $P$ des prédecesseurs. Il s'agit de :
+liste $P$ des prédécesseurs. Il s'agit de :
 
 \begin{align*}
   &8 \rightarrow P(8) \rightarrow P(P(8)) \rightarrow \dots \rightarrow 1\\\\
@@ -384,7 +387,8 @@ liste $P$ des prédecesseurs. Il s'agit de :
 \section{Appliquer l'algorithme de Jacobi}
 
 Nous allons maintenant utiliser l'algorithme de Jacobi pour déterminer
-les chemins de capacité maximale partant de 1.\\
+les chemins de capacité maximale partant de 1. Les résultats trouvés
+devraient être identiques à ceux de l'algorithme de Dijkstra.\\
 
 \underline{Initialisation}
 
@@ -448,7 +452,7 @@ les chemins de capacité maximale partant de 1.\\
 
 \underline{Itération 3}\\
 
-On procède la même façon pour les itérations suivantes.
+On procède de la même façon pour les itérations suivantes.
 
 \begin{align*}
   y^3 = (\infty,12,14,12,11,10,12,10)
@@ -474,10 +478,29 @@ On procède la même façon pour les itérations suivantes.
 
 On a $y^5 = y^6$ donc on est arrivé à la fin de l'algorithme. Les
 résultats fournis par l'algorithme de Jacobi correspondent à ceux
-déterminés par l'algorithme de Disjkstra.
+déterminés par l'algorithme de Dijkstra.
 
 \section{Améliorer l'algorithme de Jacobi}
 
+Afin de pouvoir reconstruire les chemins de capacité maximum à la fin
+de l'exécution de l'algorithme de Jacobi, on en propose une nouvelle
+version.\\
 
+Le principe est le même que dans l'algorithme de Dijkstra amélioré :
+On initialise au début une liste $P$ de prédécesseurs et à chaque
+itération on la met à jour en fonction des valeurs ayant changé. Pour
+connaître le prédécesseur d'un n\oe ud dont la valeur dans la liste
+$y$ vient de changer, il faut se référer à la matrice d'adjacence. Le
+prédécesseur est alors le n\oe ud correpondant à la ligne de la
+matrice dont la valeur a été absorbée.\\
+
+Par exemple, à la première itération de la question précédente, on
+avait $y^0(2) = 0$ et $y^1(2) = 12$, il était donc nécessaire de
+changer le prédécesseur de 2. Pour le déterminer, on remarque dans la
+matrice d'adjacence que la nouvelle valeur de 2 provient de la
+première ligne puisque $y^1(2) = \mmax(\mmin(y^0,A_2),b^T)$ et
+$\mmin(y^0,A_2) = \mMAX(\mmin(\infty,12),\mmin(0,\infty),\dots)) =
+\mMAX(\mmin(\infty,12))$ et le 12 en question provient de la première
+ligne de la matrice. Au final $P(2) = 1$ après la première itération.
 
 \end{document}
