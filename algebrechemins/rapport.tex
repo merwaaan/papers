@@ -205,7 +205,7 @@ $$
 
 On déroule manuellement l'algorithme de Dijkstra. On utilise ici sa
 version améliorée afin de bénéficier d'une liste contenant le
-prédecesseur de chaque n\oe ud dans le meilleur parcours. On s'en
+prédécesseur de chaque n\oe ud dans le meilleur parcours. On s'en
 servira typiquement pour reconstruire les chemins.
 
 \newpage
@@ -213,16 +213,16 @@ servira typiquement pour reconstruire les chemins.
 \underline{Initialisation}
 
 \begin{align*}
-  &T = (1,2,3,4,5,6,7,8) \\
-  &\pi = (\infty, 0,0,0,0,0,0,0) \\
-  &P = (\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon)
+  T &= (1,2,3,4,5,6,7,8) \\
+  \pi &= (\infty, 0,0,0,0,0,0,0) \\
+  P &= (\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon,\varepsilon)
 \end{align*}
 
 \underline{Itération 1}
 
 \begin{align*}
-  &i = \mMAX_{\forall j \in T}(\pi_j) = 1\\
-  &T = (2,3,4,5,6,7,8)
+  i &= \mMAX_{\forall j \in T}(\pi_j) = 1\\
+  T &= (2,3,4,5,6,7,8)
 \end{align*}
 
 \begin{align*}
@@ -243,8 +243,8 @@ servira typiquement pour reconstruire les chemins.
 \underline{Itération 2}
 
 \begin{align*}
-  &i = \mMAX_{\forall j \in T}(\pi_j) = 3\\
-  &T = (2,4,5,6,7,8)
+  i &= \mMAX_{\forall j \in T}(\pi_j) = 3\\
+  T &= (2,4,5,6,7,8)
 \end{align*}
 
 \begin{align*}
@@ -264,8 +264,8 @@ servira typiquement pour reconstruire les chemins.
 \underline{Itération 3}
 
 \begin{align*}
-  &i = \mMAX_{\forall j \in T}(\pi_j) = 2\\
-  &T = (4,5,6,7,8)
+  i &= \mMAX_{\forall j \in T}(\pi_j) = 2\\
+  T &= (4,5,6,7,8)
 \end{align*}
 
 \begin{align*}
@@ -284,8 +284,8 @@ servira typiquement pour reconstruire les chemins.
 \underline{Itération 4}
 
 \begin{align*}
-  &i = \mMAX_{\forall j \in T}(\pi_j) = 4\\
-  &T = (5,6,7,8)
+  i &= \mMAX_{\forall j \in T}(\pi_j) = 4\\
+  T &= (5,6,7,8)
 \end{align*}
 
 \begin{align*}
@@ -303,8 +303,8 @@ servira typiquement pour reconstruire les chemins.
 \underline{Itération 5}
 
 \begin{align*}
-  &i = \mMAX_{\forall j \in T}(\pi_j) = 7\\
-  &T = (5,6,8)
+  i &= \mMAX_{\forall j \in T}(\pi_j) = 7\\
+  T &= (5,6,8)
 \end{align*}
 
 \begin{align*}
@@ -321,8 +321,8 @@ servira typiquement pour reconstruire les chemins.
 \underline{Itération 6}
 
 \begin{align*}
-  &i = \mMAX_{\forall j \in T}(\pi_j) = 5\\
-  &T = (6,8)
+  i &= \mMAX_{\forall j \in T}(\pi_j) = 5\\
+  T &= (6,8)
 \end{align*}
 
 \begin{align*}
@@ -338,8 +338,8 @@ servira typiquement pour reconstruire les chemins.
 \underline{Itération 7}
 
 \begin{align*}
-  &i = \mMAX_{\forall j \in T}(\pi_j) = 8\\
-  &T = (6)
+  i &= \mMAX_{\forall j \in T}(\pi_j) = 8\\
+  T &= (6)
 \end{align*}
 
 \begin{align*}
@@ -354,8 +354,8 @@ servira typiquement pour reconstruire les chemins.
 \underline{Itération 8}
 
 \begin{align*}
-  &i = \mMAX_{\forall j \in T}(\pi_j) = 6\\
-  &T = \emptyset
+  i &= \mMAX_{\forall j \in T}(\pi_j) = 6\\
+  T &= \emptyset
 \end{align*}
 
 $T = \emptyset$ alors l'algorithme est arrivé à la fin de son
@@ -445,7 +445,7 @@ devraient être identiques à ceux de l'algorithme de Dijkstra.\\
 \end{align*}
 
 \begin{align*}
-  y^2 &= \mmax(\mmin(y^0,A),b^T)\\
+  y^2 &= \mmax(\mmin(y^1,A),b^T)\\
   &= \mmax((\infty, 12,14,12,10,6,10,0), (\infty,0,0,0,0,0,0,0))\\
   &= (\infty, 12,14,12,10,6,10,0)
 \end{align*}
