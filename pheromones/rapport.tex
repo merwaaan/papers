@@ -7,18 +7,75 @@
 \usepackage{float}
 
 \title{Recherche de chemin par phéromones}
-\author{Merwan Achibet\\Université du Havre}
+\author{Merwan Achibet $\;$ \textendash $\;$  Université du Havre}
 \date{}
 
 \begin{document}
 
 \maketitle
 
+\section*{Introduction}
+
+On se propose d'étudier l'implémentation NetLogo de José M Vidal
+inspirée de \textit{Synthetic Pheromone Mechanisms for Coordination of
+  Unmanned Vehicles} de Parunak, Brueckner et Sauter. Dans un premier
+temps, on étudiera le modèle original puis on analysera
+l'implémentation proposée.
+
 \section{Concept}
 
-\cite{parunak}
+\subsection{Analogie avec le vivant}
+
+Les fourmis sont des insectes reconnus pour leur caractère
+social. Seules, elles restent vulnérables à l'environnement immense
+les entourant. Pourtant, la coopération entre individus de la même
+fourmilière qui caractérise cette espèce leur a permis de compter
+parmi les êtres vivants les plus présents sur le globe terrestre.
+
+Les fourmis communiquent par le biais de signaux chimiques appelés
+phéromones et que l'on peut assimiler à des odeurs
+\cite{insectes}. Elles peuvent dialoguer d'individu à individu en
+utilisant leurs antennes mais, dans le contexte de la croissance de la
+fourmilière, il est plus efficace de déposer dans leur environnement
+des messages généraux adressés à tous. C'est notamment le cas
+lorsqu'un nouvelle source de nourriture est trouvée puisque que la
+fourmi à l'origine de l'heureuse découverte déposera derrière elle des
+phéromones dites de piste afin que ses congénères puissent y être
+guidés.
+
+Les phéromones restant des signaux chimiques éphémères, un phénomène
+d'évaporation se produit naturellement et efface les pistes les moins
+arpentées (source de nourriture épuisée, mauvaise piste) alors qu'au
+contraire les meilleures pistes sont renforcées par le dépôt de
+phéromones de toutes les autres fourmis les arpentant.
+
+Ce type de comportement est une source d'inspiration pour la
+conception de certaines méthodes de résolution destinée à des systèmes
+multi-agents puisqu'il rassemble des qualités notables
+\cite{parunak} :
+
+\begin{description}
+  \item[Distribution]{}
+  \item[Décentralisation]{Si une fourmi est mangée par un oiseau, cela
+  n'impactera pas l'avenir de la fourmilière car l'individu manquant
+  n'est qu'un rouage d'un mécanisme complexe}
+  \item[Dynamicité]{}
+\end{description}
+
+Parunak \textit{et al.} s'inspire de ce constat, ainsi que des modèles
+existants (CITATIONS), pour proposer une méthode de guidage destinée
+aux véhicules non habités, plus spécifiquement dans le cadre
+d'opérations militaires.
+
+\subsection{Champ de potentiel}
+
+\subsection{Les agents et leur monde}
 
 \section{Implémentation}
+
+\subsection{\'Etude}
+
+\subsection{Analyse}
 
 \bibliographystyle{alpha}
 \bibliography{sources}
