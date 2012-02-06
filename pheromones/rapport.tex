@@ -29,7 +29,7 @@ l'implémentation proposée.
 Les fourmis sont des insectes reconnus pour leur caractère
 social. Seules, elles restent vulnérables à l'environnement immense
 les entourant. Pourtant, la coopération entre individus de la même
-colonie caractérisant cette espèce leur a permis de compter
+colonie caractérisant cette espèce leur permet de compter
 parmi les êtres vivants les plus présents sur le globe terrestre.
 
 Les fourmis communiquent par le biais de signaux chimiques que l'on peut assimiler à des odeurs, les phéromones
@@ -37,11 +37,12 @@ Les fourmis communiquent par le biais de signaux chimiques que l'on peut assimil
 utilisant leurs antennes mais, dans le contexte de la croissance de la
 fourmilière, il est plus efficace de déposer dans leur environnement
 des messages généraux adressés à tous. C'est notamment le cas
-lorsqu'un nouvelle source de nourriture est trouvée puisque que la
+lorsqu'une nouvelle source de nourriture est trouvée puisque que la
 fourmi à l'origine de l'heureuse découverte déposera derrière elle des
 phéromones dites de piste afin que ses congénères puissent y être
-guidés. De la même façon, un autre type de phéromone peut être déposé pour 
-indiquer un danger.
+guidés. Plusieurs autres types de phéromones existent : certaines préviennent d'un
+danger tandis que d'autre délimitent un territoire ou bien attirent les individus de l'autre sexe
+en période de reproduction.
 
 Les phéromones restant des signaux chimiques éphémères, un phénomène
 d'évaporation se produit naturellement et efface les pistes les moins
@@ -49,7 +50,8 @@ arpentées (source de nourriture épuisée, mauvaise piste). Au
 contraire, les meilleures pistes sont renforcées par accumulation puisque
 toutes les autres fourmis les arpentant les renforcent par le dépôt de
 leur propres phéromones. Les signaux chimiques sont aussi soumis à une diffusion
-dans l'environnement et BLABLA
+dans l'environnement et les insectes disposent d'un odorat assez fin pour en retrouver 
+la source.
 
 Ce type de comportement est une source d'inspiration pour la
 conception de certaines méthodes de résolution destinée à des systèmes
@@ -63,13 +65,13 @@ sur tout l'environnement}
   \item[Décentralisation]{Si une fourmi est mangée par un oiseau, cela
   n'impactera pas l'avenir de la fourmilière car l'individu manquant
   n'est qu'un rouage d'un mécanisme plus complexe}
-  \item[Dynamicité]{Les tracés se renforçant et s'évaporant de façon continue, les fourmis
-s'adaptent à tout changement impromptu de leur environnement}
+  \item[Dynamicité]{Les tracés se renforçant et s'évaporant continuellement, les fourmis
+s'adaptent à tout changement impromptu de l'environnement}
 \end{description}
 
 Parunak \textit{et al.} s'inspirent de ce constat, ainsi que des
 modèles existants \cite{dorigo}, pour proposer une méthode de guidage
-destinée aux véhicules non habités, plus spécifiquement dans le cadre
+destinée aux véhicules non habités dans le cadre
 d'opérations militaires.
 
 \subsection{Les agents et leur monde}
@@ -78,12 +80,42 @@ Ici, la fourmi est remplacée par un véhicule, un drône aérien dans l'exemple
 est de partir d'une base, et d'atteindre un objectif de type bâtiment ennemi tout en évitant
 certaines infrastructures pouvant l'impacter négativement (radars ennemis, batteries anti-aérienne).
 
-Un véhicule peut déposer deux types de phé
+Dans la simulation, un véhicule peut déposer deux types de phéromones :
 
-Dans ce modèle, 
+\begin{description}
+  \item[GTarget]{Libérée par un agent venant de rencontrer une cible ennemi et rentrant à sa base, elle guide les autres agents vers la cible.}
+  \item[GNest]{Libérée par un agent venant de quitter la base, elle guide les agents vers la base.}
+\end{description}
 
-\subsection{Champ de potentiel}
+Ces deux signaux disposeront d'un taux de diffusion faible car les routes tracées n'ont aucunement besoin d'être larges. BLABLA
 
+Dans ce modèle, les batîments ennemis sont eux aussi agents et émetteurs des phéromones :
+
+\begin{description}
+  \item[RTarget]{Libérée par les batîments cibles, elles attirent les drones}
+  \item[RThreat]{Libérée par les batîments de contre-mesure, elles repoussent les drones}
+\end{description}
+
+Le taux de diffusion d'une phéromone dépend de l'aire d'effet du batîment associé, correspond à son rayon d'action; 
+le rayon de détection pour un radar, la portée pour une batterie anti-aérienne.
+
+L'environnement est divisé en zones (\textit{places}) dont les dimensions dépendent de la simulation envisagée. 
+Dans l'exemple SEADy Storm proposé dans le papier étudié, une zone correspond à une hexagone de 50 kilomètres de diamètre.
+Le travail d'une zone est de stocker une valeur réelle pour chaque type de phéromone y étant déposée mais aussi de les diffuser aux zones
+voisines.
+
+Le fonctionnement intrinsèque de ce modèle commence à s'esquisser. Les phéromones émisent par les
+différents acteurs de la simulation vont tisser un canevas de signaux chimiques marquant l'environnement.
+Typiquement, les drones auront pour but d'atteindre un bâtiment cible tout en évitant l'aire d'effet des
+batîments menaçants.
+
+Les phéromones décrites sont bien sûr spécifiques au modèle présenté et dans un soucis
+de généralisme, on veut associer à chaque zone une fonction calculant sa valeur d'attractivité
+en fonction des différentes phéromones qui y sont déposées. Ici, cette fonction est :
+
+$$
+\frac{\omega \operatorname{RTarget} + \gamma \operatorname{GTarget}}{\alpha \operatorname{RThreat} + \delta \operatorname{Dist}}
+$$
 
 
 \section{Implémentation}
