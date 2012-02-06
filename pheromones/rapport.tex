@@ -16,7 +16,7 @@
 
 \section*{Introduction}
 
-On se propose d'étudier l'implémentation NetLogo de José M Vidal
+On se propose d'étudier l'implémentation NetLogo de José M. Vidal
 inspirée de \textit{Synthetic Pheromone Mechanisms for Coordination of
   Unmanned Vehicles} de Parunak, Brueckner et Sauter. Dans un premier
 temps, on étudie le modèle original puis on analyse
@@ -37,36 +37,37 @@ Les fourmis communiquent par le biais de signaux chimiques que l'on peut assimil
 utilisant leurs antennes mais, dans le contexte de la croissance de la
 fourmilière, il est plus efficace de déposer dans leur environnement
 des messages généraux adressés à tous. C'est notamment le cas
-lorsqu'une nouvelle source de nourriture est trouvée puisque que la
+lorsqu'une nouvelle source de nourriture est trouvée puisque la
 fourmi à l'origine de l'heureuse découverte déposera derrière elle des
-phéromones dites de piste afin que ses congénères puissent y être
-guidés. Plusieurs autres types de phéromones existent : certaines préviennent d'un
-danger tandis que d'autre délimitent un territoire ou bien attirent les individus de l'autre sexe
+phéromones de piste afin que ses congénères puissent y être
+guidées. Plusieurs autres types de phéromones existent : certaines préviennent d'un
+danger tandis que d'autre délimitent un territoire ou bien, chez d'autres insectes, attirent les individus de l'autre sexe
 en période de reproduction.
 
-Les phéromones restant des signaux chimiques éphémères, un phénomène
-d'évaporation se produit naturellement et efface les pistes les moins
-arpentées (source de nourriture épuisée, mauvaise piste). Au
-contraire, les meilleures pistes sont renforcées par accumulation puisque
-toutes les autres fourmis les arpentant les renforcent par le dépôt de
-leur propres phéromones. Les signaux chimiques sont aussi soumis à une diffusion
-dans l'environnement et les insectes disposent d'un odorat assez fin pour en retrouver 
-la source.
+Les phéromones étant des signaux chimiques éphémères, un phénomène
+d'évaporation se produit naturellement et efface progressivement les pistes. 
+Pour qu'une piste perdure, elle doit être entretenue par accumulation des phéromones
+des autres fourmis l'arpentant. Ainsi seules les meilleures pistes sont conservées tandis que
+les autres (source de nourriture épuisée ou moins importantes) disparaissent par érosion.
+Un aspect important des phéromones est qu'elles sont soumises à une diffusion
+dans l'environnement et que les insectes disposent d'un odorat assez fin pour en retrouver 
+la source. Ainsi, un individu peut détecter et être attiré par une odeur en passant à proximité de la piste originelle
+mais sans nécessairement la croiser.
 
 Ce type de comportement est une source d'inspiration pour la
-conception de certaines méthodes de résolution destinée à des systèmes
+conception de méthodes de résolution destinée à des systèmes
 multi-agents puisqu'il rassemble des qualités notables
 \cite{parunak} :
 
 \begin{description}
-\item[Diversité]{Une phéromone peut aussi bien indiquer une piste à suivre qu'un danger. Tout type de sémantique peut leur être associé}
-  \item[Distribution]{Les signaux chimiques guidant les fourmis sont répartis
-sur tout l'environnement}
+\item[Diversité]{Une phéromone peut aussi bien indiquer une piste à suivre qu'un danger. Le concepteur d'un modèle est libre d'associer tout type de sémantique à une phéromone.}
+  \item[Distribution]{Les signaux chimiques guidant les insected sont répartis
+sur tout l'environnement.}
   \item[Décentralisation]{Si une fourmi est mangée par un oiseau, cela
   n'impactera pas l'avenir de la fourmilière car l'individu manquant
-  n'est qu'un rouage d'un mécanisme plus complexe}
-  \item[Dynamicité]{Les tracés se renforçant et s'évaporant continuellement, les fourmis
-s'adaptent à tout changement impromptu de l'environnement}
+  n'est qu'un rouage d'un mécanisme plus complexe. Les signaux qu'il a déposés perdureront jusqu'à évaporation.}
+  \item[Dynamicité]{Les tracés se renforçant et s'évaporant continuellement, les insectes
+s'adaptent à tout changement impromptu de l'environnement.}
 \end{description}
 
 Parunak \textit{et al.} s'inspirent de ce constat, ainsi que des
@@ -83,20 +84,20 @@ certaines infrastructures pouvant l'impacter négativement (radars ennemis, batt
 Dans la simulation, un véhicule peut déposer deux types de phéromones :
 
 \begin{description}
-  \item[GTarget]{Libérée par un agent venant de rencontrer une cible ennemi et rentrant à sa base, elle guide les autres agents vers la cible.}
-  \item[GNest]{Libérée par un agent venant de quitter la base, elle guide les agents vers la base.}
+  \item[GTarget]{Libérée par un agent venant de rencontrer une cible ennemi et rentrant à sa base. Elle guide les autres agents vers la cible.}
+  \item[GNest]{Libérée par un agent venant de quitter la base. Elle guide les agents vers la base.}
 \end{description}
 
-Ces deux signaux disposeront d'un taux de diffusion faible car les routes tracées n'ont aucunement besoin d'être larges. BLABLA
+Taux de diffusion ?
 
 Dans ce modèle, les batîments ennemis sont eux aussi agents et émetteurs des phéromones :
 
 \begin{description}
-  \item[RTarget]{Libérée par les batîments cibles, elles attirent les drones}
-  \item[RThreat]{Libérée par les batîments de contre-mesure, elles repoussent les drones}
+  \item[RTarget]{Libérée par les batîments cibles. Elles attirent les drones.}
+  \item[RThreat]{Libérée par les batîments de contre-mesure. Elles repoussent les drones.}
 \end{description}
 
-Le taux de diffusion d'une phéromone dépend de l'aire d'effet du batîment associé, correspond à son rayon d'action; 
+Le taux de diffusion d'une phéromone dépend de l'aire d'effet du batîment associé, et correspond concrètement à son rayon d'action :
 le rayon de détection pour un radar, la portée pour une batterie anti-aérienne.
 
 L'environnement est divisé en zones (\textit{places}) dont les dimensions dépendent de la simulation envisagée. 
@@ -106,7 +107,7 @@ voisines.
 
 Le fonctionnement intrinsèque de ce modèle commence à s'esquisser. Les phéromones émisent par les
 différents acteurs de la simulation vont tisser un canevas de signaux chimiques marquant l'environnement.
-Typiquement, les drones auront pour but d'atteindre un bâtiment cible tout en évitant l'aire d'effet des
+Typiquement, les drones auront pour but d'atteindre un bâtiment cible tout en évitant les aires d'effet des
 batîments menaçants.
 
 Les phéromones décrites sont bien sûr spécifiques au modèle présenté et dans un soucis
