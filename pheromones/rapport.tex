@@ -19,21 +19,20 @@
 On se propose d'étudier l'implémentation NetLogo de José M Vidal
 inspirée de \textit{Synthetic Pheromone Mechanisms for Coordination of
   Unmanned Vehicles} de Parunak, Brueckner et Sauter. Dans un premier
-temps, on étudiera le modèle original puis on analysera
+temps, on étudie le modèle original puis on analyse
 l'implémentation proposée.
 
-\section{Concept}
+\section{Modèle}
 
 \subsection{Analogie avec le vivant}
 
 Les fourmis sont des insectes reconnus pour leur caractère
 social. Seules, elles restent vulnérables à l'environnement immense
 les entourant. Pourtant, la coopération entre individus de la même
-fourmilière qui caractérise cette espèce leur a permis de compter
+colonie caractérisant cette espèce leur a permis de compter
 parmi les êtres vivants les plus présents sur le globe terrestre.
 
-Les fourmis communiquent par le biais de signaux chimiques appelés
-phéromones et que l'on peut assimiler à des odeurs
+Les fourmis communiquent par le biais de signaux chimiques que l'on peut assimiler à des odeurs, les phéromones
 \cite{insectes}. Elles peuvent dialoguer d'individu à individu en
 utilisant leurs antennes mais, dans le contexte de la croissance de la
 fourmilière, il est plus efficace de déposer dans leur environnement
@@ -41,13 +40,16 @@ des messages généraux adressés à tous. C'est notamment le cas
 lorsqu'un nouvelle source de nourriture est trouvée puisque que la
 fourmi à l'origine de l'heureuse découverte déposera derrière elle des
 phéromones dites de piste afin que ses congénères puissent y être
-guidés.
+guidés. De la même façon, un autre type de phéromone peut être déposé pour 
+indiquer un danger.
 
 Les phéromones restant des signaux chimiques éphémères, un phénomène
 d'évaporation se produit naturellement et efface les pistes les moins
-arpentées (source de nourriture épuisée, mauvaise piste) alors qu'au
-contraire les meilleures pistes sont renforcées par le dépôt de
-phéromones de toutes les autres fourmis les arpentant.
+arpentées (source de nourriture épuisée, mauvaise piste). Au
+contraire, les meilleures pistes sont renforcées par accumulation puisque
+toutes les autres fourmis les arpentant les renforcent par le dépôt de
+leur propres phéromones. Les signaux chimiques sont aussi soumis à une diffusion
+dans l'environnement et BLABLA
 
 Ce type de comportement est une source d'inspiration pour la
 conception de certaines méthodes de résolution destinée à des systèmes
@@ -55,23 +57,34 @@ multi-agents puisqu'il rassemble des qualités notables
 \cite{parunak} :
 
 \begin{description}
-  \item[Distribution]{}
+\item[Diversité]{Une phéromone peut aussi bien indiquer une piste à suivre qu'un danger. Tout type de sémantique peut leur être associé}
+  \item[Distribution]{Les signaux chimiques guidant les fourmis sont répartis
+sur tout l'environnement}
   \item[Décentralisation]{Si une fourmi est mangée par un oiseau, cela
   n'impactera pas l'avenir de la fourmilière car l'individu manquant
-  n'est qu'un rouage d'un mécanisme complexe}
-  \item[Dynamicité]{}
+  n'est qu'un rouage d'un mécanisme plus complexe}
+  \item[Dynamicité]{Les tracés se renforçant et s'évaporant de façon continue, les fourmis
+s'adaptent à tout changement impromptu de leur environnement}
 \end{description}
 
 Parunak \textit{et al.} s'inspirent de ce constat, ainsi que des
-modèles existants (CITATIONS), pour proposer une méthode de guidage
+modèles existants \cite{dorigo}, pour proposer une méthode de guidage
 destinée aux véhicules non habités, plus spécifiquement dans le cadre
 d'opérations militaires.
 
+\subsection{Les agents et leur monde}
 
+Ici, la fourmi est remplacée par un véhicule, un drône aérien dans l'exemple. Sa mission
+est de partir d'une base, et d'atteindre un objectif de type bâtiment ennemi tout en évitant
+certaines infrastructures pouvant l'impacter négativement (radars ennemis, batteries anti-aérienne).
+
+Un véhicule peut déposer deux types de phé
+
+Dans ce modèle, 
 
 \subsection{Champ de potentiel}
 
-\subsection{Les agents et leur monde}
+
 
 \section{Implémentation}
 
