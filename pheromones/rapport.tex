@@ -61,7 +61,7 @@ multi-agents puisqu'il rassemble des qualités notables
 
 \begin{description}
 \item[Diversité]{Une phéromone peut aussi bien indiquer une piste à suivre qu'un danger. Le concepteur d'un modèle est libre d'associer tout type de sémantique à une phéromone.}
-  \item[Distribution]{Les signaux chimiques guidant les insected sont répartis
+  \item[Distribution]{Les signaux chimiques guidant les insectes sont répartis
 sur tout l'environnement.}
   \item[Décentralisation]{Si une fourmi est mangée par un oiseau, cela
   n'impactera pas l'avenir de la fourmilière car l'individu manquant
@@ -79,16 +79,14 @@ d'opérations militaires.
 
 Ici, la fourmi est remplacée par un véhicule, un drône aérien dans l'exemple. Sa mission
 est de partir d'une base, et d'atteindre un objectif de type bâtiment ennemi tout en évitant
-certaines infrastructures pouvant l'impacter négativement (radars ennemis, batteries anti-aérienne).
+certaines infrastructures pouvant l'impacter négativement (radars, batteries anti-aérienne).
 
 Dans la simulation, un véhicule peut déposer deux types de phéromones :
 
 \begin{description}
   \item[GTarget]{Libérée par un agent venant de rencontrer une cible ennemi et rentrant à sa base. Elle guide les autres agents vers la cible.}
-  \item[GNest]{Libérée par un agent venant de quitter la base. Elle guide les agents vers la base.}
+  \item[GNest]{Libérée par un agent venant de quitter la base. Elle guide les agents vers cette dernière.}
 \end{description}
-
-Taux de diffusion ?
 
 Dans ce modèle, les batîments ennemis sont eux aussi agents et émetteurs des phéromones :
 
@@ -97,18 +95,22 @@ Dans ce modèle, les batîments ennemis sont eux aussi agents et émetteurs des 
   \item[RThreat]{Libérée par les batîments de contre-mesure. Elles repoussent les drones.}
 \end{description}
 
-Le taux de diffusion d'une phéromone dépend de l'aire d'effet du batîment associé, et correspond concrètement à son rayon d'action :
-le rayon de détection pour un radar, la portée pour une batterie anti-aérienne.
+Chacune de ces phéromènes véhicule une information différente, mais au delà de leur sémantique, elles
+différent aussi de par leur taux de diffusion dans l'environnement.
+Pour les batîments ennemis, ce taux de diffusion dépend de l'aire d'effet du batîment associé, 
+et correspond concrètement à son rayon d'action : le rayon de détection pour un radar, la portée pour une batterie anti-aérienne.
+Le taux de diffusion des phéromones libérées par les drones doit quant à elle être finement mesuré pour qu'elles soient remarquées par les véhicules passant à proximité
+sans pour autant définir une route trop large (et donc plus encline à empiéter sur les zones d'effets des bâtiments ennemis).
 
 L'environnement est divisé en zones (\textit{places}) dont les dimensions dépendent de la simulation envisagée. 
 Dans l'exemple SEADy Storm proposé dans le papier étudié, une zone correspond à une hexagone de 50 kilomètres de diamètre.
-Le travail d'une zone est de stocker une valeur réelle pour chaque type de phéromone y étant déposée mais aussi de les diffuser aux zones
-voisines.
+C'est sur ces zones que les quantités des différentes phéromones déposées sont stockées et aussi que le 
+phénomène de diffusion ce produit entre zones voisines.
 
 Le fonctionnement intrinsèque de ce modèle commence à s'esquisser. Les phéromones émisent par les
 différents acteurs de la simulation vont tisser un canevas de signaux chimiques marquant l'environnement.
-Typiquement, les drones auront pour but d'atteindre un bâtiment cible tout en évitant les aires d'effet des
-batîments menaçants.
+Typiquement, les drones auront pour but de suivre une piste menant à un bâtiment cible tout en évitant 
+les aires d'effet des batîments menaçants, puis à revenir jusqu'à une base en suivant une piste associée.
 
 Les phéromones décrites sont bien sûr spécifiques au modèle présenté et dans un soucis
 de généralisme, on veut associer à chaque zone une fonction calculant sa valeur d'attractivité
@@ -118,12 +120,36 @@ $$
 \frac{\omega \operatorname{RTarget} + \gamma \operatorname{GTarget}}{\alpha \operatorname{RThreat} + \delta \operatorname{Dist}}
 $$
 
+Lorsqu'un véhicule se trouve dans une zone, il a accés aux quantités de phéromones présentes dans les zones voisines et
+un tirage aléatoire de type roue de la fortune biaisée permet de simuler un choix.
+
+GHOSTS???
 
 \section{Implémentation}
 
 \subsection{\'Etude}
 
+José M. Vidal a implémenté le modèle décrit précédemment sur la plate-forme de simulation NetLogo.
+
+Son implémentation est basée sur une grille de \textit{patches} torique alors que l'implémentation originale
+utilisait des hexagones à six voisins. Cette différence est négligeable au niveau des résultats que fournit cette
+simulation car Parunak \textit{et al.} précisent que la configuration du terrain et des blocs le formant, ainsi que
+leurs dimensions peuvent varier librement.
+
 \subsection{Analyse}
+
+Les facteurs que l'utilisateur peut contrôler sont :
+
+\begin{description}
+  \item[Le nombre de cibles]{blabla}
+  \item[Le nombre de menaces]{blabla}
+  \item[Le nombre maximum de fantômes]{blabla}
+  \item[La durée de vie d'un fantôme]{blabla}]
+  \item[Le taux de diffusion]{blabla}
+  \item[Le taux d'évaporation]{blabla}
+\end{description}
+
+TESTS!
 
 \bibliographystyle{alpha}
 \bibliography{sources}
