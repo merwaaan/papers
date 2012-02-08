@@ -6,13 +6,15 @@ breed [ ghosts ]
 breed [ walkers ]
 breed [ targets ]
 breed [ hazards ]
+breed [ homes ]
 
+globals [mission-ok base-x base-y]
 
 ;There are 4 pheronomes. Their values range from 0-1.
 patches-own [target hazard to-target to-home]
 
 ;when wait-steps is 0 the walker can fd 1, these set it back to walker-speed.
-walkers-own [wait-steps steps hazards-hit]
+walkers-own [mode wait-steps steps hazards-hit]
 
 ;mode = "to-target" or "to-home"
 ghosts-own [mode steps drop-size]
@@ -33,6 +35,11 @@ to setup
   set-default-shape walkers "default"
   set-default-shape targets "circle"
   set-default-shape hazards "x"
+  set-default-shape homes "none"
+  
+  set mission-ok 0
+  set base-x get-random-xcor
+  set base-y get-random-ycor
   
   create-hazards num-hazards [
     setxy get-random-xcor get-random-ycor
@@ -50,25 +57,43 @@ to setup
     ]
   ]
   
+  create-homes 1 [
+    setxy base-x base-y
+    set pcolor yellow
+    rt 0
+  ]
+  
   create-walkers 1 [
+    setxy base-x base-y
     set wait-steps walker-speed
-    setxy get-random-xcor get-random-ycor
-    set color blue]
+    set mode "to-target"
+    set mission-ok 0
+    set color blue
+  ]
+  
   reset-ticks
 end
 
 to update
+  
   ask targets [go-targets]
   ask hazards [go-hazards]
+  
   ask ghosts [find-target-or-home]
-  ask walkers [move-to-target]
+  ask walkers [move]
+  
   diffuse target diffusion-rate / 100
   diffuse hazard diffusion-rate / 100
   diffuse to-target diffusion-rate / 100
   diffuse to-home diffusion-rate / 100
+  
   ask patches [go-patches]
   
-  if (first [at-target?] of walkers) [stop]
+  ; stop when the mission is over
+  if (first [at-homes?] of walkers and mission-ok = 1) [
+    stop
+  ]
+  
 end
 
 ;ghosts
@@ -77,32 +102,81 @@ to find-target-or-home
   set steps steps + 1
   if (steps > ghosts-lifetime) [die]
   
-  ifelse (mode = "to-target")[ ;;looking for the target
+  if (mode = "wandering") [
+  
+    uphill target
     
+    ; change mode if a target is encountered
     if (any? targets-here) [
       set mode "to-home"
       set color magenta
       set drop-size 20
       rt 180
-      stop]
+      stop
+    ]
     
+    ; change mode if a home is encountered
+    if (any? homes-here) [
+      set mode "to-target"
+      set color magenta
+      set drop-size 20
+      rt 180
+      stop
+    ]
+  ]
+  
+  if (mode = "to-target") [
+    
+    ; change mode if a target is encountered
+    if (any? targets-here) [
+      set mode "to-home"
+      set color magenta
+      set drop-size 20
+      rt 180
+      stop
+    ]
+    
+    ; drop pheromones leading to the home
     set to-home (to-home + drop-size)
+    
+    ; update drop size
     set drop-size drop-size - 1
-    if (drop-size < 1) [set drop-size 1]
+    if (drop-size < 1) [
+      set drop-size 1
+    ]
+    
+    ; seek a target
     uphill target
   ]
-  [
-    if (any? walkers-here) [ ;were home
-      die]
+  
+  if (mode = "to-homes") [
+    
+    ; change mode if a home is encountered
+    if (any? homes-here) [
+      set mode "to-target"
+      set color magenta
+      set drop-size 20
+      rt 180
+      stop
+    ]
+    
+    ; drop pheromones leading to a target
     set to-target (to-target + drop-size)
+    
+    ; update drop size
     set drop-size drop-size - 1
-    if (drop-size < 1) [set drop-size 1]
+    if (drop-size < 1) [
+      set drop-size 1
+    ]
+    
+    ; seek the home
     uphill-to-home
     fd 1
   ]
 end
 
 to uphill-to-home
+  
   let ahead 0
   let scent-left 0
   let scent-right 0
@@ -118,7 +192,7 @@ to uphill-to-home
     [ ifelse (scent-right > scent-left) 
       [ rt 45 ]
       [ lt 45 ]
-  ]
+    ]
 end
 
 to-report next-to-home  ;; reports what the strength of chemical right in front of the ant is   
@@ -126,6 +200,17 @@ to-report next-to-home  ;; reports what the strength of chemical right in front 
 end
 
 ;walkers
+
+to move
+  
+  ifelse (mode = "to-target")[ ;;looking for the target
+    move-to-target
+  ][
+    move-to-home
+  ]
+  
+end
+
 to move-to-target
   
   if (wait-steps = 0)[
@@ -136,8 +221,14 @@ to move-to-target
     uphill to-target
     
     if (any? hazards-here) [
-      set hazards-hit hazards-hit + 1] 
+      set hazards-hit hazards-hit + 1
     ]
+    
+    if (any? targets-here) [
+      set mode "to-home"
+      set mission-ok 1 
+    ] 
+  ]
   
   set wait-steps wait-steps - 1
   
@@ -146,13 +237,49 @@ to move-to-target
       sprout 1 [
         set breed ghosts
         set drop-size 20
-        set mode "to-target"
+        set mode "wandering"
         set color green
-        fd 1]]]
+        fd 1
+      ]
+    ]
+  ]
+end
+
+to move-to-home
+
+  if (wait-steps = 0)[
+    
+    set wait-steps walker-speed
+    set steps steps + 1
+    
+    uphill to-home
+    
+    if (any? hazards-here) [
+      set hazards-hit hazards-hit + 1
+    ] 
+  ]
+  
+  set wait-steps wait-steps - 1
+  
+  if (count ghosts < max-num-ghosts) [
+    ask patch-here [
+      sprout 1 [
+        set breed ghosts
+        set drop-size 20
+        set mode "to-home"
+        set color green
+        fd 1
+      ]
+    ]
+  ]
 end
 
 to-report at-target?
   report any? targets-here
+end
+
+to-report at-homes?
+  report any? homes-here
 end
 
 ;patches
@@ -165,17 +292,19 @@ to go-patches
   set to-home to-home * (100 - evaporation-rate) / 100
   
   ; colorize with respect to the pheromone intensity
-  if (show-target) [
-    set pcolor scale-color green target 0 1
-  ]
-  if (show-hazard) [
-    set pcolor scale-color red hazard 0 1
-  ]
-  if (show-to-home) [
-    set pcolor scale-color yellow to-home 0 1
-  ]
-  if (show-to-target) [
-    set pcolor scale-color yellow to-target 0 1
+  if (pcolor != yellow) [
+    if (show-target) [
+      set pcolor scale-color green target 0 1
+    ]
+    if (show-hazard) [
+      set pcolor scale-color red hazard 0 1
+    ]
+    if (show-to-home) [
+      set pcolor scale-color cyan to-home 0 1
+    ]
+    if (show-to-target) [
+      set pcolor scale-color blue to-target 0 1
+    ]
   ]
 end
 
@@ -239,7 +368,7 @@ walker-speed
 walker-speed
 0
 100
-52
+24
 1
 1
 NIL
@@ -382,7 +511,7 @@ SWITCH
 159
 show-to-home
 show-to-home
-1
+0
 1
 -1000
 
@@ -406,7 +535,7 @@ ghosts-lifetime
 ghosts-lifetime
 0
 100
-50
+51
 1
 1
 NIL
@@ -562,6 +691,10 @@ circle
 false
 0
 Circle -7500403 true true 35 35 230
+
+none
+true
+0
 
 person
 false

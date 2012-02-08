@@ -1,14 +1,10 @@
 \documentclass[12pt]{article}
 
-\usepackage[utf8]{inputenc}
-\usepackage[francais]{babel}
-\usepackage{amsmath}
-\usepackage{url}
-\usepackage{float}
+\usepackage[utf8]{inputenc} \usepackage[francais]{babel}
+\usepackage{amsmath} \usepackage{url} \usepackage{float}
 
-\title{Recherche de chemin par phéromones}
-\author{Merwan Achibet $\;$ \textendash $\;$  Université du Havre}
-\date{}
+\title{Recherche de chemin par phéromones} \author{Merwan Achibet $\;$
+  \textendash $\;$ Université du Havre} \date{}
 
 \begin{document}
 
@@ -19,8 +15,8 @@
 On se propose d'étudier l'implémentation NetLogo de José M. Vidal
 inspirée de \textit{Synthetic Pheromone Mechanisms for Coordination of
   Unmanned Vehicles} de Parunak, Brueckner et Sauter. Dans un premier
-temps, on étudie le modèle original puis on analyse
-l'implémentation proposée.
+temps, on étudie le modèle original puis on analyse l'implémentation
+proposée.
 
 \section{Modèle}
 
@@ -29,99 +25,128 @@ l'implémentation proposée.
 Les fourmis sont des insectes reconnus pour leur caractère
 social. Seules, elles restent vulnérables à l'environnement immense
 les entourant. Pourtant, la coopération entre individus de la même
-colonie caractérisant cette espèce leur permet de compter
-parmi les êtres vivants les plus présents sur le globe terrestre.
+colonie caractérisant cette espèce leur permet de compter parmi les
+êtres vivants les plus présents sur le globe terrestre.
 
-Les fourmis communiquent par le biais de signaux chimiques que l'on peut assimiler à des odeurs, les phéromones
-\cite{insectes}. Elles peuvent dialoguer d'individu à individu en
-utilisant leurs antennes mais, dans le contexte de la croissance de la
-fourmilière, il est plus efficace de déposer dans leur environnement
-des messages généraux adressés à tous. C'est notamment le cas
-lorsqu'une nouvelle source de nourriture est trouvée puisque la
-fourmi à l'origine de l'heureuse découverte déposera derrière elle des
-phéromones de piste afin que ses congénères puissent y être
-guidées. Plusieurs autres types de phéromones existent : certaines préviennent d'un
-danger tandis que d'autre délimitent un territoire ou bien, chez d'autres insectes, attirent les individus de l'autre sexe
-en période de reproduction.
+Les fourmis communiquent par le biais de signaux chimiques que l'on
+peut assimiler à des odeurs, les phéromones \cite{insectes}. Elles
+peuvent dialoguer d'individu à individu en utilisant leurs antennes
+mais, dans le contexte de la croissance de la fourmilière, il est plus
+efficace de déposer dans leur environnement des messages généraux
+adressés à tous. C'est notamment le cas lorsqu'une nouvelle source de
+nourriture est trouvée puisque la fourmi à l'origine de l'heureuse
+découverte déposera derrière elle des phéromones de piste afin que ses
+congénères puissent y être guidées. Plusieurs autres types de
+phéromones existent : certaines préviennent d'un danger tandis que
+d'autre délimitent un territoire ou bien, chez d'autres insectes,
+attirent les individus de l'autre sexe en période de reproduction.
 
 Les phéromones étant des signaux chimiques éphémères, un phénomène
-d'évaporation se produit naturellement et efface progressivement les pistes. 
-Pour qu'une piste perdure, elle doit être entretenue par accumulation des phéromones
-des autres fourmis l'arpentant. Ainsi seules les meilleures pistes sont conservées tandis que
-les autres (source de nourriture épuisée ou moins importantes) disparaissent par érosion.
-Un aspect important des phéromones est qu'elles sont soumises à une diffusion
-dans l'environnement et que les insectes disposent d'un odorat assez fin pour en retrouver 
-la source. Ainsi, un individu peut détecter et être attiré par une odeur en passant à proximité de la piste originelle
-mais sans nécessairement la croiser.
+d'évaporation se produit naturellement et efface progressivement les
+pistes.  Pour qu'une piste perdure, elle doit être entretenue par
+accumulation des phéromones des autres fourmis l'arpentant. Ainsi
+seules les meilleures pistes sont conservées tandis que les autres
+(source de nourriture épuisée ou moins importantes) disparaissent par
+érosion.  Un aspect important des phéromones est qu'elles sont
+soumises à une diffusion dans l'environnement et que les insectes
+disposent d'un odorat assez fin pour en retrouver la source. Ainsi, un
+individu peut détecter et être attiré par une odeur en passant à
+proximité de la piste originelle mais sans nécessairement la croiser.
 
 Ce type de comportement est une source d'inspiration pour la
 conception de méthodes de résolution destinée à des systèmes
-multi-agents puisqu'il rassemble des qualités notables
-\cite{parunak} :
+multi-agents puisqu'il rassemble des qualités notables \cite{parunak}
+:
 
 \begin{description}
-\item[Diversité]{Une phéromone peut aussi bien indiquer une piste à suivre qu'un danger. Le concepteur d'un modèle est libre d'associer tout type de sémantique à une phéromone.}
-  \item[Distribution]{Les signaux chimiques guidant les insectes sont répartis
-sur tout l'environnement.}
-  \item[Décentralisation]{Si une fourmi est mangée par un oiseau, cela
+\item[Diversité]{Une phéromone peut aussi bien indiquer une piste à
+  suivre qu'un danger. Le concepteur d'un modèle est libre d'associer
+  tout type de sémantique à une phéromone.}
+\item[Distribution]{Les signaux chimiques guidant les insectes sont
+  répartis sur tout l'environnement.}
+\item[Décentralisation]{Si une fourmi est mangée par un oiseau, cela
   n'impactera pas l'avenir de la fourmilière car l'individu manquant
-  n'est qu'un rouage d'un mécanisme plus complexe. Les signaux qu'il a déposés perdureront jusqu'à évaporation.}
-  \item[Dynamicité]{Les tracés se renforçant et s'évaporant continuellement, les insectes
-s'adaptent à tout changement impromptu de l'environnement.}
+  n'est qu'un rouage d'un mécanisme plus complexe. Les signaux qu'il a
+  déposés perdureront jusqu'à évaporation.}
+\item[Dynamicité]{Les tracés se renforçant et s'évaporant
+  continuellement, les insectes s'adaptent à tout changement impromptu
+  de l'environnement.}
 \end{description}
 
 Parunak \textit{et al.} s'inspirent de ce constat, ainsi que des
 modèles existants \cite{dorigo}, pour proposer une méthode de guidage
-destinée aux véhicules non habités dans le cadre
-d'opérations militaires.
+destinée aux véhicules non habités dans le cadre d'opérations
+militaires.
 
 \subsection{Les agents et leur monde}
 
-Ici, la fourmi est remplacée par un véhicule, un drône aérien dans l'exemple. Sa mission
-est de partir d'une base, et d'atteindre un objectif de type bâtiment ennemi tout en évitant
-certaines infrastructures pouvant l'impacter négativement (radars, batteries anti-aérienne).
+Ici, la fourmi est remplacée par un véhicule, un drône aérien dans
+l'exemple. Sa mission est de partir d'une base, et d'atteindre un
+objectif de type bâtiment ennemi tout en évitant certaines
+infrastructures pouvant l'impacter négativement (radars, batteries
+anti-aérienne).
 
-Dans la simulation, un véhicule peut déposer deux types de phéromones :
-
-\begin{description}
-  \item[GTarget]{Libérée par un agent venant de rencontrer une cible ennemi et rentrant à sa base. Elle guide les autres agents vers la cible.}
-  \item[GNest]{Libérée par un agent venant de quitter la base. Elle guide les agents vers cette dernière.}
-\end{description}
-
-Dans ce modèle, les batîments ennemis sont eux aussi agents et émetteurs des phéromones :
+Dans la simulation, un véhicule peut déposer deux types de phéromones
+:
 
 \begin{description}
-  \item[RTarget]{Libérée par les batîments cibles. Elles attirent les drones.}
-  \item[RThreat]{Libérée par les batîments de contre-mesure. Elles repoussent les drones.}
+\item[GTarget]{Libérée par un agent venant de rencontrer une cible
+  ennemi et rentrant à sa base. Elle guide les autres agents vers la
+  cible.}
+\item[GNest]{Libérée par un agent venant de quitter la base. Elle
+  guide les agents vers cette dernière.}
 \end{description}
 
-Chacune de ces phéromènes véhicule une information différente, mais au delà de leur sémantique, elles
-différent aussi de par leur taux de diffusion dans l'environnement.
-Pour les batîments ennemis, ce taux de diffusion dépend de l'aire d'effet du batîment associé, 
-et correspond concrètement à son rayon d'action : le rayon de détection pour un radar, la portée pour une batterie anti-aérienne.
-Le taux de diffusion des phéromones libérées par les drones doit quant à elle être finement mesuré pour qu'elles soient remarquées par les véhicules passant à proximité
-sans pour autant définir une route trop large (et donc plus encline à empiéter sur les zones d'effets des bâtiments ennemis).
+Dans ce modèle, les batîments ennemis sont eux aussi agents et
+émetteurs des phéromones :
 
-L'environnement est divisé en zones (\textit{places}) dont les dimensions dépendent de la simulation envisagée. 
-Dans l'exemple SEADy Storm proposé dans le papier étudié, une zone correspond à une hexagone de 50 kilomètres de diamètre.
-C'est sur ces zones que les quantités des différentes phéromones déposées sont stockées et aussi que le 
-phénomène de diffusion ce produit entre zones voisines.
+\begin{description}
+\item[RTarget]{Libérée par les batîments cibles. Elles attirent les
+  drones.}
+\item[RThreat]{Libérée par les batîments de contre-mesure. Elles
+  repoussent les drones.}
+\end{description}
 
-Le fonctionnement intrinsèque de ce modèle commence à s'esquisser. Les phéromones émisent par les
-différents acteurs de la simulation vont tisser un canevas de signaux chimiques marquant l'environnement.
-Typiquement, les drones auront pour but de suivre une piste menant à un bâtiment cible tout en évitant 
-les aires d'effet des batîments menaçants, puis à revenir jusqu'à une base en suivant une piste associée.
+Chacune de ces phéromènes véhicule une information différente, mais au
+delà de leur sémantique, elles différent aussi de par leur taux de
+diffusion dans l'environnement.  Pour les batîments ennemis, ce taux
+de diffusion dépend de l'aire d'effet du batîment associé, et
+correspond concrètement à son rayon d'action : le rayon de détection
+pour un radar, la portée pour une batterie anti-aérienne.  Le taux de
+diffusion des phéromones libérées par les drones doit quant à elle
+être finement mesuré pour qu'elles soient remarquées par les véhicules
+passant à proximité sans pour autant définir une route trop large (et
+donc plus encline à empiéter sur les zones d'effets des bâtiments
+ennemis).
 
-Les phéromones décrites sont bien sûr spécifiques au modèle présenté et dans un soucis
-de généralisme, on veut associer à chaque zone une fonction calculant sa valeur d'attractivité
-en fonction des différentes phéromones qui y sont déposées. Ici, cette fonction est :
+L'environnement est divisé en zones (\textit{places}) dont les
+dimensions dépendent de la simulation envisagée.  Dans l'exemple SEADy
+Storm proposé dans le papier étudié, une zone correspond à une
+hexagone de 50 kilomètres de diamètre.  C'est sur ces zones que les
+quantités des différentes phéromones déposées sont stockées et aussi
+que le phénomène de diffusion ce produit entre zones voisines.
 
+Le fonctionnement intrinsèque de ce modèle commence à s'esquisser. Les
+phéromones émisent par les différents acteurs de la simulation vont
+tisser un canevas de signaux chimiques marquant l'environnement.
+Typiquement, les drones auront pour but de suivre une piste menant à
+un bâtiment cible tout en évitant les aires d'effet des batîments
+menaçants, puis à revenir jusqu'à une base en suivant une piste
+associée.
+
+Les phéromones décrites sont bien sûr spécifiques au modèle présenté
+et dans un soucis de généralisme, on veut associer à chaque zone une
+fonction calculant sa valeur d'attractivité en fonction des
+différentes phéromones qui y sont déposées. Ici, cette fonction est :
+
+$$ \frac{\omega \operatorname{RTarget} + \gamma
+  \operatorname{GTarget}}{\alpha \operatorname{RThreat} + \delta
+  \operatorname{Dist}}
 $$
-\frac{\omega \operatorname{RTarget} + \gamma \operatorname{GTarget}}{\alpha \operatorname{RThreat} + \delta \operatorname{Dist}}
-$$
 
-Lorsqu'un véhicule se trouve dans une zone, il a accés aux quantités de phéromones présentes dans les zones voisines et
-un tirage aléatoire de type roue de la fortune biaisée permet de simuler un choix.
+Lorsqu'un véhicule se trouve dans une zone, il a accés aux quantités
+de phéromones présentes dans les zones voisines et un tirage aléatoire
+de type roue de la fortune biaisée permet de simuler un choix.
 
 GHOSTS???
 
@@ -129,29 +154,39 @@ GHOSTS???
 
 \subsection{\'Etude}
 
-José M. Vidal a implémenté le modèle décrit précédemment sur la plate-forme de simulation NetLogo.
+José M. Vidal a implémenté le modèle décrit précédemment sur la
+plate-forme de simulation NetLogo.
 
-Son implémentation est basée sur une grille de \textit{patches} torique alors que l'implémentation originale
-utilisait des hexagones à six voisins. Cette différence est négligeable au niveau des résultats que fournit cette
-simulation car Parunak \textit{et al.} précisent que la configuration du terrain et des blocs le formant, ainsi que
-leurs dimensions peuvent varier librement.
+Son implémentation est basée sur une grille de \textit{patches}
+torique alors que l'implémentation originale utilisait des hexagones à
+six voisins. Cette différence est négligeable au niveau des résultats
+que fournit cette simulation car Parunak \textit{et al.} précisent que
+la configuration du terrain et des blocs le formant, ainsi que leurs
+dimensions peuvent varier librement.
+
+ETATS
+
+EVAP/DIFF
+
+FIN DE LA SIMULATION
+
+FORMULE?
 
 \subsection{Analyse}
 
 Les facteurs que l'utilisateur peut contrôler sont :
 
 \begin{description}
-  \item[Le nombre de cibles]{blabla}
-  \item[Le nombre de menaces]{blabla}
-  \item[Le nombre maximum de fantômes]{blabla}
-  \item[La durée de vie d'un fantôme]{blabla}]
-  \item[Le taux de diffusion]{blabla}
-  \item[Le taux d'évaporation]{blabla}
+\item[Le nombre de cibles]{blabla}
+\item[Le nombre de menaces]{blabla}
+\item[Le nombre maximum de fantômes]{blabla}
+\item[La durée de vie d'un fantôme]{blabla}]
+\item[Le taux de diffusion]{blabla}
+\item[Le taux d'évaporation]{blabla}
 \end{description}
 
 TESTS!
 
-\bibliographystyle{alpha}
-\bibliography{sources}
+\bibliographystyle{alpha} \bibliography{sources}
 
 \end{document}
