@@ -207,7 +207,7 @@ num-targets
 num-targets
 1
 100
-1
+8
 1
 1
 NIL
@@ -300,7 +300,7 @@ num-hazards
 num-hazards
 1
 100
-100
+63
 1
 1
 NIL
@@ -337,10 +337,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-564
-42
-702
-75
+575
+40
+713
+73
 show-target
 show-target
 1
@@ -348,21 +348,21 @@ show-target
 -1000
 
 SWITCH
-564
-75
-710
-108
+575
+73
+721
+106
 show-hazard
 show-hazard
-0
+1
 1
 -1000
 
 SWITCH
-564
-108
-720
-141
+575
+106
+731
+139
 show-to-home
 show-to-home
 0
@@ -370,10 +370,10 @@ show-to-home
 -1000
 
 SWITCH
-564
-141
-722
-174
+575
+139
+733
+172
 show-to-target
 show-to-target
 1

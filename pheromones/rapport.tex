@@ -8,8 +8,9 @@
 \usepackage{graphicx}
 \usepackage{subfigure}
 
-\title{Recherche de chemin par phéromones} \author{Merwan Achibet $\;$
-  \textendash $\;$ Université du Havre} \date{}
+\title{Recherche de chemin par dépôt de phéromones}
+\author{Merwan Achibet $\;$ \textendash $\;$ Université du Havre}
+\date{}
 
 \begin{document}
 
@@ -71,8 +72,8 @@ multi-agents puisqu'il rassemble des qualités notables \cite{parunak}
   répartis sur tout l'environnement.}
 \item[Décentralisation]{Si une fourmi est mangée par un oiseau, cela
   n'impactera pas l'avenir de la fourmilière car l'individu manquant
-  n'est qu'un rouage d'un mécanisme plus complexe. Les signaux qu'il a
-  déposés perdureront jusqu'à évaporation.}
+  n'est qu'un rouage d'un mécanisme plus complexe et les signaux qu'il
+  a déposés perdureront jusqu'à évaporation.}
 \item[Dynamicité]{Les tracés se renforçant et s'évaporant
   continuellement, les insectes s'adaptent à tout changement impromptu
   de l'environnement.}
@@ -89,6 +90,16 @@ Ici, la fourmi est remplacée par un véhicule, un drone aérien dans
 l'exemple. Sa mission est de partir d'une base, et d'atteindre un
 bâtiment ennemi cible tout en évitant certaines infrastructures
 pouvant l'impacter négativement (radars, batteries anti-aérienne).
+
+\begin{figure}[H]
+  \centering
+
+  \includegraphics[width=6.5cm]{terrain_real.png}
+
+  \caption{Une configuration à résoudre. En bleu les drones; en gris,
+    la cible; en rouge les menaces \cite{parunak}.}
+  \label{real}
+\end{figure}
 
 Dans la simulation, un véhicule peut déposer deux types de phéromones
 :
@@ -120,15 +131,16 @@ pour un radar, la portée pour une batterie anti-aérienne.  Le taux de
 diffusion des phéromones libérées par les drones doit quant à elle
 être finement mesuré pour qu'elles soient remarquées par les véhicules
 passant à proximité sans pour autant définir une route trop large (et
-donc plus encline à empiéter sur les zones d'effets des bâtiments
+donc plus encline à empiéter sur les zones d'effet des bâtiments
 ennemis).
 
 L'environnement est divisé en zones (\textit{places}) dont les
-dimensions dépendent de la simulation envisagée.  Dans l'exemple SEADy
-Storm proposé dans le papier étudié, une zone correspond à une
-hexagone de 50 kilomètres de diamètre.  C'est sur ces zones que les
-quantités des différentes phéromones déposées sont stockées et aussi
-que le phénomène de diffusion se produit entre zones voisines.
+dimensions dépendent de la simulation envisagée.  Dans l'exemple
+\textit{SEADy Storm} proposé dans le papier étudié, une zone
+correspond à un hexagone de 50 kilomètres de diamètre. C'est sur ces
+zones que les quantités des différentes phéromones déposées sont
+stockées et aussi que le phénomène de diffusion se produit entre zones
+voisines.
 
 Le fonctionnement intrinsèque de ce modèle commence à s'esquisser. Les
 phéromones émisent par les différents acteurs de la simulation vont
@@ -137,13 +149,25 @@ Typiquement, les drones auront pour but de suivre une piste menant à
 un bâtiment cible tout en évitant les aires d'effet des bâtiments
 menaçants, puis à revenir jusqu'à une base.
 
+\begin{figure}[H]
+  \centering
+
+  \includegraphics[width=6.5cm]{terrain_field.png}
+
+  \caption{Le même environnement marqué par les phéromones des
+    bâtiments ennemis \cite{parunak}.}
+  \label{field}
+\end{figure}
+
+\subsection{Guidage}
+
 Les phéromones décrites sont bien sûr spécifiques au modèle présenté
 et on peut aisément imaginer, selon la simulation, que l'on en
 introduise de nouveaux types. Dans un soucis de généralisme et de
 simplicité, on ne souhaite pas qu'un agent ait à envisager des
 considérations complexes prenant en compte chaque phéromones
 séparement et on préfère associer aux zones une fonction $g$ calculant
-leur valeur d'attractivité afin de guider le déplacement des
+une valeur d'attractivité nette afin de guider le déplacement des
 drones. Dans l'exemple proposé, cette fonction est la suivante, avec
 $\alpha$, $\beta$, $\gamma$, $\delta$ et $\theta$ des facteurs de
 réglage et $\operatorname{Dist}$ une approximation de la distance
@@ -159,9 +183,28 @@ séparant le drone de sa cible :
 Lorsqu'un véhicule se trouve dans une zone, il a accès aux quantités
 de phéromones présentes dans les zones voisines et un tirage aléatoire
 de type roue de la fortune biaisée permet de simuler un choix quant à
-la route empruntée.
+la route empruntée. Globalement, et si le drone suit une piste, les
+zones les plus attrayantes se trouvent devant et derrière lui. Afin
+d'éviter qu'il ne change de intempestivement, son élan est pris en
+compte et la zone devant lui bénéficie d'un bonus lors du tirage
+aléatoire.
 
-GHOSTS???
+Pour l'instant seuls les agents mobiles de type drone ont été
+présentés. Il en existe pourtant une seconde catégorie, que nous
+appellons les fantômes. Un fantôme est un drone virtuel éphémère, créé
+par le véritable drone, et donc la principale caractéristique et de
+disposer d'une vitesse d'exploration plus importante. Les fantômes
+sont régulièrement instanciés par le drone et déposent des phéromones
+de la même façon que leur parent; ils font ainsi office d'éclaireurs
+et améliorent ses choix de déplacement.
+
+Le concept des fantômes est une différence majeure entre la méthode
+proposée et un algorithme de colonies de fourmis classique. Il est
+bien sûr plus adapté au cadre opérationnel décrit car l'action d'un
+drone doit être rapide et efficace. On imagine mal une flotte
+d'appareils physiques explorer de façon non ostensible un espace
+aérien avant de pouvoir choisir une action à effectuer. L'utilisation
+d'agents virtuels est donc justifiée.
 
 \section{Implémentation}
 
@@ -177,7 +220,14 @@ que fournit cette simulation car Parunak \textit{et al.} précisent que
 la configuration du terrain et des blocs le formant, ainsi que leurs
 dimensions peuvent varier librement.
 
-\begin{figure}
+Chaque \textit{patch} contient une valeur réelle représentant la
+quantité de chaque phéromone qu'il contient. La diffusion de ces
+signaux chimiques se fait par la fonction netlogo \texttt{diffuse} qui
+partage une fraction d'une variable de \textit{patch} entre les zones
+voisines. Un exemple de configuration est visible sur la figure
+\ref{pheromones}.
+
+\begin{figure}[p]
   \centering
 
   \mbox{
@@ -203,7 +253,9 @@ dimensions peuvent varier librement.
     }
   }
 
-  \caption{Les quatre types de phéromone pour une configuration donnée}
+  \caption{Les quatre types de phéromone pour une configuration
+    donnée. En violet, les drones; en vert les cibles; en orange, les
+    menaces; en jaune, la phéromone.}
   \label{pheromones}
 \end{figure}
 
@@ -214,7 +266,7 @@ en \textit{patch} en utilisant comme heuristique la quantité de
 phéromone GTarget (menant à une cible) des cases voisines. L'équation
 \ref{g} n'est donc pas utilisée. Cette simplification a pour conséquence
 
-EVAP/DIFF
+
 
 FIN DE LA SIMULATION
 
