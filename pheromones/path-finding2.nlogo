@@ -3,16 +3,18 @@
 ; Jose M Vidal
 
 breed [ ghosts ]
+breed [ walkers ]
 breed [ targets ]
 breed [ hazards ]
-breed [ walkers ]
+breed [ homes ]
 
+globals [mission-ok base-x base-y]
 
 ;There are 4 pheronomes. Their values range from 0-1.
 patches-own [target hazard to-target to-home]
 
 ;when wait-steps is 0 the walker can fd 1, these set it back to walker-speed.
-walkers-own [wait-steps steps hazards-hit]
+walkers-own [mode wait-steps steps hazards-hit]
 
 ;mode = "to-target" or "to-home"
 ghosts-own [mode steps drop-size]
@@ -27,11 +29,18 @@ to-report get-random-ycor
 end
 
 to setup
+  
   clear-all
   
-  set-default-shape walkers "box"
+  set-default-shape walkers "default"
   set-default-shape targets "circle"
-  set-default-shape hazards "box"
+  set-default-shape hazards "x"
+  set-default-shape homes "none"
+  
+  set mission-ok 0
+  set base-x get-random-xcor
+  set base-y get-random-ycor
+  
   create-hazards num-hazards [
     setxy get-random-xcor get-random-ycor
     set color orange
@@ -39,6 +48,7 @@ to setup
     ask patch-here [
       set hazard 10]
   ]  
+  
   create-targets num-targets [
     setxy get-random-xcor get-random-ycor
     set color green
@@ -46,58 +56,127 @@ to setup
       set target 10
     ]
   ]
-  create-walkers 1 [
-    set wait-steps walker-speed
-    setxy get-random-xcor get-random-ycor
-    set color magenta]
-end
-
-to update
-  ask targets [go-targets]
-  ask hazards [go-hazards]
-  ask ghosts [find-target-or-home]
-  ask walkers [move-to-target]
-  diffuse target diffusion-rate / 100
-  diffuse hazard diffusion-rate / 100
-  diffuse to-target diffusion-rate / 100
-  diffuse to-home diffusion-rate / 100
-  ask patches [go-patches]
   
-  if (first [at-target?] of walkers) [stop]
+  create-homes 1 [
+    setxy base-x base-y
+    set pcolor yellow
+    rt 0
+  ]
+  
+  create-walkers 1 [
+    setxy base-x base-y
+    set wait-steps walker-speed
+    set mode "to-target"
+    set mission-ok 0
+    set color blue
+  ]
   
   reset-ticks
 end
 
+to update
+  
+  ask targets [go-targets]
+  ask hazards [go-hazards]
+  
+  ask ghosts [find-target-or-home]
+  ask walkers [move]
+  
+  diffuse target diffusion-rate / 100
+  diffuse hazard diffusion-rate / 100
+  diffuse to-target diffusion-rate / 100
+  diffuse to-home diffusion-rate / 100
+  
+  ask patches [go-patches]
+  
+  ; stop when the mission is over
+  if (first [at-homes?] of walkers and mission-ok = 1) [
+    stop
+  ]
+  
+end
+
 ;ghosts
 to find-target-or-home
+  
   set steps steps + 1
   if (steps > ghosts-lifetime) [die]
-  ifelse (mode = "to-target")[ ;;looking for the target
+  
+  if (mode = "wandering") [
+  
+    uphill target
+    
+    ; change mode if a target is encountered
     if (any? targets-here) [
       set mode "to-home"
       set color magenta
       set drop-size 20
       rt 180
-      stop]
-    set to-home (to-home + drop-size)
-    set drop-size drop-size - 1
-    if (drop-size < 1) [set drop-size 1]
-    uphill target
-;    set heading uphill target ; or to-target
-;    fd 1
+      stop
+    ]
+    
+    ; change mode if a home is encountered
+    if (any? homes-here) [
+      set mode "to-target"
+      set color magenta
+      set drop-size 20
+      rt 180
+      stop
+    ]
   ]
-  [
-    if (any? walkers-here) [ ;were home
-      die]
-    set to-target (to-target + drop-size)
+  
+  if (mode = "to-target") [
+    
+    ; change mode if a target is encountered
+    if (any? targets-here) [
+      set mode "to-home"
+      set color magenta
+      set drop-size 20
+      rt 180
+      stop
+    ]
+    
+    ; drop pheromones leading to the home
+    set to-home (to-home + drop-size)
+    
+    ; update drop size
     set drop-size drop-size - 1
-    if (drop-size < 1) [set drop-size 1]
+    if (drop-size < 1) [
+      set drop-size 1
+    ]
+    
+    ; seek a target
+    uphill target
+  ]
+  
+  if (mode = "to-homes") [
+    
+    ; change mode if a home is encountered
+    if (any? homes-here) [
+      set mode "to-target"
+      set color magenta
+      set drop-size 20
+      rt 180
+      stop
+    ]
+    
+    ; drop pheromones leading to a target
+    set to-target (to-target + drop-size)
+    
+    ; update drop size
+    set drop-size drop-size - 1
+    if (drop-size < 1) [
+      set drop-size 1
+    ]
+    
+    ; seek the home
     uphill-to-home
     fd 1
   ]
 end
 
 to uphill-to-home
+  
   let ahead 0
   let scent-left 0
   let scent-right 0
@@ -113,7 +192,7 @@ to uphill-to-home
     [ ifelse (scent-right > scent-left) 
       [ rt 45 ]
       [ lt 45 ]
-  ]
+    ]
 end
 
 to-report next-to-home  ;; reports what the strength of chemical right in front of the ant is   
@@ -121,45 +200,112 @@ to-report next-to-home  ;; reports what the strength of chemical right in front 
 end
 
 ;walkers
+
+to move
+  
+  ifelse (mode = "to-target")[ ;;looking for the target
+    move-to-target
+  ][
+    move-to-home
+  ]
+  
+end
+
 to move-to-target
+  
   if (wait-steps = 0)[
+    
     set wait-steps walker-speed
     set steps steps + 1
+    
     uphill to-target
-;    set heading uphill to-target
-;    fd 1
+    
     if (any? hazards-here) [
-      set hazards-hit hazards-hit + 1] 
+      set hazards-hit hazards-hit + 1
     ]
+    
+    if (any? targets-here) [
+      set mode "to-home"
+      set mission-ok 1 
+    ] 
+  ]
+  
   set wait-steps wait-steps - 1
+  
   if (count ghosts < max-num-ghosts) [
     ask patch-here [
       sprout 1 [
         set breed ghosts
         set drop-size 20
-        set mode "to-target"
+        set mode "wandering"
         set color green
-        fd 1]]]
+        fd 1
+      ]
+    ]
+  ]
+end
+
+to move-to-home
+
+  if (wait-steps = 0)[
+    
+    set wait-steps walker-speed
+    set steps steps + 1
+    
+    uphill to-home
+    
+    if (any? hazards-here) [
+      set hazards-hit hazards-hit + 1
+    ] 
+  ]
+  
+  set wait-steps wait-steps - 1
+  
+  if (count ghosts < max-num-ghosts) [
+    ask patch-here [
+      sprout 1 [
+        set breed ghosts
+        set drop-size 20
+        set mode "to-home"
+        set color green
+        fd 1
+      ]
+    ]
+  ]
 end
 
 to-report at-target?
   report any? targets-here
 end
 
+to-report at-homes?
+  report any? homes-here
+end
+
 ;patches
 to go-patches
+  
+  ; evaporate every pheromone
   set target target * (100 - evaporation-rate) / 100
   set hazard hazard * (100 - evaporation-rate) / 100
   set to-target to-target * (100 - evaporation-rate) / 100
   set to-home to-home * (100 - evaporation-rate) / 100
-  if (show-target) [
-    set pcolor scale-color yellow target 0 1]
-  if (show-hazard) [
-    set pcolor scale-color yellow hazard 0 1]
-  if (show-to-home) [
-    set pcolor scale-color yellow to-home 0 1]
-  if (show-to-target) [
-    set pcolor scale-color yellow to-target 0 1]
+  
+  ; colorize with respect to the pheromone intensity
+  if (pcolor != yellow) [
+    if (show-target) [
+      set pcolor scale-color green target 0 1
+    ]
+    if (show-hazard) [
+      set pcolor scale-color red hazard 0 1
+    ]
+    if (show-to-home) [
+      set pcolor scale-color cyan to-home 0 1
+    ]
+    if (show-to-target) [
+      set pcolor scale-color blue to-target 0 1
+    ]
+  ]
 end
 
 ;hazards
@@ -173,13 +319,13 @@ to go-targets
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-247
+267
 10
-572
-356
+977
+741
 17
 17
-9.0
+20.0
 1
 10
 1
@@ -200,44 +346,44 @@ ticks
 
 SLIDER
 3
-76
+101
 175
-109
+134
 num-targets
 num-targets
 1
 100
-1
+8
 1
 1
 NIL
 HORIZONTAL
 
 SLIDER
-3
-142
-175
-175
-walker-speed
-walker-speed
-0
-100
-50
-1
-1
-NIL
-HORIZONTAL
-
-SLIDER
-3
-175
-176
-208
-max-num-ghosts
-max-num-ghosts
-0
-100
 5
+383
+177
+416
+walker-speed
+walker-speed
+0
+100
+24
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+2
+186
+175
+219
+max-num-ghosts
+max-num-ghosts
+0
+100
+7
 1
 1
 NIL
@@ -293,14 +439,14 @@ NIL
 
 SLIDER
 3
-109
+133
 175
-142
+166
 num-hazards
 num-hazards
 1
 100
-100
+33
 1
 1
 NIL
@@ -337,10 +483,10 @@ NIL
 HORIZONTAL
 
 SWITCH
-564
-42
-702
-75
+1012
+18
+1150
+51
 show-target
 show-target
 1
@@ -348,48 +494,48 @@ show-target
 -1000
 
 SWITCH
-564
-75
-710
-108
+1010
+71
+1156
+104
 show-hazard
 show-hazard
-0
+1
 1
 -1000
 
 SWITCH
-564
-108
-720
-141
+1009
+126
+1165
+159
 show-to-home
 show-to-home
-0
+1
 1
 -1000
 
 SWITCH
-564
-141
-722
-174
+1008
+181
+1166
+214
 show-to-target
 show-to-target
-1
+0
 1
 -1000
 
 SLIDER
 4
-208
+348
 176
-241
+381
 ghosts-lifetime
 ghosts-lifetime
 0
 100
-50
+51
 1
 1
 NIL
@@ -418,12 +564,13 @@ hazards
 11
 
 @#$#@#$#@
-# Path-Finding Using Pheromones  
-## CREDITS 
+Path-Finding Using Pheromones  
+
+CREDITS 
 
 Jose M Vidal
 
-## WHAT IS IT?
+WHAT IS IT?
 
 In this problem a series of drones tries to find a path from the source  
 to the target while staying away from the obstacles. They use pheromones.  
@@ -431,7 +578,7 @@ I tried to implement something similar to
   
 * H. Van Dyke Parunak, Sven Brueckner, and John Sauter. [Synthetic pheronome mechanisms for coordination of unmanned vehicles](http://jmvidal.cse.sc.edu/library/parunak02a.html) In _Proceedings of the First Intenational Joint Conference on Autonomous Agents and Multiagent Systems_, pages 448-450, Bologna, Italy, 2002. ACM Press, New York, NY.
 
-## CHANGES
+CHANGES
 
 20100623
 @#$#@#$#@
@@ -545,6 +692,10 @@ false
 0
 Circle -7500403 true true 35 35 230
 
+none
+true
+0
+
 person
 false
 0
@@ -626,6 +777,46 @@ Line -16777216 false 58 211 67 192
 Polygon -6459832 true true 38 138 66 149
 Polygon -6459832 true true 46 128 33 120 21 118 11 123 3 138 5 160 13 178 9 192 0 199 20 196 25 179 24 161 25 148 45 140
 Polygon -6459832 true true 67 122 96 126 63 144
+
+x
+true
+0
+Rectangle -2674135 true false 45 45 60 60
+Rectangle -2674135 true false 60 60 75 75
+Rectangle -2674135 true false 165 135 180 150
+Rectangle -2674135 true false 105 105 120 120
+Rectangle -2674135 true false 90 90 105 105
+Rectangle -2674135 true false 75 75 90 90
+Rectangle -2674135 true false 135 165 150 180
+Rectangle -2674135 true false 150 150 165 165
+Rectangle -2674135 true false 135 150 150 165
+Rectangle -2674135 true false 150 135 165 150
+Rectangle -2674135 true false 150 120 165 135
+Rectangle -2674135 true false 135 135 150 150
+Rectangle -2674135 true false 150 165 165 180
+Rectangle -2674135 true false 165 165 180 180
+Rectangle -2674135 true false 210 210 225 225
+Rectangle -2674135 true false 120 150 135 165
+Rectangle -2674135 true false 120 135 135 150
+Rectangle -2674135 true false 120 120 135 135
+Rectangle -2674135 true false 135 120 150 135
+Rectangle -2674135 true false 165 150 180 165
+Rectangle -2674135 true false 165 120 180 135
+Rectangle -2674135 true false 240 45 255 60
+Rectangle -2674135 true false 225 60 240 75
+Rectangle -2674135 true false 210 75 225 90
+Rectangle -2674135 true false 195 90 210 105
+Rectangle -2674135 true false 180 105 195 120
+Rectangle -2674135 true false 195 195 210 210
+Rectangle -2674135 true false 180 180 195 195
+Rectangle -2674135 true false 45 240 60 255
+Rectangle -2674135 true false 60 225 75 240
+Rectangle -2674135 true false 105 180 120 195
+Rectangle -2674135 true false 90 195 105 210
+Rectangle -2674135 true false 75 210 90 225
+Rectangle -2674135 true false 120 165 135 180
+Rectangle -2674135 true false 240 240 255 255
+Rectangle -2674135 true false 225 225 240 240
 
 @#$#@#$#@
 NetLogo 4.1.3

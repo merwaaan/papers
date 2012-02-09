@@ -1,7 +1,12 @@
 \documentclass[12pt]{article}
 
-\usepackage[utf8]{inputenc} \usepackage[francais]{babel}
-\usepackage{amsmath} \usepackage{url} \usepackage{float}
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{subfigure}
 
 \title{Recherche de chemin par phéromones} \author{Merwan Achibet $\;$
   \textendash $\;$ Université du Havre} \date{}
@@ -39,7 +44,7 @@ découverte déposera derrière elle des phéromones de piste afin que ses
 congénères puissent y être guidées. Plusieurs autres types de
 phéromones existent : certaines préviennent d'un danger tandis que
 d'autre délimitent un territoire ou bien, chez d'autres insectes,
-attirent les individus de l'autre sexe en période de reproduction.
+attirent les individus de sexe opposé en période de reproduction.
 
 Les phéromones étant des signaux chimiques éphémères, un phénomène
 d'évaporation se produit naturellement et efface progressivement les
@@ -73,18 +78,17 @@ multi-agents puisqu'il rassemble des qualités notables \cite{parunak}
   de l'environnement.}
 \end{description}
 
-Parunak \textit{et al.} s'inspirent de ce constat, ainsi que des
+Parunak \textit{et al.} partent de ce constat, et s'inspirent des
 modèles existants \cite{dorigo}, pour proposer une méthode de guidage
 destinée aux véhicules non habités dans le cadre d'opérations
 militaires.
 
 \subsection{Les agents et leur monde}
 
-Ici, la fourmi est remplacée par un véhicule, un drône aérien dans
+Ici, la fourmi est remplacée par un véhicule, un drone aérien dans
 l'exemple. Sa mission est de partir d'une base, et d'atteindre un
-objectif de type bâtiment ennemi tout en évitant certaines
-infrastructures pouvant l'impacter négativement (radars, batteries
-anti-aérienne).
+bâtiment ennemi cible tout en évitant certaines infrastructures
+pouvant l'impacter négativement (radars, batteries anti-aérienne).
 
 Dans la simulation, un véhicule peut déposer deux types de phéromones
 :
@@ -97,20 +101,20 @@ Dans la simulation, un véhicule peut déposer deux types de phéromones
   guide les agents vers cette dernière.}
 \end{description}
 
-Dans ce modèle, les batîments ennemis sont eux aussi agents et
+Dans ce modèle, les bâtiments ennemis sont eux aussi agents et
 émetteurs des phéromones :
 
 \begin{description}
-\item[RTarget]{Libérée par les batîments cibles. Elles attirent les
+\item[RTarget]{Libérée par les bâtiments cibles. Elle attire les
   drones.}
-\item[RThreat]{Libérée par les batîments de contre-mesure. Elles
-  repoussent les drones.}
+\item[RThreat]{Libérée par les bâtiments de contre-mesure. Elle
+  repousse les drones.}
 \end{description}
 
 Chacune de ces phéromènes véhicule une information différente, mais au
 delà de leur sémantique, elles différent aussi de par leur taux de
-diffusion dans l'environnement.  Pour les batîments ennemis, ce taux
-de diffusion dépend de l'aire d'effet du batîment associé, et
+diffusion dans l'environnement.  Pour les bâtiments ennemis, ce taux
+de diffusion dépend de l'aire d'effet du bâtiment associé, et
 correspond concrètement à son rayon d'action : le rayon de détection
 pour un radar, la portée pour une batterie anti-aérienne.  Le taux de
 diffusion des phéromones libérées par les drones doit quant à elle
@@ -124,29 +128,38 @@ dimensions dépendent de la simulation envisagée.  Dans l'exemple SEADy
 Storm proposé dans le papier étudié, une zone correspond à une
 hexagone de 50 kilomètres de diamètre.  C'est sur ces zones que les
 quantités des différentes phéromones déposées sont stockées et aussi
-que le phénomène de diffusion ce produit entre zones voisines.
+que le phénomène de diffusion se produit entre zones voisines.
 
 Le fonctionnement intrinsèque de ce modèle commence à s'esquisser. Les
 phéromones émisent par les différents acteurs de la simulation vont
 tisser un canevas de signaux chimiques marquant l'environnement.
 Typiquement, les drones auront pour but de suivre une piste menant à
-un bâtiment cible tout en évitant les aires d'effet des batîments
-menaçants, puis à revenir jusqu'à une base en suivant une piste
-associée.
+un bâtiment cible tout en évitant les aires d'effet des bâtiments
+menaçants, puis à revenir jusqu'à une base.
 
 Les phéromones décrites sont bien sûr spécifiques au modèle présenté
-et dans un soucis de généralisme, on veut associer à chaque zone une
-fonction calculant sa valeur d'attractivité en fonction des
-différentes phéromones qui y sont déposées. Ici, cette fonction est :
+et on peut aisément imaginer, selon la simulation, que l'on en
+introduise de nouveaux types. Dans un soucis de généralisme et de
+simplicité, on ne souhaite pas qu'un agent ait à envisager des
+considérations complexes prenant en compte chaque phéromones
+séparement et on préfère associer aux zones une fonction $g$ calculant
+leur valeur d'attractivité afin de guider le déplacement des
+drones. Dans l'exemple proposé, cette fonction est la suivante, avec
+$\alpha$, $\beta$, $\gamma$, $\delta$ et $\theta$ des facteurs de
+réglage et $\operatorname{Dist}$ une approximation de la distance
+séparant le drone de sa cible :
 
-$$ \frac{\omega \operatorname{RTarget} + \gamma
-  \operatorname{GTarget}}{\alpha \operatorname{RThreat} + \delta
-  \operatorname{Dist}}
-$$
+\begin{equation}
+  g = \frac{ \theta \operatorname{RTarget} + \gamma
+  \operatorname{GTarget} + \beta}{\alpha \operatorname{RThreat} + \delta
+  \operatorname{Dist} + \beta}
+  \label{g}
+\end{equation}
 
-Lorsqu'un véhicule se trouve dans une zone, il a accés aux quantités
+Lorsqu'un véhicule se trouve dans une zone, il a accès aux quantités
 de phéromones présentes dans les zones voisines et un tirage aléatoire
-de type roue de la fortune biaisée permet de simuler un choix.
+de type roue de la fortune biaisée permet de simuler un choix quant à
+la route empruntée.
 
 GHOSTS???
 
@@ -157,14 +170,49 @@ GHOSTS???
 José M. Vidal a implémenté le modèle décrit précédemment sur la
 plate-forme de simulation NetLogo.
 
-Son implémentation est basée sur une grille de \textit{patches}
-torique alors que l'implémentation originale utilisait des hexagones à
-six voisins. Cette différence est négligeable au niveau des résultats
+Son implémentation est basée sur une grille torique de
+\textit{patches} alors que l'implémentation originale utilisait des
+hexagones. Cette différence est négligeable au niveau des résultats
 que fournit cette simulation car Parunak \textit{et al.} précisent que
 la configuration du terrain et des blocs le formant, ainsi que leurs
 dimensions peuvent varier librement.
 
-ETATS
+\begin{figure}
+  \centering
+
+  \mbox{
+    \subfigure{
+      \subfigure[RTarget]{
+        \includegraphics[width=6.5cm]{pheromones_target.png}
+      }
+      \quad
+      \subfigure[RThreat]{
+        \includegraphics[width=6.5cm]{pheromones_hazard.png}
+      }
+    }
+  }
+  \mbox{
+    \subfigure{
+      \subfigure[GTarget]{
+        \includegraphics[width=6.5cm]{pheromones_totarget.png}
+      }
+      \quad
+      \subfigure[GNest]{
+        \includegraphics[width=6.5cm]{pheromones_tohome.png}
+      }
+    }
+  }
+
+  \caption{Les quatre types de phéromone pour une configuration donnée}
+  \label{pheromones}
+\end{figure}
+
+La simulation comprend un unique drone et se termine lorsque ce
+dernier atteint une des cibles. Ce drone ayant ici pour unique but
+d'atteindre un objectif, il ne fait que se déplacer de \textit{patch}
+en \textit{patch} en utilisant comme heuristique la quantité de
+phéromone GTarget (menant à une cible) des cases voisines. L'équation
+\ref{g} n'est donc pas utilisée. Cette simplification a pour conséquence
 
 EVAP/DIFF
 
@@ -176,17 +224,26 @@ FORMULE?
 
 Les facteurs que l'utilisateur peut contrôler sont :
 
-\begin{description}
-\item[Le nombre de cibles]{blabla}
-\item[Le nombre de menaces]{blabla}
-\item[Le nombre maximum de fantômes]{blabla}
-\item[La durée de vie d'un fantôme]{blabla}]
-\item[Le taux de diffusion]{blabla}
-\item[Le taux d'évaporation]{blabla}
-\end{description}
+\begin{itemize}
+\item{Le nombre de cibles}
+\item{Le nombre de menaces}
+\item{Le nombre maximum de fantômes}
+\item{Le taux de diffusion des phéromones}
+\item{Le taux d'évaporation des phéromones}
+\item{La durée de vie des fantômes}
+\item{La vitesse du drone}
+\end{itemize}
 
-TESTS!
+On remarque que le taux de diffusion ainsi que le taux d'évaporation
+est commun à toutes les phéromones, contrairement au modèle original
+qui supporte les phéromones disposant de dynamiques différentes.
 
-\bibliographystyle{alpha} \bibliography{sources}
+La durée de vie des fantômes correspond au nombre d'itérations pendant
+lequel un fantôme est actif. Lorsque cette limite est atteinte, il
+disparaît. Le champ appellé vitesse du drone correspond au nombre
+d'itérations
+
+\bibliographystyle{alpha}
+\bibliography{sources}
 
 \end{document}
