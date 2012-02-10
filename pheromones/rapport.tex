@@ -218,13 +218,13 @@ Son implémentation est basée sur une grille torique de
 hexagones. Cette différence est négligeable au niveau des résultats
 que fournit cette simulation car Parunak \textit{et al.} précisent que
 la configuration du terrain et des blocs le formant, ainsi que leurs
-dimensions peuvent varier librement.
+dimensions, peuvent varier librement.
 
-Chaque \textit{patch} contient une valeur réelle représentant la
-quantité de chaque phéromone qu'il contient. La diffusion de ces
+Chaque \textit{patch} contient une valeur réelle chacune des phéromones
+qu'il contient. La diffusion de ces
 signaux chimiques se fait par la fonction NetLogo \texttt{diffuse} qui
-partage une fraction d'une variable de \textit{patch} entre les zones
-voisines. Un exemple de configuration est visible sur la figure
+partage une fraction de la phéromones entre les huit zones
+adjacentes. Un exemple de configuration est visible sur la figure
 \ref{pheromones}.
 
 \begin{figure}[p]
@@ -266,10 +266,13 @@ en \textit{patch} en utilisant comme heuristique la quantité de
 phéromone GTarget (menant à une cible) des cases voisines, via la fonction
 NetLogo \texttt{uphill}. L'équation
 \ref{g} n'est donc pas utilisée. En conséquence, le drone se dirige vers
-les cibles sans prêter attention aux menaces ennemis, l'interêt de la simulation en est donc 
-relativement réduit puisqu'il s'agissait d'un des principaux intérêts du modèle. 
-On remarque que les drones physiques ne déposent aucune
+les cibles sans prêter attention aux menaces ennemies, l'interêt de la simulation en est donc 
+relativement réduit puisque l'évitement des menaces est un des principaux intérêts du modèle. 
+On remarque que le drone physique ne dépose aucune
 phéromone; ce travail est ici réservé aux fantômes.
+Un aspect import du modèle original provient de la vitesse elevée des fantômes et il est ici respecté.
+Dans cette simulation, une unité de temps correspond à un déplacement de fantôme et le drone physique 
+se déplace tous les $n$ pas de fantômes ($n$ est réglable par l'utilisateur).
 
 Les fantômes, ces drones virtuels, sont régulièrement générés par les drones 
 physiques. Ils oscillent entre deux modes :
@@ -278,18 +281,23 @@ physiques. Ils oscillent entre deux modes :
   
   \item[to-target]{Dans ce mode, ils se dirigent vers une cible en suivant les phéromones
   de type RTarget (libérées par les cibles) et lâchent des 
-  phéromones de type GNest (menant à la base). Ce choix semble infondé car les fantômes naissent
-  sur la position de leur drone physique parent et cette phéromone guidera donc vers leur
-  position de naissance plutôt qu'à la base. Les déplacement se font de la même façon que pour les drones
-  physiques, via \texttt{uphill} et la formule \ref{g} n'est pas non plus utilisée ici.}
+  phéromones de type GNest (menant à la base). Les déplacement se font de la même façon que pour les drones
+  physiques, via \texttt{uphill}. La formule \ref{g} n'est pas non plus utilisée ici. On passe au second état
+  quand une cibleest atteinte.}
 
   \item[to-home]{Dans ce mode, ils reviennent à la base en suivant les phéromones de type
-  GNest déposés dans le mode précédent (comme précisé, ils reviennent en pratique à leur position
-  de naissance) et libèrent des phéromones de type GTarget menant à la dernière cible visitée.}
+  GNest déposés dans le mode précédent et libèrent des phéromones de type GTarget menant 
+  à la dernière cible visitée.}
 
 \end{description}
 
-Le changement de mode s'opère lorsqu'un fantôme passe sur un \textit{patch} contenant une cible ou la base.
+On remarque que \textbf{to-target} est le mode initial d'un fantôme. La phéromone déposée pendant cet
+état guide donc en fait vers leur position de naissance et non vers une véritable base physique (zone
+d'atterissage par exemple). Position de naissance correspondant en fait à la position de leur drone parent
+puisque les fantômes sont plus rapides et il est donc possible qu'ils atteignent une cible puis repassent 
+par la position du drone parent avant même que ce dernier n'ait changé de position. Ce choix peut être justifié par le 
+fait que dans une situation réelle, les fantômes pourraient correspondre à de minuscules appareils utilisant 
+leur drone parent, un véhicule plus imposant, comme base mobile.
 
 \subsection{Analyse}
 
@@ -298,10 +306,10 @@ Les facteurs que l'utilisateur peut contrôler sont :
 \begin{itemize}
 \item{Le nombre de cibles}
 \item{Le nombre de menaces}
-\item{Le nombre maximum de fantômes}
 \item{Le taux de diffusion des phéromones}
 \item{Le taux d'évaporation des phéromones}
-\item{La durée de vie des fantômes}
+\item{Le nombre maximum de fantômes}
+\item{La durée de vie d'un fantôme}
 \item{La vitesse du drone}
 \end{itemize}
 
@@ -309,10 +317,9 @@ On remarque que le taux de diffusion ainsi que le taux d'évaporation
 est commun à toutes les phéromones, contrairement au modèle original
 qui supporte les phéromones disposant de dynamiques différentes.
 
-La durée de vie des fantômes correspond au nombre d'itérations pendant
-lequel un fantôme est actif. Lorsque cette limite est atteinte, il
-disparaît. Le champ appellé vitesse du drone correspond au nombre
-d'itérations
+\subsection{Nouvelle version}
+
+
 
 \bibliographystyle{alpha}
 \bibliography{sources}
