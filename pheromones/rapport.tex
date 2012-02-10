@@ -22,7 +22,7 @@ On se propose d'étudier l'implémentation NetLogo de José M. Vidal
 inspirée de \textit{Synthetic Pheromone Mechanisms for Coordination of
   Unmanned Vehicles} de Parunak, Brueckner et Sauter. Dans un premier
 temps, on étudie le modèle original puis on analyse l'implémentation
-proposée.
+fournie.
 
 \section{Modèle}
 
@@ -109,7 +109,7 @@ Dans la simulation, un véhicule peut déposer deux types de phéromones
   ennemi et rentrant à sa base. Elle guide les autres agents vers la
   cible.}
 \item[GNest]{Libérée par un agent venant de quitter la base. Elle
-  guide les agents vers cette dernière.}
+  guide les agents vers la base.}
 \end{description}
 
 Dans ce modèle, les bâtiments ennemis sont eux aussi agents et
@@ -183,10 +183,10 @@ séparant le drone de sa cible :
 Lorsqu'un véhicule se trouve dans une zone, il a accès aux quantités
 de phéromones présentes dans les zones voisines et un tirage aléatoire
 de type roue de la fortune biaisée permet de simuler un choix quant à
-la route empruntée. Globalement, et si le drone suit une piste, les
+la route à emprunter. Globalement, si le drone suit déjà une piste, les
 zones les plus attrayantes se trouvent devant et derrière lui. Afin
-d'éviter qu'il ne change de intempestivement, son élan est pris en
-compte et la zone devant lui bénéficie d'un bonus lors du tirage
+d'éviter qu'il ne change intempestivement de direction et prenne la piste à l'envers, son élan est pris en
+compte et la zone dans la direction de son déplacement bénéficie d'un bonus lors du tirage
 aléatoire.
 
 Pour l'instant seuls les agents mobiles de type drone ont été
@@ -222,7 +222,7 @@ dimensions peuvent varier librement.
 
 Chaque \textit{patch} contient une valeur réelle représentant la
 quantité de chaque phéromone qu'il contient. La diffusion de ces
-signaux chimiques se fait par la fonction netlogo \texttt{diffuse} qui
+signaux chimiques se fait par la fonction NetLogo \texttt{diffuse} qui
 partage une fraction d'une variable de \textit{patch} entre les zones
 voisines. Un exemple de configuration est visible sur la figure
 \ref{pheromones}.
@@ -259,18 +259,37 @@ voisines. Un exemple de configuration est visible sur la figure
   \label{pheromones}
 \end{figure}
 
-La simulation comprend un unique drone et se termine lorsque ce
-dernier atteint une des cibles. Ce drone ayant ici pour unique but
+La simulation comprend un unique drone physique et se termine lorsque ce
+dernier atteint une des cibles. Ce véhicule ayant ici pour unique but
 d'atteindre un objectif, il ne fait que se déplacer de \textit{patch}
 en \textit{patch} en utilisant comme heuristique la quantité de
-phéromone GTarget (menant à une cible) des cases voisines. L'équation
-\ref{g} n'est donc pas utilisée. Cette simplification a pour conséquence
+phéromone GTarget (menant à une cible) des cases voisines, via la fonction
+NetLogo \texttt{uphill}. L'équation
+\ref{g} n'est donc pas utilisée. En conséquence, le drone se dirige vers
+les cibles sans prêter attention aux menaces ennemis, l'interêt de la simulation en est donc 
+relativement réduit puisqu'il s'agissait d'un des principaux intérêts du modèle. 
+On remarque que les drones physiques ne déposent aucune
+phéromone; ce travail est ici réservé aux fantômes.
 
+Les fantômes, ces drones virtuels, sont régulièrement générés par les drones 
+physiques. Ils oscillent entre deux modes :
 
+\begin{description}
+  
+  \item[to-target]{Dans ce mode, ils se dirigent vers une cible en suivant les phéromones
+  de type RTarget (libérées par les cibles) et lâchent des 
+  phéromones de type GNest (menant à la base). Ce choix semble infondé car les fantômes naissent
+  sur la position de leur drone physique parent et cette phéromone guidera donc vers leur
+  position de naissance plutôt qu'à la base. Les déplacement se font de la même façon que pour les drones
+  physiques, via \texttt{uphill} et la formule \ref{g} n'est pas non plus utilisée ici.}
 
-FIN DE LA SIMULATION
+  \item[to-home]{Dans ce mode, ils reviennent à la base en suivant les phéromones de type
+  GNest déposés dans le mode précédent (comme précisé, ils reviennent en pratique à leur position
+  de naissance) et libèrent des phéromones de type GTarget menant à la dernière cible visitée.}
 
-FORMULE?
+\end{description}
+
+Le changement de mode s'opère lorsqu'un fantôme passe sur un \textit{patch} contenant une cible ou la base.
 
 \subsection{Analyse}
 
