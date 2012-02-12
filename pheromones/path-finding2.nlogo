@@ -8,13 +8,13 @@ breed [ targets ]
 breed [ hazards ]
 breed [ homes ]
 
-globals [mission-ok base-x base-y]
+globals [base-x base-y]
 
 ;There are 4 pheronomes. Their values range from 0-1.
-patches-own [target hazard to-target to-home]
+patches-own [target hazard to-target to-home guidance-to-target]
 
 ;when wait-steps is 0 the walker can fd 1, these set it back to walker-speed.
-walkers-own [mode wait-steps steps hazards-hit]
+walkers-own [wait-steps steps hazards-hit]
 
 ;mode = "to-target" or "to-home"
 ghosts-own [mode steps drop-size]
@@ -37,7 +37,6 @@ to setup
   set-default-shape hazards "x"
   set-default-shape homes "none"
   
-  set mission-ok 0
   set base-x get-random-xcor
   set base-y get-random-ycor
   
@@ -66,8 +65,6 @@ to setup
   create-walkers 1 [
     setxy base-x base-y
     set wait-steps walker-speed
-    set mode "to-target"
-    set mission-ok 0
     set color blue
   ]
   
@@ -88,9 +85,10 @@ to update
   diffuse to-home diffusion-rate / 100
   
   ask patches [go-patches]
+  ask patches [update-guidance]
   
   ; stop when the mission is over
-  if (first [at-homes?] of walkers and mission-ok = 1) [
+  if (first [at-target?] of walkers) [
     stop
   ]
   
@@ -101,30 +99,7 @@ to find-target-or-home
   
   set steps steps + 1
   if (steps > ghosts-lifetime) [die]
-  
-  if (mode = "wandering") [
-  
-    uphill target
-    
-    ; change mode if a target is encountered
-    if (any? targets-here) [
-      set mode "to-home"
-      set color magenta
-      set drop-size 20
-      rt 180
-      stop
-    ]
-    
-    ; change mode if a home is encountered
-    if (any? homes-here) [
-      set mode "to-target"
-      set color magenta
-      set drop-size 20
-      rt 180
-      stop
-    ]
-  ]
-  
+
   if (mode = "to-target") [
     
     ; change mode if a target is encountered
@@ -146,20 +121,16 @@ to find-target-or-home
     ]
     
     ; seek a target
-    uphill target
+    ;uphill guidance-to-target
+    guide
   ]
   
-  if (mode = "to-homes") [
+  if (mode = "to-home") [
     
-    ; change mode if a home is encountered
-    if (any? homes-here) [
-      set mode "to-target"
-      set color magenta
-      set drop-size 20
-      rt 180
-      stop
+    if (any? walkers-here) [
+      die
     ]
-    
+   
     ; drop pheromones leading to a target
     set to-target (to-target + drop-size)
     
@@ -170,8 +141,42 @@ to find-target-or-home
     ]
     
     ; seek the home
-    uphill-to-home
-    fd 1
+    uphill to-home
+  ]
+end
+
+to guide
+
+  let guidances ([guidance-to-target] of neighbors)
+  print guidances
+  let sum-guidances 0
+  
+  foreach guidances [
+    set sum-guidances (sum-guidances + ?) 
+  ]
+
+  set guidances (sort guidances)
+  
+  let acc 0
+  foreach guidances [
+    
+    set acc (acc + ?)
+    
+    if((random-float 1) < acc) [
+      
+      let xxx -1
+      let yyy -1
+      
+      ask neighbors with [guidance-to-target = ?][
+        set xxx pxcor
+        set yyy pycor
+      ]
+      
+      facexy xxx yyy
+      fd 1
+      
+      stop
+    ]
   ]
 end
 
@@ -203,31 +208,16 @@ end
 
 to move
   
-  ifelse (mode = "to-target")[ ;;looking for the target
-    move-to-target
-  ][
-    move-to-home
-  ]
-  
-end
-
-to move-to-target
-  
   if (wait-steps = 0)[
     
     set wait-steps walker-speed
     set steps steps + 1
     
-    uphill to-target
+    uphill guidance-to-target
     
     if (any? hazards-here) [
       set hazards-hit hazards-hit + 1
     ]
-    
-    if (any? targets-here) [
-      set mode "to-home"
-      set mission-ok 1 
-    ] 
   ]
   
   set wait-steps wait-steps - 1
@@ -237,41 +227,13 @@ to move-to-target
       sprout 1 [
         set breed ghosts
         set drop-size 20
-        set mode "wandering"
+        set mode "to-target"
         set color green
         fd 1
       ]
     ]
   ]
-end
-
-to move-to-home
-
-  if (wait-steps = 0)[
-    
-    set wait-steps walker-speed
-    set steps steps + 1
-    
-    uphill to-home
-    
-    if (any? hazards-here) [
-      set hazards-hit hazards-hit + 1
-    ] 
-  ]
   
-  set wait-steps wait-steps - 1
-  
-  if (count ghosts < max-num-ghosts) [
-    ask patch-here [
-      sprout 1 [
-        set breed ghosts
-        set drop-size 20
-        set mode "to-home"
-        set color green
-        fd 1
-      ]
-    ]
-  ]
 end
 
 to-report at-target?
@@ -293,6 +255,9 @@ to go-patches
   
   ; colorize with respect to the pheromone intensity
   if (pcolor != yellow) [
+    if (show-guidance) [
+      set pcolor scale-color grey guidance-to-target 0 1 
+    ]
     if (show-target) [
       set pcolor scale-color green target 0 1
     ]
@@ -306,6 +271,10 @@ to go-patches
       set pcolor scale-color blue to-target 0 1
     ]
   ]
+end
+
+to update-guidance
+  set guidance-to-target (1 * target + 3 * to-target) / (6 * hazard + 1)
 end
 
 ;hazards
@@ -353,7 +322,7 @@ num-targets
 num-targets
 1
 100
-8
+2
 1
 1
 NIL
@@ -445,8 +414,8 @@ SLIDER
 num-hazards
 num-hazards
 1
-100
-33
+200
+200
 1
 1
 NIL
@@ -461,7 +430,7 @@ diffusion-rate
 diffusion-rate
 0
 100
-10
+11
 1
 1
 NIL
@@ -476,7 +445,7 @@ evaporation-rate
 evaporation-rate
 0
 100
-5
+6
 1
 1
 NIL
@@ -522,7 +491,7 @@ SWITCH
 214
 show-to-target
 show-to-target
-0
+1
 1
 -1000
 
@@ -535,7 +504,7 @@ ghosts-lifetime
 ghosts-lifetime
 0
 100
-51
+27
 1
 1
 NIL
@@ -562,6 +531,17 @@ hazards
 0
 1
 11
+
+SWITCH
+1006
+234
+1171
+267
+show-guidance
+show-guidance
+0
+1
+-1000
 
 @#$#@#$#@
 Path-Finding Using Pheromones  
