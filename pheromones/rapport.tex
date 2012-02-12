@@ -87,7 +87,7 @@ militaires.
 \subsection{Les agents et leur monde}
 
 Ici, la fourmi est remplacée par un véhicule, un drone aérien dans
-l'exemple. Sa mission est de partir d'une base, et d'atteindre un
+l'exemple. Sa mission est de partir d'une base et d'atteindre un
 bâtiment ennemi cible tout en évitant certaines infrastructures
 pouvant l'impacter négativement (radars, batteries anti-aérienne).
 
@@ -105,11 +105,11 @@ Dans la simulation, un véhicule peut déposer deux types de phéromones
 :
 
 \begin{description}
+\item[GNest]{Libérée par un agent venant de quitter la base. Elle
+  guide les autres agents vers la base.}
 \item[GTarget]{Libérée par un agent venant de rencontrer une cible
   ennemi et rentrant à sa base. Elle guide les autres agents vers la
   cible.}
-\item[GNest]{Libérée par un agent venant de quitter la base. Elle
-  guide les agents vers la base.}
 \end{description}
 
 Dans ce modèle, les bâtiments ennemis sont eux aussi agents et
@@ -122,17 +122,17 @@ Dans ce modèle, les bâtiments ennemis sont eux aussi agents et
   repousse les drones.}
 \end{description}
 
-Chacune de ces phéromènes véhicule une information différente, mais au
-delà de leur sémantique, elles différent aussi de par leur taux de
-diffusion dans l'environnement.  Pour les bâtiments ennemis, ce taux
-de diffusion dépend de l'aire d'effet du bâtiment associé, et
-correspond concrètement à son rayon d'action : le rayon de détection
-pour un radar, la portée pour une batterie anti-aérienne.  Le taux de
-diffusion des phéromones libérées par les drones doit quant à elle
-être finement mesuré pour qu'elles soient remarquées par les véhicules
-passant à proximité sans pour autant définir une route trop large (et
-donc plus encline à empiéter sur les zones d'effet des bâtiments
-ennemis).
+Chacune de ces phéromones véhicule une information différente, mais au
+delà de leur sens, elles différent aussi de par leur taux de diffusion
+dans l'environnement.  Pour les bâtiments ennemis, ce taux de
+diffusion dépend de l'aire d'effet du bâtiment associé, et correspond
+concrètement à son rayon d'action : le rayon de détection pour un
+radar, la portée pour une batterie anti-aérienne.  Le taux de
+diffusion des phéromones libérées par les drones doit quant à lui être
+finement mesuré pour que les pistes soient remarquées par les
+véhicules passant à proximité sans pour autant définir une route trop
+large (et donc plus encline à empiéter sur les aires d'effet des
+bâtiments ennemis).
 
 L'environnement est divisé en zones (\textit{places}) dont les
 dimensions dépendent de la simulation envisagée.  Dans l'exemple
@@ -183,13 +183,14 @@ séparant le drone de sa cible :
 Lorsqu'un véhicule se trouve dans une zone, il a accès aux quantités
 de phéromones présentes dans les zones voisines et un tirage aléatoire
 de type roue de la fortune biaisée permet de simuler un choix quant à
-la route à emprunter. Globalement, si le drone suit déjà une piste, les
-zones les plus attrayantes se trouvent devant et derrière lui. Afin
-d'éviter qu'il ne change intempestivement de direction et prenne la piste à l'envers, son élan est pris en
-compte et la zone dans la direction de son déplacement bénéficie d'un bonus lors du tirage
-aléatoire.
+la route à emprunter. Globalement, si le drone suit déjà une piste,
+les zones les plus attrayantes se trouvent devant et derrière
+lui. Afin d'éviter qu'il ne change intempestivement de direction et
+prenne la piste à l'envers, son élan est pris en compte et la zone
+directement dans la direction de son déplacement bénéficie d'un bonus
+lors du tirage aléatoire.
 
-Pour l'instant seuls les agents mobiles de type drone ont été
+Pour l'instant, seuls les agents mobiles de type drone ont été
 présentés. Il en existe pourtant une seconde catégorie, que nous
 appellons les fantômes. Un fantôme est un drone virtuel éphémère, créé
 par le véritable drone, et donc la principale caractéristique et de
@@ -200,11 +201,11 @@ et améliorent ses choix de déplacement.
 
 Le concept des fantômes est une différence majeure entre la méthode
 proposée et un algorithme de colonies de fourmis classique. Il est
-bien sûr plus adapté au cadre opérationnel décrit car l'action d'un
-drone doit être rapide et efficace. On imagine mal une flotte
-d'appareils physiques explorer de façon non ostensible un espace
-aérien avant de pouvoir choisir une action à effectuer. L'utilisation
-d'agents virtuels est donc justifiée.
+bien sûr plus adapté au cadre opérationnel décrit, car l'action d'un
+drone doit être rapide et efficace. En effet, on imagine mal libérer
+dans un espace aérien une flotte de drones devant explorer tout
+l'environnement avant de pouvoir choisir une action à
+effectuer. L'utilisation d'agents virtuels est donc justifiée.
 
 \section{Implémentation}
 
@@ -220,12 +221,14 @@ que fournit cette simulation car Parunak \textit{et al.} précisent que
 la configuration du terrain et des blocs le formant, ainsi que leurs
 dimensions, peuvent varier librement.
 
-Chaque \textit{patch} contient une valeur réelle chacune des phéromones
-qu'il contient. La diffusion de ces
+Chaque \textit{patch} contient une valeur réelle représentant le
+volume de chacune des phéromones qu'il contient. La diffusion de ces
 signaux chimiques se fait par la fonction NetLogo \texttt{diffuse} qui
-partage une fraction de la phéromones entre les huit zones
-adjacentes. Un exemple de configuration est visible sur la figure
-\ref{pheromones}.
+partage une fraction de la phéromone entre les huit zones
+adjacentes. L'évaporation est faite manuellement et la valeur de
+chaque phéromone est réduite d'un pourcentage réglable à chaque
+itération de la simulation. Un exemple de configuration est visible
+sur la figure \ref{pheromones}.
 
 \begin{figure}[p]
   \centering
@@ -259,45 +262,54 @@ adjacentes. Un exemple de configuration est visible sur la figure
   \label{pheromones}
 \end{figure}
 
-La simulation comprend un unique drone physique et se termine lorsque ce
-dernier atteint une des cibles. Ce véhicule ayant ici pour unique but
-d'atteindre un objectif, il ne fait que se déplacer de \textit{patch}
-en \textit{patch} en utilisant comme heuristique la quantité de
-phéromone GTarget (menant à une cible) des cases voisines, via la fonction
-NetLogo \texttt{uphill}. L'équation
-\ref{g} n'est donc pas utilisée. En conséquence, le drone se dirige vers
-les cibles sans prêter attention aux menaces ennemies, l'interêt de la simulation en est donc 
-relativement réduit puisque l'évitement des menaces est un des principaux intérêts du modèle. 
-On remarque que le drone physique ne dépose aucune
-phéromone; ce travail est ici réservé aux fantômes.
-Un aspect import du modèle original provient de la vitesse elevée des fantômes et il est ici respecté.
-Dans cette simulation, une unité de temps correspond à un déplacement de fantôme et le drone physique 
-se déplace tous les $n$ pas de fantômes ($n$ est réglable par l'utilisateur).
+La simulation comprend un unique drone physique et se termine lorsque
+ce dernier atteint une des cibles. Ce véhicule ayant ici pour unique
+but d'atteindre un objectif, il ne fait que se déplacer de
+\textit{patch} en \textit{patch} en utilisant comme heuristique la
+quantité de phéromone GTarget (menant à une cible) des cases voisines,
+via la fonction NetLogo \texttt{uphill}. L'équation \ref{g} n'est donc
+pas utilisée. En conséquence, le drone se dirige vers les cibles sans
+prêter attention aux menaces ennemies, l'interêt de la simulation en
+est donc relativement réduit puisque l'évitement des menaces est un
+des principaux intérêts du modèle.  On remarque que le drone physique
+ne dépose aucune phéromone; ce travail est ici réservé aux fantômes.
+Un aspect important du modèle original provient de la vitesse elevée
+des fantômes et il est ici respecté.  Dans cette simulation, une unité
+de temps correspond à un déplacement de fantôme et le drone physique
+se déplace tous les $n$ pas de fantômes ($n$ est réglable par
+l'utilisateur).
 
-Les fantômes, ces drones virtuels, sont régulièrement générés par les drones 
+Les fantômes, ces drones virtuels, sont régulièrement générés par les drones
 physiques. Ils oscillent entre deux modes :
 
 \begin{description}
-  
-  \item[to-target]{Dans ce mode, ils se dirigent vers une cible en suivant les phéromones
-  de type RTarget (libérées par les cibles) et lâchent des 
-  phéromones de type GNest (menant à la base). Les déplacement se font de la même façon que pour les drones
-  physiques, via \texttt{uphill}. La formule \ref{g} n'est pas non plus utilisée ici. On passe au second état
-  quand une cibleest atteinte.}
 
-  \item[to-home]{Dans ce mode, ils reviennent à la base en suivant les phéromones de type
-  GNest déposés dans le mode précédent et libèrent des phéromones de type GTarget menant 
-  à la dernière cible visitée.}
+  \item[to-target]{Dans ce mode, ils se dirigent vers une cible en
+    suivant les phéromones de type RTarget (libérées par les cibles)
+    et lâchent des phéromones de type GNest (menant à la base). Les
+    déplacements se font de la même façon que pour les drones
+    physiques, via \texttt{uphill}. La formule \ref{g} n'est pas non
+    plus utilisée ici. On passe au second état quand une cible est
+    atteinte.}
+
+  \item[to-home]{Dans ce mode, ils reviennent à la base en suivant les
+    phéromones de type GNest déposés dans le mode précédent et
+    libèrent des phéromones de type GTarget menant à la dernière cible
+    visitée.}
 
 \end{description}
 
-On remarque que \textbf{to-target} est le mode initial d'un fantôme. La phéromone déposée pendant cet
-état guide donc en fait vers leur position de naissance et non vers une véritable base physique (zone
-d'atterissage par exemple). Position de naissance correspondant en fait à la position de leur drone parent
-puisque les fantômes sont plus rapides et il est donc possible qu'ils atteignent une cible puis repassent 
-par la position du drone parent avant même que ce dernier n'ait changé de position. Ce choix peut être justifié par le 
-fait que dans une situation réelle, les fantômes pourraient correspondre à de minuscules appareils utilisant 
-leur drone parent, un véhicule plus imposant, comme base mobile.
+On remarque que \textbf{to-target} est le mode initial d'un
+fantôme. La phéromone déposée pendant cet état guide donc en fait vers
+leur position de naissance et non vers une véritable base physique
+(zone d'atterissage par exemple). Position de naissance correspondant
+en fait à la position de leur drone parent puisque les fantômes sont
+plus rapides et il est donc possible qu'ils atteignent une cible puis
+repassent par la position du drone parent avant même que ce dernier ne
+se soit déplacé. Ce choix peut être justifié par le fait que dans une
+situation réelle, les fantômes pourraient correspondre à de minuscules
+appareils utilisant leur drone parent, un véhicule plus imposant,
+comme base mobile.
 
 \subsection{Analyse}
 
@@ -308,7 +320,7 @@ Les facteurs que l'utilisateur peut contrôler sont :
 \item{Le nombre de menaces}
 \item{Le taux de diffusion des phéromones}
 \item{Le taux d'évaporation des phéromones}
-\item{Le nombre maximum de fantômes}
+\item{Le nombre de fantômes}
 \item{La durée de vie d'un fantôme}
 \item{La vitesse du drone}
 \end{itemize}
@@ -317,9 +329,30 @@ On remarque que le taux de diffusion ainsi que le taux d'évaporation
 est commun à toutes les phéromones, contrairement au modèle original
 qui supporte les phéromones disposant de dynamiques différentes.
 
+\subsubsection{Incidence du taux de diffusion}
+
+\subsubsection{Incidence du taux d'évaporation}
+
+\subsubsection{Incidence du nombre de fantômes}
+
+\subsubsection{Incidence de la vitesse du drone}
+
 \subsection{Nouvelle version}
 
+Comme montré précédemment, le défaut principal de cette implémentation
+est dû au fait que \texttt{uphill GTarget} est utilisé pour suivre les
+dépots de phéromone et s'approcher d'une cible. En conséquence, le
+chemin est forcément le plus court (une ligne droite) mais il passe
+indifférement sur des zones protégées ou non. De la même façon, il
+ignore totalement ???. On choisit de modifier cette implémentation
+afin d'obtenir des résultats plus fidèles à ceux du papier original.
 
+Concrètement, pour chaque drone et à chaque itération on calcule les
+valeurs d'attractivité de chaque zone de l'environnement (voir formule
+\ref{g}). On détermine ensuite la zone vers laquelle on se déplace en
+effectuant un
+
+IMAGES
 
 \bibliographystyle{alpha}
 \bibliography{sources}

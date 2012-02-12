@@ -11,7 +11,7 @@ breed [ homes ]
 globals [base-x base-y]
 
 ;There are 4 pheronomes. Their values range from 0-1.
-patches-own [target hazard to-target to-home guidance-to-target]
+patches-own [target hazard to-target to-home guidance-to-target guidance-to-home]
 
 ;when wait-steps is 0 the walker can fd 1, these set it back to walker-speed.
 walkers-own [wait-steps steps hazards-hit]
@@ -30,7 +30,7 @@ end
 
 to setup
   
-  clear-all
+  clear-all 
   
   set-default-shape walkers "default"
   set-default-shape targets "circle"
@@ -72,7 +72,7 @@ to setup
 end
 
 to update
-  
+     
   ask targets [go-targets]
   ask hazards [go-hazards]
   
@@ -100,12 +100,11 @@ to find-target-or-home
   set steps steps + 1
   if (steps > ghosts-lifetime) [die]
 
-  if (mode = "to-target") [
+  ifelse (mode = "to-target") [
     
     ; change mode if a target is encountered
     if (any? targets-here) [
       set mode "to-home"
-      set color magenta
       set drop-size 20
       rt 180
       stop
@@ -123,9 +122,8 @@ to find-target-or-home
     ; seek a target
     ;uphill guidance-to-target
     guide
-  ]
-  
-  if (mode = "to-home") [
+ 
+  ][
     
     if (any? walkers-here) [
       die
@@ -147,8 +145,13 @@ end
 
 to guide
 
-  let guidances ([guidance-to-target] of neighbors)
-  print guidances
+  let guidances []
+  ifelse (mode = "to-target") [
+    set guidances ([guidance-to-target] of neighbors)
+  ][
+    set guidances ([guidance-to-home] of neighbors)
+  ]
+  
   let sum-guidances 0
   
   foreach guidances [
@@ -158,11 +161,13 @@ to guide
   set guidances (sort guidances)
   
   let acc 0
-  foreach guidances [
+  let x ((random-float 1) * sum-guidances)
     
+  foreach guidances [
+
     set acc (acc + ?)
     
-    if((random-float 1) < acc) [
+    if(x < acc) [
       
       let xxx -1
       let yyy -1
@@ -214,7 +219,7 @@ to move
     set steps steps + 1
     
     uphill guidance-to-target
-    
+
     if (any? hazards-here) [
       set hazards-hit hazards-hit + 1
     ]
@@ -256,7 +261,7 @@ to go-patches
   ; colorize with respect to the pheromone intensity
   if (pcolor != yellow) [
     if (show-guidance) [
-      set pcolor scale-color grey guidance-to-target 0 1 
+      set pcolor scale-color green guidance-to-target 0 1 
     ]
     if (show-target) [
       set pcolor scale-color green target 0 1
@@ -274,7 +279,8 @@ to go-patches
 end
 
 to update-guidance
-  set guidance-to-target (1 * target + 3 * to-target) / (6 * hazard + 1)
+  set guidance-to-target (1 * target + 1 * to-target) / (1 * hazard + 1)
+  set guidance-to-home (1 * to-home) / (1 * hazard + 1)
 end
 
 ;hazards
@@ -352,7 +358,7 @@ max-num-ghosts
 max-num-ghosts
 0
 100
-7
+78
 1
 1
 NIL
@@ -415,7 +421,7 @@ num-hazards
 num-hazards
 1
 200
-200
+113
 1
 1
 NIL
@@ -430,7 +436,7 @@ diffusion-rate
 diffusion-rate
 0
 100
-11
+4
 1
 1
 NIL
@@ -445,7 +451,7 @@ evaporation-rate
 evaporation-rate
 0
 100
-6
+4
 1
 1
 NIL
@@ -504,7 +510,7 @@ ghosts-lifetime
 ghosts-lifetime
 0
 100
-27
+50
 1
 1
 NIL
@@ -546,19 +552,19 @@ show-guidance
 @#$#@#$#@
 Path-Finding Using Pheromones  
 
-CREDITS 
+## CREDITS 
 
 Jose M Vidal
 
-WHAT IS IT?
+## WHAT IS IT?
 
-In this problem a series of drones tries to find a path from the source  
-to the target while staying away from the obstacles. They use pheromones.  
+In this problem a series of drones tries to find a path from the source    
+to the target while staying away from the obstacles. They use pheromones.    
 I tried to implement something similar to
-  
+    
 * H. Van Dyke Parunak, Sven Brueckner, and John Sauter. [Synthetic pheronome mechanisms for coordination of unmanned vehicles](http://jmvidal.cse.sc.edu/library/parunak02a.html) In _Proceedings of the First Intenational Joint Conference on Autonomous Agents and Multiagent Systems_, pages 448-450, Bologna, Italy, 2002. ACM Press, New York, NY.
 
-CHANGES
+## CHANGES
 
 20100623
 @#$#@#$#@
