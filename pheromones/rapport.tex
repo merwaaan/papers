@@ -21,7 +21,7 @@
 On se propose d'étudier l'implémentation NetLogo de José M. Vidal
 inspirée de \textit{Synthetic Pheromone Mechanisms for Coordination of
   Unmanned Vehicles} de Parunak, Brueckner et Sauter. Dans un premier
-temps, on étudie le modèle original puis on analyse l'implémentation
+temps, on étudie le modèle original, puis on analyse l'implémentation
 fournie.
 
 \section{Le modèle}
@@ -57,7 +57,7 @@ par érosion.  Un aspect important des phéromones est qu'elles sont
 soumises à une diffusion dans l'environnement et que les insectes
 disposent d'un odorat assez fin pour en retrouver la source. Ainsi, un
 individu peut détecter et être attiré par une odeur en passant à
-proximité de la piste originelle mais sans nécessairement la croiser.
+proximité d'une piste sans nécessairement la croiser.
 
 Ce type de comportement est une source d'inspiration pour la
 conception de méthodes de résolution destinée à des systèmes
@@ -66,8 +66,8 @@ multi-agents puisqu'il rassemble des qualités notables \cite{dorigo}
 
 \begin{description}
 \item[Diversité]{Une phéromone peut aussi bien indiquer une piste à
-  suivre qu'un danger. Le concepteur d'un modèle est libre d'associer
-  tout type de sémantique à une phéromone.}
+  suivre qu'un danger. Tout type de sémantique peut leur être
+  associé.}
 \item[Distribution]{Les signaux chimiques guidant les insectes sont
   répartis sur tout l'environnement.}
 \item[Décentralisation]{Si une fourmi est mangée par un oiseau, cela
@@ -90,15 +90,15 @@ Ici, la fourmi est remplacée par un véhicule, un drone aérien dans
 l'exemple. Sa mission est de partir d'une base et d'atteindre un
 bâtiment ennemi cible tout en évitant certaines infrastructures
 pouvant l'impacter négativement (radars, batteries anti-aérienne). La
-figure \ref{real} montre un exemple de configuration réalisable.
+figure \ref{real} montre un exemple scénario possible.
 
 \begin{figure}[H]
   \centering
 
   \includegraphics[width=6.5cm]{terrain_real.png}
 
-  \caption{Exemple de configuration modélisable. En bleu, les drones;
-    en gris, la cible; en rouge les menaces \cite{parunak}.}
+  \caption{Exemple de scénario. En bleu, les drones; en gris, la
+    cible; en rouge les menaces \cite{parunak}.}
   \label{real}
 \end{figure}
 
@@ -110,15 +110,14 @@ zones que les quantités des différentes phéromones déposées par les
 acteurs de la simulation sont stockées et que le phénomène de
 diffusion se produit entre zones voisines.
 
-L'acteur principal, le véhicule, peut déposer deux types de phéromones
-:
+L'acteur principal, le drone, peut déposer deux types de phéromones :
 
 \begin{description}
 \item[GNest]{Libérée par un agent venant de quitter la base. Elle
-  guide les autres agents vers la base.}
+  guide les autres agents vers cette base.}
 \item[GTarget]{Libérée par un agent venant de rencontrer une cible
-  ennemie et rentrant à sa base. Elle guide les autres agents vers la
-  cible.}
+  ennemie et rentrant à sa base. Elle guide les autres agents vers
+  cette cible.}
 \end{description}
 
 Dans ce modèle, les bâtiments ennemis sont eux aussi agents. Ils
@@ -132,9 +131,9 @@ Dans ce modèle, les bâtiments ennemis sont eux aussi agents. Ils
 \end{description}
 
 Chacune de ces phéromones véhicule une information différente, mais au
-delà de leur sens, elles différent aussi de par leur taux de diffusion
-dans l'environnement.  Pour les bâtiments ennemis, ce taux de
-diffusion dépend de l'aire d'effet du bâtiment associé, et correspond
+delà de leur sens, elles différent de par leur taux de diffusion dans
+l'environnement.  Pour les bâtiments ennemis, ce taux de diffusion
+dépend de l'aire d'effet du bâtiment associé, et correspond
 concrètement à son rayon d'action : le rayon de détection pour un
 radar, la portée pour une batterie anti-aérienne.  Le taux de
 diffusion des phéromones libérées par les drones doit quant à lui être
@@ -156,7 +155,7 @@ illustre la configuration de la figure \ref{real} de ce point de vue.
 
   \includegraphics[width=6.5cm]{terrain_field.png}
 
-  \caption{Le même environnement marqué par les phéromones des
+  \caption{Le même environnement, marqué par les phéromones des
     bâtiments ennemis \cite{parunak}.}
   \label{field}
 \end{figure}
@@ -167,13 +166,13 @@ Les phéromones décrites sont bien sûr spécifiques au modèle présenté
 et on peut aisément imaginer, selon la simulation, que l'on en
 introduise de nouveaux types. Dans un soucis de généralisme et de
 simplicité, on ne souhaite pas qu'un agent ait à envisager des
-considérations complexes prenant en compte chaque phéromones
-séparement et on préfère associer aux zones une fonction $g$ calculant
-une valeur d'attractivité nette afin de guider le déplacement des
-drones. Dans l'exemple proposé, cette fonction est la suivante, avec
-$\alpha$, $\beta$, $\gamma$, $\delta$ et $\theta$ des facteurs de
-réglage et $\operatorname{Dist}$ une approximation de la distance
-séparant le drone de sa cible :
+considérations complexes prenant en compte chaque phéromone séparement
+et on préfère associer aux zones une fonction $g$ calculant une valeur
+d'attractivité nette afin de guider le déplacement des drones. Dans
+l'exemple proposé, cette fonction est la suivante, avec $\alpha$,
+$\beta$, $\gamma$, $\delta$ et $\theta$ des facteurs de réglage et
+$\operatorname{Dist}$ une approximation de la distance séparant le
+drone de sa cible :
 
 \begin{equation}
   g = \frac{ \theta \operatorname{RTarget} + \gamma
@@ -187,7 +186,7 @@ de phéromones présentes dans les zones voisines et un tirage aléatoire
 de type roue de la fortune biaisée permet de simuler un choix quant à
 la route à emprunter. Plus une zone est attractive (beaucoup de
 phéromones menant à la cible, peu de phéromones menant à une menace)
-et plus la probabilité de l'emprunter est elevée.
+et plus la probabilité d'y aller est elevée.
 
 Généralement, et si le drone suit déjà une piste et qu'il est aligné
 sur sa direction, les zones les plus attrayantes se trouvent devant et
@@ -200,7 +199,7 @@ Pour l'instant, seuls les agents mobiles de type drone ont été
 présentés. Il en existe pourtant une seconde catégorie, qui peuple en
 majorité l'espace de la simulation et que nous appellons les
 fantômes. Un fantôme est un drone virtuel à courte portée et à courte
-durée de vie, lâché par le véritable drone, et donc la principale
+durée de vie, libéré par le véritable drone, et dont la principale
 caractéristique est de disposer d'une vitesse d'exploration plus
 importante.  Les fantômes se comportent de la même façon que leur
 drone parent vis à vis des phéromones; elles servent à leur guidage et
@@ -214,7 +213,7 @@ figure \ref{ghosts}).
 
   \includegraphics[width=8cm]{ghosts.png}
 
-  \caption{Un drone (en bleu) suit la piste de phéromones (en vert)
+  \caption{Un drone (en bleu) suit une piste de phéromones (en vert)
     déposée et renforcée par ses fantômes (en orange).}
   \label{ghosts}
 \end{figure}
@@ -222,10 +221,10 @@ figure \ref{ghosts}).
 Le concept des fantômes est une différence majeure entre la méthode
 proposée et un algorithme de colonies de fourmis classique. Il est
 bien sûr plus adapté au cadre opérationnel décrit, car l'action d'un
-drone doit être rapide et efficace. On imagine mal que le travail
-d'exploration de tout l'espace aérien revienne au drone. L'utilisation
-d'éclaireurs, plus rapides et de plus petite taille, est donc
-justifiée.
+drone doit être rapide et efficace. En effet, on imagine mal que le
+travail d'exploration de tout l'espace aérien lui
+revienne. L'utilisation d'éclaireurs, plus rapides et de plus petite
+taille, est donc justifiée.
 
 \section{L'implémentation}
 
@@ -244,8 +243,8 @@ signaux chimiques se fait par la fonction NetLogo \texttt{diffuse} qui
 partage une fraction de la phéromone entre les huit zones
 adjacentes. L'évaporation est réalisée manuellement et la valeur de
 chaque phéromone est réduite à chaque itération d'un pourcentage
-réglable. Un exemple de configuration est visible sur la figure
-\ref{pheromones}.
+réglable. Un exemple d'environnement est visible sur la figure
+\ref{pheromones}; chaque vue correspond à l'isolation d'une phéromone.
 
 \begin{figure}[p]
   \centering
@@ -273,9 +272,9 @@ réglable. Un exemple de configuration est visible sur la figure
     }
   }
 
-  \caption{Les quatre types de phéromone pour une configuration
-    donnée. En violet, les drones; en vert les cibles; en orange, les
-    menaces; en jaune, la phéromone.}
+  \caption{Les quatre types de phéromone pour un scénario donnée
+    (drone en vert, fantômes en bleu, cibles en vert et menaces en
+    rouge).}
   \label{pheromones}
 \end{figure}
 
@@ -287,8 +286,8 @@ quantité de phéromone GTarget (menant à une cible) des cases voisines,
 via la fonction NetLogo \texttt{uphill}. L'équation \ref{g} n'est donc
 pas utilisée. En conséquence, le drone se dirige vers les cibles sans
 prêter attention aux menaces ennemies, l'interêt de la simulation en
-est donc fortement réduit puisque l'évitement des menaces est l'un des
-principaux atouts du modèle.
+est donc fortement réduit puisque l'évitement des obstacles est l'un
+des principaux atouts du modèle.
 
 On retrouve dans cette implémentation le fait que les fantômes
 disposent d'une vitesse plus elevée que leur drone parent afin
@@ -299,36 +298,35 @@ réglable par l'utilisateur).
 
 Les fantômes sont instanciés par le drone principal dés le début de la
 simulation. \`A chaque fois qu'un fantôme est arrivé à la fin de sa
-durée de vie, un nouveau est ajouté à la position du drone. Ils
-oscillent entre deux modes :
+durée de vie, il disparaît et un nouveau est ajouté à la position du
+drone. Un fantôme passe par deux modes :
 
 \begin{description}
 
-  \item[to-target]{Dans ce mode, ils se dirigent vers une cible en
-    suivant les phéromones de type RTarget (libérées par les cibles)
-    et lâchent des phéromones de type GNest (menant à la base). Les
-    déplacements se font de la même façon que pour les drones
-    physiques, via \texttt{uphill}. La formule \ref{g} n'est pas non
-    plus utilisée ici. On passe au second état quand une cible est
-    atteinte.}
+  \item[to-target]{Il se dirige vers une cible en suivant les
+    phéromones de type RTarget (libérées par les cibles) et lâche des
+    phéromones de type GNest (menant à la base). Les déplacements se
+    font de la même façon que pour les drones physiques, via
+    \texttt{uphill}. La formule \ref{g} n'est toujours pas
+    utilisée. Il passe au mode suivant quand une cible est atteinte.}
 
-  \item[to-home]{Dans ce mode, ils reviennent à la base en suivant les
-    phéromones de type GNest et libèrent des phéromones de type
-    GTarget menant à la dernière cible visitée.}
+  \item[to-home]{Il revient à la base en suivant les phéromones de
+    type GNest et libère des phéromones de type GTarget menant à la
+    dernière cible visitée.}
 
 \end{description}
 
 On remarque que \textbf{to-target} est le mode initial d'un
 fantôme. La phéromone déposée pendant cet état guide donc en fait vers
 leur position de naissance et non vers une véritable base physique
-(zone d'atterissage par exemple). Position de naissance correspondant
-en fait à la position de leur drone parent puisque les fantômes sont
-plus rapides et il est donc possible qu'ils atteignent une cible puis
-repassent par la position du drone parent avant même que ce dernier ne
-se soit déplacé. Ce choix peut être justifié par le fait que dans une
-situation réelle, les fantômes pourraient correspondre à de minuscules
-appareils utilisant leur drone parent, un véhicule plus imposant,
-comme base mobile.
+(zone d'atterissage par exemple). Cette position de naissance
+correspond en fait à la position de leur drone parent puisque les
+fantômes sont plus rapides et il est donc possible qu'ils atteignent
+une cible puis repassent par la position du drone parent avant même
+que ce dernier ne se soit déplacé. Ce choix peut être justifié par le
+fait que dans une situation réelle, les fantômes pourraient
+correspondre à de minuscules appareils utilisant leur drone parent, un
+véhicule plus imposant, comme base mobile.
 
 \subsection{Analyse}
 
@@ -341,12 +339,12 @@ Les facteurs que l'utilisateur peut contrôler sont :
 \item{Le taux d'évaporation des phéromones}
 \item{Le nombre de fantômes}
 \item{La durée de vie d'un fantôme}
-\item{La vitesse du drone}
+\item{La vitesse des fantômes par rapport au drone}
 \end{itemize}
 
 On remarque que le taux de diffusion ainsi que le taux d'évaporation
 est commun à toutes les phéromones, contrairement au modèle original
-qui autorise des phéromones disposant de dynamiques différentes.
+qui supporte les phéromones disposant de dynamiques différentes.
 
 Comme suggéré précédemment, cette implémentation n'est pas assez
 fidèle au modèle original pour que les résultats soient
@@ -356,14 +354,10 @@ prenant pas en compte les obstacles à éviter.
 On peut néanmoins faire varier quelques paramètres et remarquer
 plusieurs résultats. Premièrement, on note qu'un grand nombre de
 fantômes diminue la durée de la recherche car plus de chemins sont
-explorés et plus les pistes prometteuses sont rapidement renforcées.
+explorés et plus vite les pistes prometteuses sont renforcées.
 Attention cependant à ne pas surcharger de fantômes l'environnement,
-sous peine de créer de nombreuses pistes moins intéressantes. La
-figure \ref{} met en relation la quantité de fantômes et le nombre de
-zones contenant une phéromone de guidage GTarget supérieure à un
-seuil $\theta = 0.5$.
-
-GRAPHIQUE
+au risque de créer trop de pistes de phéromones et de noyer les plus
+intéressantes dans la masse.
 
 On observe aussi qu'un taux de diffusion mal adapté peut grandement
 perturber la simulation. S'il est trop faible, les pistes restent
@@ -391,8 +385,8 @@ papier original.
 
 Le c\oe ur du script est conservé. On ajoute uniquement à chaque
 \textit{patch} un nouveau type de phéromone : la phéromone nette
-calculée à l'aide de la fonction $g$ de la formule \ref{g}. Elle est
-mise à jour pour toutes les zones entre chaque itération de la
+calculée à l'aide de la fonction $g$ (voir équation \ref{g}). Elle est
+mise à jour pour toutes les zones après chaque itération de la
 simulation.
 
 Pour guider un agent mobile, on procède comme suit :
@@ -400,17 +394,45 @@ Pour guider un agent mobile, on procède comme suit :
 \begin{enumerate}
   \item{On obtient la valeur de la phéromone nette de chacune des huit
     zones voisines à celle de l'agent}
-  \item{On effectue un tirage aléatoire sur une roue dont les huit
-    tranches sont biaisée en fonction de la valeur d'attractivité de
-    chaque case associée}
-  \item{On déplace l'agent sur la zone choisie}
+  \item{On effectue un tirage aléatoire sur une roue de la fortune
+    dont les huit tranches sont biaisées en fonction de la valeur
+    d'attractivité de chaque case associée}
+  \item{On déplace l'agent sur la zone gagnante}
 \end{enumerate}
+
+\begin{figure}[H]
+  \centering
+
+  \includegraphics[width=8cm]{pheromones_net.png}
+
+  \caption{Phéromone nette traduisant l'attractivité des zones de
+    l'environnement.}
+  \label{net}
+\end{figure}
+
+La phéromone nette calculées traduit l'attractivité de chaque zone
+(voir la figure \ref{net} et comparer avec la figure \ref{pheromones})
+et le comportement des drones dépendra des facteurs utilisés. Si l'on
+prend $\alpha$ grand, alors on s'assure que la probabilité qu'un drone
+passe sur une zone à risque reste faible. Attention cependant à ne pas
+donner une trop grande valeur à ce facteur, sous peine d'amplifier de
+façon démesurée la répulsivité des bâtiments menaçants et d'empêcher
+les drones de se déplacer à travers certaines configuration de
+l'espace (couloir délimité par des menaces, par exemple).
+
+Pour affiner le guidage du véhicule, on prendra $\gamma >
+\theta$. Pour rappel, $\gamma$ est le facteur associé à la phéromone
+GTarget libérée par les fantômes et menant à une cible tandis que
+$\theta$ est le facteur associé à RTarget, la phéromone libérée par
+les bâtiments cibles. En faisant ce choix, on s'assure de favoriser
+les pistes construites par les fantômes plutôt que les pistes
+directes, plus piégeuses et pouvant mener à des dangers.
 
 Drones et fantômes atteignent désormais leur but tout en évitant les
 menaces ennemies. La différence de guidage entre les deux versions du
 programme est visible sur la figure \ref{paths}.
 
-\begin{figure}[p]
+\begin{figure}[H]
   \centering
 
   \mbox{
@@ -426,7 +448,7 @@ programme est visible sur la figure \ref{paths}.
   }
 
   \caption{Chemins parcourus par le drone pour les deux versions
-    différentes du programme. En rouge, les menaces à éviter; en vert
+    différentes du programme. En rouge, les menaces à éviter; en vert,
     la cible.}
   \label{paths}
 \end{figure}

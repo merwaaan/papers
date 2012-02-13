@@ -322,7 +322,7 @@ to colorize-patch
       set pcolor scale-color green target 0 1
     ]
     if (show-hazard) [
-      set pcolor scale-color red hazard 0 1
+      set pcolor scale-color red hazard 0 10
     ]
     if (show-to-home) [
       set pcolor scale-color cyan to-home 0 1
@@ -414,7 +414,7 @@ max-num-ghosts
 max-num-ghosts
 0
 100
-4
+50
 1
 1
 NIL
@@ -531,7 +531,7 @@ SWITCH
 104
 show-hazard
 show-hazard
-0
+1
 1
 -1000
 
@@ -865,6 +865,14 @@ NetLogo 4.1.3
 @#$#@#$#@
 @#$#@#$#@
 @#$#@#$#@
+<experiments>
+  <experiment name="pheromone density" repetitions="5" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>update</go>
+    <metric>count patches with [hazard &gt; 8]</metric>
+    <steppedValueSet variable="max-num-ghosts" first="1" step="1" last="50"/>
+  </experiment>
+</experiments>
 @#$#@#$#@
 @#$#@#$#@
 default
