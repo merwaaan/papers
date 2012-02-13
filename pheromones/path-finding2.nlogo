@@ -36,7 +36,15 @@ to setup
   set-default-shape targets "circle"
   set-default-shape hazards "x"
   set-default-shape homes "none"
+
+  ;setup1
+  setup2
   
+  reset-ticks
+end
+
+to setup1
+
   set base-x get-random-xcor
   set base-y get-random-ycor
   
@@ -45,7 +53,8 @@ to setup
     set color orange
     set heading 0
     ask patch-here [
-      set hazard 10]
+      set hazard 10
+    ]
   ]  
   
   create-targets num-targets [
@@ -68,7 +77,53 @@ to setup
     set color blue
   ]
   
-  reset-ticks
+end
+
+to setup2
+  
+  set base-x -10
+  set base-y -10
+  
+  put-hazard 10 10
+  
+  put-target 11 10
+  
+  create-homes 1 [
+    setxy base-x base-y
+    set pcolor yellow
+    rt 0
+  ]
+  
+  create-walkers 1 [
+    setxy base-x base-y
+    set wait-steps walker-speed
+    set color blue
+  ]
+  
+end
+
+to put-hazard [x y]
+
+  create-hazards 1 [
+    setxy x y
+    set color orange
+    ask patch-here [
+      set hazard 10
+    ]
+  ]
+
+end
+
+to put-target [x y]
+  
+  create-targets 1 [
+    setxy x y
+    set color green
+    ask patch-here [
+      set target 10
+    ]
+  ]
+  
 end
 
 to update

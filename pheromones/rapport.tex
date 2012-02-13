@@ -24,7 +24,7 @@ inspirée de \textit{Synthetic Pheromone Mechanisms for Coordination of
 temps, on étudie le modèle original puis on analyse l'implémentation
 fournie.
 
-\section{Modèle}
+\section{Le modèle}
 
 \subsection{Analogie avec le vivant}
 
@@ -61,7 +61,7 @@ proximité de la piste originelle mais sans nécessairement la croiser.
 
 Ce type de comportement est une source d'inspiration pour la
 conception de méthodes de résolution destinée à des systèmes
-multi-agents puisqu'il rassemble des qualités notables \cite{parunak}
+multi-agents puisqu'il rassemble des qualités notables \cite{dorigo}
 :
 
 \begin{description}
@@ -80,7 +80,7 @@ multi-agents puisqu'il rassemble des qualités notables \cite{parunak}
 \end{description}
 
 Parunak \textit{et al.} partent de ce constat, et s'inspirent des
-modèles existants \cite{dorigo}, pour proposer une méthode de guidage
+modèles existants \cite{swarm}, pour proposer une méthode de guidage
 destinée aux véhicules non habités dans le cadre d'opérations
 militaires.
 
@@ -226,14 +226,11 @@ d'exploration de tout l'espace aérien revienne au drone. L'utilisation
 d'éclaireurs, plus rapides et de plus petite taille, est donc
 justifiée.
 
-\section{Implémentation}
+\section{L'implémentation}
 
 \subsection{\'Etude}
 
-José M. Vidal a implémenté le modèle décrit précédemment sur la
-plate-forme de simulation NetLogo.
-
-Son implémentation est basée sur une grille torique de
+L'implémentation de Vidal est basée sur une grille torique de
 \textit{patches} carrés alors que l'implémentation originale utilisait
 des hexagones. Cette différence est négligeable au niveau des
 résultats que fournit cette simulation car Parunak \textit{et al.}
@@ -244,7 +241,7 @@ Chaque \textit{patch} contient une valeur réelle représentant le
 volume de chacune des phéromones qu'il contient. La diffusion de ces
 signaux chimiques se fait par la fonction NetLogo \texttt{diffuse} qui
 partage une fraction de la phéromone entre les huit zones
-adjacentes. L'évaporation est faite manuellement et la valeur de
+adjacentes. L'évaporation est réalisée manuellement et la valeur de
 chaque phéromone est réduite à chaque itération d'un pourcentage
 réglable. Un exemple de configuration est visible sur la figure
 \ref{pheromones}.
@@ -351,40 +348,57 @@ est commun à toutes les phéromones, contrairement au modèle original
 qui supporte les phéromones disposant de dynamiques différentes.
 
 Comme suggéré précédemment, cette implémentation n'est pas assez
-fidèle pour que les résultats correspondent aux modèles originales. Le
-principaux défaut étant un guidage simplifié ne prenant pas en compte
-les obstacles à éviter.
+fidèle au modèle original pour que les résultats soient
+significatifs. Le principaux défaut étant un guidage simplifié ne
+prenant pas en compte les obstacles à éviter.
 
-On peut faire varier quelques paramètres et l'on remarque plusieurs
-résultats. Premièrement, on note qu'un grand nombre de fantômes
-diminue la durée de la recherche car plus de chemins sont explorées et
-les pistes prometteuses sont plus rapidement renforcées.
+On peut néanmoins faire varier quelques paramètres et remarquer
+plusieurs résultats. Premièrement, on note qu'un grand nombre de
+fantômes diminue la durée de la recherche car plus de chemins sont
+explorés et les pistes prometteuses sont plus rapidement renforcées.
 
 On observe aussi qu'un taux de diffusion mal adapté peut grandement
 perturber la simulation. S'il est trop faible, les pistes restent
 linéaires et une fois qu'un fantôme en croise une, il la suit sans en
-ressortir (notamment à cause de l'utilisation de \texttt{uphill} à la
-place de la formule \ref{g}). \`A l'inverse, un taux de diffusion trop
-elevé inonde l'environnement de phéromones et les drones errent sans
-qu'aucun chemin n'émerge.
+ressortir (notamment à cause de l'utilisation stricte de
+\texttt{uphill} à la place de la formule \ref{g}). \`A l'inverse, un
+taux de diffusion trop elevé inonde l'environnement de phéromones et
+les drones errent sans qu'aucun chemin n'émerge.
 
-De la même façon, le taux d'évaporation est à contrôler.
+De la même façon, le taux d'évaporation est à contrôler. S'il est trop
+faible, les pistes ne persistent pas et le drone et les fantômes n'ont
+pas le temps de les suivre. S'il est trop élevé, les pistes perdurent
+trop longtemps, même si elles sont de mauvaise qualité, et induisent
+les drones en erreur.
+
 \subsection{Nouvelle version}
 
 Comme montré précédemment, le défaut principal de cette implémentation
 est dû au fait que \texttt{uphill GTarget} est utilisé pour suivre les
 dépots de phéromone et s'approcher d'une cible. En conséquence, le
 chemin est forcément le plus court (une ligne droite) mais il passe
-indifférement sur des zones protégées ou non. De la même façon, il
-ignore totalement ???. On choisit de modifier cette implémentation
-afin d'obtenir des résultats plus fidèles à ceux du papier original.
+indifférement sur des zones gardées ou non. On choisit de modifier le
+programme NetLogo afin d'obtenir des résultats plus fidèles à ceux du
+papier original.
 
-Concrètement, pour chaque drone et à chaque itération on calcule les
-valeurs d'attractivité de chaque zone de l'environnement (voir formule
-\ref{g}). On détermine ensuite la zone vers laquelle on se déplace en
-effectuant un
+Le c\oe ur du script est conservé. On ajoute uniquement à chaque
+\textit{patch} un nouveau type de phéromone : la phéromone nette
+calculée à l'aide de la formule \ref{g}. Elle est mise à jour pour
+toutes les zones entre chaque itération de la simulation.
 
-IMAGES
+pour le guidage de chaque agent mobile, on procède comme suit :
+
+\begin{enumerate}
+  \item{On obtient la valeur de la phéromone nette de chacune des huit
+  cases voisines à celle de l'agent}
+  \item{On effectue un tirage aléatoire sur une roue dont les huit tranches
+  sont biaisée en fonction de la valeur d'attractivité de la case
+  associée}
+  \item{On déplace l'agent sur la zone choisie}
+\end{enumerate}
+
+Drones et fantômes atteignent désormais leur but tout en évitant les
+menaces ennemies.
 
 \bibliographystyle{alpha}
 \bibliography{sources}
