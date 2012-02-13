@@ -37,8 +37,8 @@ to setup
   set-default-shape hazards "x"
   set-default-shape homes "none"
 
-  ;setup1
-  setup2
+  setup1
+  ;setup2
   
   create-homes 1 [
     setxy base-x base-y
@@ -307,6 +307,12 @@ to go-patches
   set to-target to-target * (100 - evaporation-rate) / 100
   set to-home to-home * (100 - evaporation-rate) / 100
   
+  colorize-patch
+  
+end
+
+to colorize-patch
+  
   ; colorize with respect to the pheromone intensity
   if (pcolor != yellow) [
     if (show-guidance) [
@@ -325,6 +331,7 @@ to go-patches
       set pcolor scale-color blue to-target 0 1
     ]
   ]
+  
 end
 
 to update-guidance
@@ -377,7 +384,7 @@ num-targets
 num-targets
 1
 100
-2
+10
 1
 1
 NIL
@@ -485,7 +492,7 @@ diffusion-rate
 diffusion-rate
 0
 100
-4
+14
 1
 1
 NIL
@@ -500,7 +507,7 @@ evaporation-rate
 evaporation-rate
 0
 100
-4
+6
 1
 1
 NIL
@@ -524,7 +531,7 @@ SWITCH
 104
 show-hazard
 show-hazard
-1
+0
 1
 -1000
 
@@ -559,7 +566,7 @@ ghosts-lifetime
 ghosts-lifetime
 0
 100
-17
+39
 1
 1
 NIL
@@ -594,7 +601,7 @@ SWITCH
 267
 show-guidance
 show-guidance
-0
+1
 1
 -1000
 

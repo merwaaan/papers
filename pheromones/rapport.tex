@@ -117,12 +117,12 @@ L'acteur principal, le véhicule, peut déposer deux types de phéromones
 \item[GNest]{Libérée par un agent venant de quitter la base. Elle
   guide les autres agents vers la base.}
 \item[GTarget]{Libérée par un agent venant de rencontrer une cible
-  ennemi et rentrant à sa base. Elle guide les autres agents vers la
+  ennemie et rentrant à sa base. Elle guide les autres agents vers la
   cible.}
 \end{description}
 
-Dans ce modèle, les bâtiments ennemis sont eux aussi agents et
-émetteurs des phéromones :
+Dans ce modèle, les bâtiments ennemis sont eux aussi agents. Ils
+émettent les phéromones suivantes :
 
 \begin{description}
 \item[RTarget]{Libérée par les bâtiments cibles. Elle attire les
@@ -199,14 +199,15 @@ bonus lors du tirage aléatoire.
 Pour l'instant, seuls les agents mobiles de type drone ont été
 présentés. Il en existe pourtant une seconde catégorie, qui peuple en
 majorité l'espace de la simulation et que nous appellons les
-fantômes. Un fantôme est un drone virtuel à courte durée de vie et à
-courte portée, lâché par le véritable drone, et donc la principale
+fantômes. Un fantôme est un drone virtuel à courte portée et à courte
+durée de vie, lâché par le véritable drone, et donc la principale
 caractéristique est de disposer d'une vitesse d'exploration plus
 importante.  Les fantômes se comportent de la même façon que leur
 drone parent vis à vis des phéromones; elles servent à leur guidage et
 ils les déposent sur leur chemin. Ils font ainsi office d'éclaireurs
 et améliorent les choix de déplacement du véritable drone en évaluant
-par avance les choix qui s'offriront à lui (voir figure \ref{ghosts}).
+par avance les choix qui s'offriront à lui dans un futur proche (voir
+figure \ref{ghosts}).
 
 \begin{figure}[H]
   \centering
@@ -286,18 +287,18 @@ quantité de phéromone GTarget (menant à une cible) des cases voisines,
 via la fonction NetLogo \texttt{uphill}. L'équation \ref{g} n'est donc
 pas utilisée. En conséquence, le drone se dirige vers les cibles sans
 prêter attention aux menaces ennemies, l'interêt de la simulation en
-est donc fortement réduit puisque l'évitement des menaces est un des
-principaux intérêts du modèle.
+est donc fortement réduit puisque l'évitement des menaces est l'un des
+principaux atouts du modèle.
 
 On retrouve dans cette implémentation le fait que les fantômes
 disposent d'une vitesse plus elevée que leur drone parent afin
 d'explorer en avance l'espace de la simulation. Ici, une itération de
-la simulation correspond à un déplacement de fantôme. Le véritable
-drone se déplace tous les $n$ pas de fantômes ($n$ est réglable par
-l'utilisateur).
+la simulation correspond à un unique déplacement de fantôme. Le
+véritable drone se déplace tous les $n$ pas de fantômes ($n$ est
+réglable par l'utilisateur).
 
 Les fantômes sont instanciés par le drone principal dés le début de la
-simulation. \`A chaque fois qu'un drone est arrivé à la fin de sa
+simulation. \`A chaque fois qu'un fantôme est arrivé à la fin de sa
 durée de vie, un nouveau est ajouté à la position du drone. Ils
 oscillent entre deux modes :
 
@@ -345,7 +346,7 @@ Les facteurs que l'utilisateur peut contrôler sont :
 
 On remarque que le taux de diffusion ainsi que le taux d'évaporation
 est commun à toutes les phéromones, contrairement au modèle original
-qui supporte les phéromones disposant de dynamiques différentes.
+qui autorise des phéromones disposant de dynamiques différentes.
 
 Comme suggéré précédemment, cette implémentation n'est pas assez
 fidèle au modèle original pour que les résultats soient
@@ -355,12 +356,19 @@ prenant pas en compte les obstacles à éviter.
 On peut néanmoins faire varier quelques paramètres et remarquer
 plusieurs résultats. Premièrement, on note qu'un grand nombre de
 fantômes diminue la durée de la recherche car plus de chemins sont
-explorés et les pistes prometteuses sont plus rapidement renforcées.
+explorés et plus les pistes prometteuses sont rapidement renforcées.
+Attention cependant à ne pas surcharger de fantômes l'environnement,
+sous peine de créer de nombreuses pistes moins intéressantes. La
+figure \ref{} met en relation la quantité de fantômes et le nombre de
+zones contenant une phéromone de guidage GTarget supérieure à un
+seuil $\theta = 0.5$.
+
+GRAPHIQUE
 
 On observe aussi qu'un taux de diffusion mal adapté peut grandement
 perturber la simulation. S'il est trop faible, les pistes restent
-linéaires et une fois qu'un fantôme en croise une, il la suit sans en
-ressortir (notamment à cause de l'utilisation stricte de
+linéaires et étroites et une fois qu'un fantôme en croise une, il la
+suit sans en ressortir (notamment à cause de l'utilisation stricte de
 \texttt{uphill} à la place de la formule \ref{g}). \`A l'inverse, un
 taux de diffusion trop elevé inonde l'environnement de phéromones et
 les drones errent sans qu'aucun chemin n'émerge.
@@ -383,17 +391,18 @@ papier original.
 
 Le c\oe ur du script est conservé. On ajoute uniquement à chaque
 \textit{patch} un nouveau type de phéromone : la phéromone nette
-calculée à l'aide de la formule \ref{g}. Elle est mise à jour pour
-toutes les zones entre chaque itération de la simulation.
+calculée à l'aide de la fonction $g$ de la formule \ref{g}. Elle est
+mise à jour pour toutes les zones entre chaque itération de la
+simulation.
 
-pour le guidage de chaque agent mobile, on procède comme suit :
+Pour guider un agent mobile, on procède comme suit :
 
 \begin{enumerate}
   \item{On obtient la valeur de la phéromone nette de chacune des huit
-  cases voisines à celle de l'agent}
-  \item{On effectue un tirage aléatoire sur une roue dont les huit tranches
-  sont biaisée en fonction de la valeur d'attractivité de la case
-  associée}
+    zones voisines à celle de l'agent}
+  \item{On effectue un tirage aléatoire sur une roue dont les huit
+    tranches sont biaisée en fonction de la valeur d'attractivité de
+    chaque case associée}
   \item{On déplace l'agent sur la zone choisie}
 \end{enumerate}
 
