@@ -40,6 +40,18 @@ to setup
   ;setup1
   setup2
   
+  create-homes 1 [
+    setxy base-x base-y
+    set pcolor yellow
+    rt 0
+  ]
+  
+  create-walkers 1 [
+    setxy base-x base-y
+    set wait-steps walker-speed
+    set color blue
+  ]
+  
   reset-ticks
 end
 
@@ -65,41 +77,23 @@ to setup1
     ]
   ]
   
-  create-homes 1 [
-    setxy base-x base-y
-    set pcolor yellow
-    rt 0
-  ]
-  
-  create-walkers 1 [
-    setxy base-x base-y
-    set wait-steps walker-speed
-    set color blue
-  ]
-  
 end
 
 to setup2
   
-  set base-x -10
-  set base-y -10
+  set base-x 0
+  set base-y 0
   
   put-hazard 10 10
+  put-hazard 10 9
+  put-hazard 10 8
+  put-hazard 11 8
+  put-hazard 12 8
+  put-hazard 12 9
+  put-hazard 12 10
   
-  put-target 11 10
-  
-  create-homes 1 [
-    setxy base-x base-y
-    set pcolor yellow
-    rt 0
-  ]
-  
-  create-walkers 1 [
-    setxy base-x base-y
-    set wait-steps walker-speed
-    set color blue
-  ]
-  
+  put-target 11 9
+
 end
 
 to put-hazard [x y]
@@ -334,7 +328,7 @@ to go-patches
 end
 
 to update-guidance
-  set guidance-to-target (1 * target + 1 * to-target) / (1 * hazard + 1)
+  set guidance-to-target (1 * target + 7 * to-target) / (10 * hazard + 1)
   set guidance-to-home (1 * to-home) / (1 * hazard + 1)
 end
 
@@ -413,7 +407,7 @@ max-num-ghosts
 max-num-ghosts
 0
 100
-78
+4
 1
 1
 NIL
@@ -565,7 +559,7 @@ ghosts-lifetime
 ghosts-lifetime
 0
 100
-50
+17
 1
 1
 NIL

@@ -398,7 +398,29 @@ pour le guidage de chaque agent mobile, on procède comme suit :
 \end{enumerate}
 
 Drones et fantômes atteignent désormais leur but tout en évitant les
-menaces ennemies.
+menaces ennemies. La différence de guidage entre les deux versions du
+programme est visible sur la figure \ref{paths}.
+
+\begin{figure}[p]
+  \centering
+
+  \mbox{
+    \subfigure{
+      \subfigure[Implémentation de José M. Vidal]{
+        \includegraphics[width=6.5cm]{path1.png}
+      }
+      \quad
+      \subfigure[Nouvelle implémentation]{
+        \includegraphics[width=6.5cm]{path2.png}
+      }
+    }
+  }
+
+  \caption{Chemins parcourus par le drone pour les deux versions
+    différentes du programme. En rouge, les menaces à éviter; en vert
+    la cible.}
+  \label{paths}
+\end{figure}
 
 \bibliographystyle{alpha}
 \bibliography{sources}

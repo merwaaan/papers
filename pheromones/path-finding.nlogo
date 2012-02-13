@@ -7,6 +7,7 @@ breed [ targets ]
 breed [ hazards ]
 breed [ walkers ]
 
+globals [base-x base-y]
 
 ;There are 4 pheronomes. Their values range from 0-1.
 patches-own [target hazard to-target to-home]
@@ -32,13 +33,38 @@ to setup
   set-default-shape walkers "box"
   set-default-shape targets "circle"
   set-default-shape hazards "box"
+
+  create-walkers 1 [
+    set wait-steps walker-speed
+    setxy get-random-xcor get-random-ycor
+    set color magenta]
+  
+  ;setup1
+  setup2
+  
+  create-walkers 1 [
+    setxy base-x base-y
+    set wait-steps walker-speed
+    set color blue
+  ]
+  
+  reset-ticks
+end
+
+to setup1
+
+  set base-x get-random-xcor
+  set base-y get-random-ycor
+  
   create-hazards num-hazards [
     setxy get-random-xcor get-random-ycor
     set color orange
     set heading 0
     ask patch-here [
-      set hazard 10]
+      set hazard 10
+    ]
   ]  
+  
   create-targets num-targets [
     setxy get-random-xcor get-random-ycor
     set color green
@@ -46,10 +72,48 @@ to setup
       set target 10
     ]
   ]
-  create-walkers 1 [
-    set wait-steps walker-speed
-    setxy get-random-xcor get-random-ycor
-    set color magenta]
+  
+end
+
+to setup2
+  
+  set base-x 0
+  set base-y 0
+  
+  put-hazard 10 10
+  put-hazard 10 9
+  put-hazard 10 8
+  put-hazard 11 8
+  put-hazard 12 8
+  put-hazard 12 9
+  put-hazard 12 10
+  
+  put-target 11 9
+
+end
+
+to put-hazard [x y]
+
+  create-hazards 1 [
+    setxy x y
+    set color orange
+    ask patch-here [
+      set hazard 10
+    ]
+  ]
+
+end
+
+to put-target [x y]
+  
+  create-targets 1 [
+    setxy x y
+    set color green
+    ask patch-here [
+      set target 10
+    ]
+  ]
+  
 end
 
 to update
@@ -365,7 +429,7 @@ SWITCH
 139
 show-to-home
 show-to-home
-0
+1
 1
 -1000
 
@@ -376,7 +440,7 @@ SWITCH
 172
 show-to-target
 show-to-target
-1
+0
 1
 -1000
 
