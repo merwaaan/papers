@@ -30,15 +30,11 @@ end
 to setup
   clear-all
   
-  set-default-shape walkers "box"
+  set-default-shape walkers "default"
+  set-default-shape ghosts "default"
   set-default-shape targets "circle"
   set-default-shape hazards "box"
-
-  create-walkers 1 [
-    set wait-steps walker-speed
-    setxy get-random-xcor get-random-ycor
-    set color magenta]
-  
+ 
   ;setup1
   setup2
   
@@ -58,7 +54,7 @@ to setup1
   
   create-hazards num-hazards [
     setxy get-random-xcor get-random-ycor
-    set color orange
+    set color red
     set heading 0
     ask patch-here [
       set hazard 10
@@ -80,13 +76,18 @@ to setup2
   set base-x 0
   set base-y 0
   
-  put-hazard 10 10
-  put-hazard 10 9
-  put-hazard 10 8
-  put-hazard 11 8
-  put-hazard 12 8
-  put-hazard 12 9
-  put-hazard 12 10
+    
+  put-hazard 9 10
+  put-hazard 9 9
+  put-hazard 9 8
+  put-hazard 9 7
+  put-hazard 10 7
+  put-hazard 11 7
+  put-hazard 12 7
+  put-hazard 13 7
+  put-hazard 13 8
+  put-hazard 13 9
+  put-hazard 13 10
   
   put-target 11 9
 
@@ -96,7 +97,7 @@ to put-hazard [x y]
 
   create-hazards 1 [
     setxy x y
-    set color orange
+    set color red
     ask patch-here [
       set hazard 10
     ]
@@ -139,7 +140,6 @@ to find-target-or-home
   ifelse (mode = "to-target")[ ;;looking for the target
     if (any? targets-here) [
       set mode "to-home"
-      set color magenta
       set drop-size 20
       rt 180
       stop]

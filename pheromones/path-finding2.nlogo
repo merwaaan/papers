@@ -37,8 +37,8 @@ to setup
   set-default-shape hazards "x"
   set-default-shape homes "none"
 
-  setup1
-  ;setup2
+  ;setup1
+  setup2
   
   create-homes 1 [
     setxy base-x base-y
@@ -84,13 +84,17 @@ to setup2
   set base-x 0
   set base-y 0
   
-  put-hazard 10 10
-  put-hazard 10 9
-  put-hazard 10 8
-  put-hazard 11 8
-  put-hazard 12 8
-  put-hazard 12 9
-  put-hazard 12 10
+  put-hazard 9 10
+  put-hazard 9 9
+  put-hazard 9 8
+  put-hazard 9 7
+  put-hazard 10 7
+  put-hazard 11 7
+  put-hazard 12 7
+  put-hazard 13 7
+  put-hazard 13 8
+  put-hazard 13 9
+  put-hazard 13 10
   
   put-target 11 9
 
@@ -335,7 +339,7 @@ to colorize-patch
 end
 
 to update-guidance
-  set guidance-to-target (1 * target + 7 * to-target) / (10 * hazard + 1)
+  set guidance-to-target (1 * target + 7 * to-target) / (5 * hazard + 1)
   set guidance-to-home (1 * to-home) / (1 * hazard + 1)
 end
 
@@ -414,7 +418,7 @@ max-num-ghosts
 max-num-ghosts
 0
 100
-50
+9
 1
 1
 NIL
@@ -492,7 +496,7 @@ diffusion-rate
 diffusion-rate
 0
 100
-14
+9
 1
 1
 NIL
@@ -507,7 +511,7 @@ evaporation-rate
 evaporation-rate
 0
 100
-6
+100
 1
 1
 NIL
@@ -601,7 +605,7 @@ SWITCH
 267
 show-guidance
 show-guidance
-1
+0
 1
 -1000
 
@@ -866,11 +870,23 @@ NetLogo 4.1.3
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="pheromone density" repetitions="5" runMetricsEveryStep="false">
+  <experiment name="num-ghosts" repetitions="10" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>update</go>
-    <metric>count patches with [hazard &gt; 8]</metric>
+    <metric>[steps] of one-of walkers</metric>
     <steppedValueSet variable="max-num-ghosts" first="1" step="1" last="50"/>
+  </experiment>
+  <experiment name="diffusion-rate" repetitions="10" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>update</go>
+    <metric>[steps] of one-of walkers</metric>
+    <steppedValueSet variable="diffusion-rate" first="1" step="1" last="25"/>
+  </experiment>
+  <experiment name="evaporation-rate" repetitions="10" runMetricsEveryStep="false">
+    <setup>setup</setup>
+    <go>update</go>
+    <metric>[steps] of one-of walkers</metric>
+    <steppedValueSet variable="evaporation-rate" first="5" step="1" last="100"/>
   </experiment>
 </experiments>
 @#$#@#$#@

@@ -218,7 +218,7 @@
   \vfill
 
   \begin{center}
-    GNest
+    GTarget
   \end{center}
 
 \end{frame}
@@ -336,10 +336,7 @@
 
   \vfill
 
-  \begin{figure}
-    \centering
-    \includegraphics[width=4cm]{path2.png}
-  \end{figure}
+  GRAPHE
 
 \end{frame}
 
@@ -350,36 +347,13 @@
   \begin{block}{Taux de diffusion}
     \begin{description}
       \item[Trop faible]{Pistes étroites}
-      \item[Trop elevé]{L'environnement est inondé}
+      \item[Trop élevé]{L'environnement est inondé}
     \end{description}
   \end{block}
 
   \vfill
 
-  \begin{figure}
-    \centering
-    \includegraphics[width=4cm]{path2.png}
-  \end{figure}
-
-\end{frame}
-
-\begin{frame}
-
-  \frametitle{Influence des réglages utilisateur}
-
-  \begin{block}{Taux de diffusion}
-    \begin{description}
-      \item[Trop faible]{Pistes étroites}
-      \item[Trop elevé]{L'environnement est inondé}
-    \end{description}
-  \end{block}
-
-  \vfill
-
-  \begin{figure}
-    \centering
-    \includegraphics[width=4cm]{path2.png}
-  \end{figure}
+  GRAPHE
 
 \end{frame}
 
@@ -390,17 +364,14 @@
   \begin{block}{Taux d'évaporation}
     \begin{description}
       \item[Trop faible]{Pas le temps de les suivre}
-      \item[Trop elevé]{Les mauvaises pistes perdurent et induisent en
+      \item[Trop élevé]{Les mauvaises pistes perdurent et induisent en
       erreur}
     \end{description}
   \end{block}
 
   \vfill
 
-  \begin{figure}
-    \centering
-    \includegraphics[width=4cm]{path2.png}
-  \end{figure}
+  GRAPHE
 
 \end{frame}
 
@@ -410,6 +381,27 @@
 
   $$g = \frac{ \theta \operatorname{RTarget} + \gamma \operatorname{GTarget} + \beta}{\alpha \operatorname{RThreat} + \delta \operatorname{Dist} + \beta}$$
 
+  \vfill
+
+  \begin{block}{$\theta$ et $\gamma$}
+    \begin{itemize}
+    \item{$\theta \rightarrow$ importance des phéromones des
+      bâtiments}
+    \item{$\gamma \rightarrow$ importance des phéromones des
+      fantômes}
+    \item{$\theta < \gamma$, on \textit{fait confiance} aux
+      fantômes}
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  \begin{block}{$\alpha$}
+    \begin{description}
+    \item[Trop faible]{Risque de rencontrer un danger}
+    \item[Trop élevé]{Configurations infranchissables}
+    \end{description}
+  \end{block}
 
 \end{frame}
 
