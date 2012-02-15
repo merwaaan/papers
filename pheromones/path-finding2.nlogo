@@ -418,7 +418,7 @@ max-num-ghosts
 max-num-ghosts
 0
 100
-9
+50
 1
 1
 NIL
@@ -511,7 +511,7 @@ evaporation-rate
 evaporation-rate
 0
 100
-100
+6
 1
 1
 NIL
@@ -870,19 +870,19 @@ NetLogo 4.1.3
 @#$#@#$#@
 @#$#@#$#@
 <experiments>
-  <experiment name="num-ghosts" repetitions="10" runMetricsEveryStep="false">
+  <experiment name="num-ghosts" repetitions="50" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>update</go>
     <metric>[steps] of one-of walkers</metric>
-    <steppedValueSet variable="max-num-ghosts" first="1" step="1" last="50"/>
+    <steppedValueSet variable="max-num-ghosts" first="20" step="1" last="50"/>
   </experiment>
-  <experiment name="diffusion-rate" repetitions="10" runMetricsEveryStep="false">
+  <experiment name="diffusion-rate" repetitions="100" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>update</go>
     <metric>[steps] of one-of walkers</metric>
-    <steppedValueSet variable="diffusion-rate" first="1" step="1" last="25"/>
+    <steppedValueSet variable="diffusion-rate" first="25" step="1" last="30"/>
   </experiment>
-  <experiment name="evaporation-rate" repetitions="10" runMetricsEveryStep="false">
+  <experiment name="evaporation-rate" repetitions="50" runMetricsEveryStep="false">
     <setup>setup</setup>
     <go>update</go>
     <metric>[steps] of one-of walkers</metric>

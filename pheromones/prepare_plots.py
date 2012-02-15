@@ -10,8 +10,9 @@ ylabel = sys.argv[3]
 source = open(name + '.csv', 'rb');
 reader = csv.reader(source);
 
-# Jump the first line.
-reader.next()
+# Jump the first lines.
+for i in range(0, 7):
+    reader.next()
 
 # Count.
 for row in reader:
