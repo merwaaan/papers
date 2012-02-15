@@ -1,8 +1,10 @@
 import csv
+import sys
 
 dictionnary = {}
 
-data = open('run-num-ghosts.csv', 'rb');
+file = sys.argv[1]
+data = open(file, 'rb');
 reader = csv.reader(data);
 
 # Jump the first line.
@@ -15,12 +17,10 @@ for row in csv.reader(data):
     steps = row[3]
 
     if value not in dictionnary:
-        dictionnary[value] = [int(steps)]
+        dictionnary[int(value)] = [int(steps)]
     else:
-        dictionnary[value].append(int(steps))
+        dictionnary[int(value)].append(int(steps))
 
 # Average
-for value, steps in dictionnary.items():
-    print str(value) + ' ' + str(steps)
+for value, steps in sorted(dictionnary.items()):
     print str(value) + ' ' + str(sum(steps) / len(steps))
-
