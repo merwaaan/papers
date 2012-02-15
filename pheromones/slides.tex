@@ -2,6 +2,7 @@
 
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
+\usepackage{subfigure}
 
 \title{Recherche de chemin par dépôt de phéromones}
 \author{Merwan Achibet}
@@ -9,6 +10,7 @@
 \date{Jeudi 16 février 2012}
 
 \usetheme{Warsaw}
+\beamertemplatenavigationsymbolsempty
 
 \begin{document}
 
@@ -20,11 +22,11 @@
 
   \frametitle{Analogie avec le vivant}
 
-  \begin{block}{}
-    Les fourmis :
+  \begin{block}{Les fourmis}
     \begin{itemize}
-      \item{Fragiles, minuscules}
-      \item{Une espèce pourtant très prospère}
+    \item{Fragiles, minuscules}
+    \item{Une espèce pourtant prospère}
+    \item{Grâce à son caractère social}
     \end{itemize}
   \end{block}
 
@@ -35,7 +37,7 @@
     \begin{itemize}
       \item{Piste vers une source de nourriture}
       \item{Délimitation d'un territoire}
-      \item{Danger imminent}
+      \item{Zone dangereuse}
       \item{Disposition à la reproduction}
     \end{itemize}
   \end{block}
@@ -46,155 +48,369 @@
 
   \frametitle{Analogie avec le vivant}
 
-  Les phéromones sont soumises à différents phénomènes naturels
+  Les phéromones sont soumises à différents phénomènes naturels :
+  \begin{description}
+    \item[\'Evaporation]{\'Ephémères, elles disparaissent progressivement}
+    \item[Diffusion]{Volatiles, elles s'étalent}
+  \end{description}
 
-  \begin{block}{L'évaporation}
-    Elles sont éphémères et disparaissent progressivement
-  \end{block}
+  \vfill
 
-  \begin{block}{La diffusion}
-    Elles s'étalent dans l'espace
-  \end{block}
-
-  \begin{block}{Le renforcement}
-    Leur puissance est renouvellée et augmentée par le passage d'autre
-    individus.
+  \begin{block}{\'Emergence de pistes}
+    \begin{itemize}
+    \item{Les meilleures sont renforcées}
+    \item{Les mauvaises s'effacent}
+    \end{itemize}
   \end{block}
 
 \end{frame}
 
 \begin{frame}
 
-  \frametitle{Qualités}
+  \frametitle{Adapté pour les systèmes multi-agents}
 
-  \begin{itemize}
-    \item[Diversité]{}
-    \item[Distribution]{}
-    \item[Décentralisation]{}
-    \item[Dynamicité]{}
-  \end{itemize}
+  Les phéromones rassemblent plusieurs qualités notables :
+
+  \vfill
+
+  \begin{block}{}
+    \begin{description}
+    \item[Diversité]{Une phéromone peut prendre n'importe quel sens}
+    \item[Distribution]{Elles sont réparties sur l'environnement}
+    \item[Décentralisation]{Une fourmi est un agent parmi d'autres}
+    \item[Dynamicité]{S'adapte aux changements de l'environnement}
+    \end{description}
+  \end{block}
 
 \end{frame}
 
-\begin{block}
+\begin{frame}
 
-  \frametitle{Dans le cadre militaire}
+  \frametitle{Le modèle de Parunak \textit{et al.}}
 
-  \begin{itemize}
-  \item{alentours de la fourmilière  $\rightarrow$ zone de conflit}
-  \item{fourmis $\rightarrow$ drones aériens}
-  \item{nourriture $\rightarrow$ bâtiments cibles}
-  \item{dangers $\rightarrow$ bâtiments menaces}
-  \end{itemize}
+  \begin{block}{Utilisation de phéromones dans un cadre militaire}
+    \begin{itemize}
+    \item{Environnement  $\rightarrow$ zone de conflit divisée en blocs}
+    \item{Fourmis $\rightarrow$ drones aériens}
+    \item{Nourriture $\rightarrow$ bâtiments cibles}
+    \item{Dangers $\rightarrow$ bâtiments menaces}
+    \end{itemize}
+  \end{block}
 
-  \includegraphics[width=3.5cm]{terrain_real.png}
+  \begin{figure}
+    \centering
+    \includegraphics[width=3.5cm]{terrain_real.png}
+  \end{figure}
 
-\end{block}
+\end{frame}
 
-\begin{block}
+\begin{frame}
 
-  \frametitle{Les phéromones}
+  \frametitle{Phéromones employées}
 
   \begin{description}
-  \item[GNest]{Mène à la base (le nid)}
+  \item[GNest]{Mène à la base}
   \item[GTarget]{Mène à une cible}
   \item[RTarget]{Libérée par les cibles, elle \textit{attire}}
   \item[RThreat]{Libérée par les menaces, elle \textit{repousse}}
   \end{description}
 
-\end{block}
+  \vfill
 
-\begin{block}
+  \begin{figure}
+    \centering
+    \includegraphics[width=3.5cm]{terrain_field.png}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
 
   \frametitle{Guidage}
 
-  \includegraphics[width=3.5cm]{terrain_field.png}
+  \begin{block}{Pour se diriger}
+    \begin{itemize}
+    \item{On ne veut pas évaluer chaque phéromone séparément}
+    \item{On calcule une phéromone nette décrivant l'attractivité}
+    \end{itemize}
+  \end{block}
 
-  \begin{equation}
-    g = \frac{ \theta \operatorname{RTarget} + \gamma \operatorname{GTarget} + \beta}{\alpha \operatorname{RThreat} + \delta \operatorname{Dist} + \beta}
-  \end{equation}
+  \vfill
 
-\end{block}
+  $$g = \frac{ \theta \operatorname{RTarget} + \gamma \operatorname{GTarget} + \beta}{\alpha \operatorname{RThreat} + \delta \operatorname{Dist} + \beta}$$
 
-\begin{block}
+\end{frame}
+
+
+\begin{frame}
 
   \frametitle{Un nouveau type d'agent}
 
   \begin{block}{Les fantômes}
+    \begin{itemize}
     \item{Courte durée de vie}
     \item{Haute vitesse}
+    \end{itemize}
   \end{block}
 
-  \includegraphics[width=3.5cm]{ghosts.png}
+  \vfill
 
-  Permet d'évaluer les chemins futurs
+  \begin{figure}
+    \centering
+    \includegraphics[width=4cm]{ghosts.png}
+  \end{figure}
 
-\end{block}
+  \vfill
+
+  Ils permettent d'évaluer les chemins que le drone pourrait arpenter
+  dans un futur proche.
+
+\end{frame}
 
 \section{L'implémentation}
 
-\begin{block}
+\begin{frame}
 
-  \begin{block}
+  \frametitle{L'implémentation de José M. Vidal}
+
+  \begin{block}{}
     \begin{itemize}
-    \item{zones $\rightarrow$ patch}
-    \item{agents $\rightarrow$ turtles}
+    \item{Zones $\rightarrow$ \textit{patches}}
+    \item{Agents (drones, fantomes, bâtiments) $\rightarrow$ \textit{turtles}}
     \end{itemize}
   \end{block}
+
+  \vfill
 
   \begin{block}{La simulation}
     \begin{itemize}
     \item{Environnement aléatoirement généré}
     \item{Un unique drone}
-    \item{objectif : atteindre une cible}
+    \item{Objectif : atteindre une cible}
     \item{On ne se soucie pas du retour à la base}
     \end{itemize}
   \end{block}
 
-\end{block}
+\end{frame}
 
-\begin{block}
+\begin{frame}
 
-  IMAGES
+  \begin{figure}
+    \centering
+    \includegraphics[width=7cm]{pheromones_tohome.png}
+  \end{figure}
 
-\end{block}
+  \vfill
 
-\begin{block}
+  \begin{center}
+    GNest
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=7cm]{pheromones_totarget.png}
+  \end{figure}
+
+  \vfill
+
+  \begin{center}
+    GNest
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=7cm]{pheromones_hazard.png}
+  \end{figure}
+
+  \vfill
+
+  \begin{center}
+    RThreat
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=7cm]{pheromones_target.png}
+  \end{figure}
+
+  \vfill
+
+  \begin{center}
+    RTarget
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
 
   \frametitle{Problème : un guidage trop simpliste}
 
-  uphill
+  \begin{block}{Dans le code}
+    \begin{itemize}
+    \item{\texttt{uphill RTarget} guide les fantômes}
+    \item{\texttt{uphill GTarget} guide le drone}
+    \end{itemize}
+  \end{block}
+
+  \vfill
 
   La fonction d'évaluation de l'attractivité n'est pas utilisée
+  \begin{itemize}
+    \item{Le drone suit toujours le chemin le plus court...}
+    \item{... Mais ignore les dangers !}
+  \end{itemize}
 
-  $\rightarrow$ Nouvelle version
+\end{frame}
 
-\end{block}
+\begin{frame}
 
-\begin{block}
+  \begin{figure}
+    \centering
+    \includegraphics[width=7cm]{path1.png}
+  \end{figure}
 
-  \frametitle{Fonctionnement}
+  \vfill
 
-  L'attractivité est mise à jour après chaque itération.
+  \begin{center}
+    Scénario critique
+  \end{center}
 
-  \begin{enumerate}
-  \item{Observer l'attractivité des huits zones voisines}
-  \item{Tirage aléatoire sur une roue de la fortune biaisée}
-  \item{Déplacement sur la case gagnante}
-  \end{enumerate}
+\end{frame}
 
-\end{block}
+\begin{frame}
 
-\begin{block}
+  \frametitle{Nouvelle version}
 
-  \frametitle{Influence des paramètres}
+  L'attractivité de chaque case est mise à jour après chaque itération
+  via la fonction $g$.
 
-\end{block}
+  \vfill
 
-\begin{block}
+  \begin{block}{\'Etapes du déplacement d'un drone/fantôme}
+    \begin{enumerate}
+    \item{Observer l'attractivité des huits zones voisines}
+    \item{Tirage aléatoire sur une roue de la fortune biaisée}
+    \item{Déplacement sur la case gagnante}
+    \end{enumerate}
+  \end{block}
 
-  \frametitle{Influence des facteurs}
+\end{frame}
 
-\end{block}
+\begin{frame}
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=7cm]{path2.png}
+  \end{figure}
+
+  \vfill
+
+  \begin{center}
+    Scénario critique
+  \end{center}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Influence des réglages utilisateur}
+
+  \begin{block}{Nombre de fantômes}
+    \begin{description}
+      \item[Plus de fantômes]{Plus de chemins possibles}
+      \item[Trop de fantômes]{Aucun chemin n'émerge}
+    \end{description}
+  \end{block}
+
+  \vfill
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=4cm]{path2.png}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Influence des réglages utilisateur}
+
+  \begin{block}{Taux de diffusion}
+    \begin{description}
+      \item[Trop faible]{Pistes étroites}
+      \item[Trop elevé]{L'environnement est inondé}
+    \end{description}
+  \end{block}
+
+  \vfill
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=4cm]{path2.png}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Influence des réglages utilisateur}
+
+  \begin{block}{Taux de diffusion}
+    \begin{description}
+      \item[Trop faible]{Pistes étroites}
+      \item[Trop elevé]{L'environnement est inondé}
+    \end{description}
+  \end{block}
+
+  \vfill
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=4cm]{path2.png}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Influence des réglages utilisateur}
+
+  \begin{block}{Taux d'évaporation}
+    \begin{description}
+      \item[Trop faible]{Pas le temps de les suivre}
+      \item[Trop elevé]{Les mauvaises pistes perdurent et induisent en
+      erreur}
+    \end{description}
+  \end{block}
+
+  \vfill
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=4cm]{path2.png}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Influence des facteurs de $g$}
+
+  $$g = \frac{ \theta \operatorname{RTarget} + \gamma \operatorname{GTarget} + \beta}{\alpha \operatorname{RThreat} + \delta \operatorname{Dist} + \beta}$$
+
+
+\end{frame}
 
 \end{document}
