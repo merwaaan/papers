@@ -16,6 +16,28 @@
 
 \maketitle
 
+\begin{frame}
+
+  \frametitle{Sujet}
+
+  \begin{block}{Le modèle}
+    \begin{itemize}
+    \item{Guidage de véhicules par phéromones synthétiques}
+    \item{Parunak, Brueckner et Sauter (2002)}
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  \begin{block}{L'implémentation}
+    \begin{itemize}
+    \item{En NetLogo}
+    \item{José M. Vidal (2010)}
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
 \section{Le modèle}
 
 \begin{frame}
@@ -108,18 +130,25 @@
 
   \frametitle{Phéromones employées}
 
-  \begin{description}
-  \item[GNest]{Mène à la base}
-  \item[GTarget]{Mène à une cible}
-  \item[RTarget]{Libérée par les cibles, elle \textit{attire}}
-  \item[RThreat]{Libérée par les menaces, elle \textit{repousse}}
-  \end{description}
+  \begin{block}{Par les drones}
+    \begin{description}
+    \item[GTarget]{Mène à une cible}
+    \item[GNest]{Mène à la base}
+    \end{description}
+  \end{block}
+
+  \begin{block}{Par les bâtiments}
+    \begin{description}
+    \item[RTarget]{Libérée par les cibles, elle \textit{attire}}
+    \item[RThreat]{Libérée par les menaces, elle \textit{repousse}}
+    \end{description}
+  \end{block}
 
   \vfill
 
   \begin{figure}
     \centering
-    \includegraphics[width=3.5cm]{terrain_field.png}
+    \includegraphics[width=3.2cm]{terrain_field.png}
   \end{figure}
 
 \end{frame}
@@ -329,8 +358,7 @@
 
   \begin{block}{Nombre de fantômes}
     \begin{description}
-      \item[Plus de fantômes]{Plus de chemins possibles}
-      \item[Trop de fantômes]{Aucun chemin n'émerge}
+      \item[Trop faible]{Peu d'émergence}
     \end{description}
   \end{block}
 
@@ -369,9 +397,9 @@
 
   \begin{block}{Taux d'évaporation}
     \begin{description}
-      \item[Trop faible]{Pas le temps de les suivre}
-      \item[Trop élevé]{Les mauvaises pistes perdurent et induisent en
-      erreur}
+      \item[Trop faible]{Les mauvaises pistes perdurent et induisent
+        en erreur}
+      \item[Trop élevé]{Pas le temps de les suivre}
     \end{description}
   \end{block}
 
