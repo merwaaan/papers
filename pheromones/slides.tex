@@ -10,7 +10,29 @@
 \date{Jeudi 16 février 2012}
 
 \usetheme{Warsaw}
-\beamertemplatenavigationsymbolsempty
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+
+\definecolor{Backdrop}{RGB}{85, 98, 112}
+\definecolor{Foreground}{RGB}{238, 238, 238}
+\definecolor{Fabulous}{RGB}{210, 111, 127}
+
+\usecolortheme[named=Backdrop]{structure}
+\setbeamerfont{title}{series=\bfseries}
+\setbeamercolor{title}{bg=Backdrop}
+\setbeamercolor{frametitle}{fg=white, bg=Backdrop}
+\setbeamercolor{normal text}{fg=Backdrop, bg=white}
+
+\setbeamertemplate{blocks}[rounded][shadow=true]
+\setbeamerfont{block title}{series=\bfseries}
+\setbeamercolor{block title}{fg=white, bg=Backdrop!105}
+\setbeamercolor{block body}{fg=Foreground, bg=Backdrop!80}
+
+\setbeamertemplate{items}[circle]
+\setbeamercolor{item}{fg=Fabulous!50}
+
+\setbeamerfont{footline}{size=\small}
 
 \begin{document}
 
