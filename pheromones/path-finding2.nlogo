@@ -82,7 +82,7 @@ end
 to setup2
   
   set base-x 0
-  set base-y 0
+  set base-y 2
   
   put-hazard 9 10
   put-hazard 9 9
@@ -418,7 +418,7 @@ max-num-ghosts
 max-num-ghosts
 0
 100
-50
+9
 1
 1
 NIL
@@ -511,7 +511,7 @@ evaporation-rate
 evaporation-rate
 0
 100
-6
+8
 1
 1
 NIL
