@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import org.graphstream.graph.Edge;
@@ -15,9 +16,18 @@ public class Simulation {
 
 	private int worldSize;
 	private int sensorCount;
-	private int sensorRadius;
 
-	private int frameLength = 100;//1000 / 60;
+	public int communicationRadius;
+
+	private int separationRadius;
+	private int neutralInterval;
+
+	public int repulsionRadius;
+	public int attractionRadius;
+
+	private static int sensorSpeed = 50;
+
+	private static int frameLength = 1000 / 20;
 
 	private static String style =
 		"node { size: 7px; }" +
@@ -28,19 +38,28 @@ public class Simulation {
 		this.net = new SingleGraph("sensor network");
 		this.net.addAttribute("ui.stylesheet", Simulation.style);
 
-		this.worldSize = 1000;
-		this.sensorCount = 50;
-		this.sensorRadius = 200;
+		this.worldSize = 40000;
+		this.sensorCount = 100;
+
+		this.communicationRadius = 3000;
+		this.separationRadius = 2500;
+		this.neutralInterval = 0;
+
+		this.repulsionRadius = this.separationRadius - this.neutralInterval;
+		this.attractionRadius = this.separationRadius + this.neutralInterval;
 
 		for(int i = 0; i < this.sensorCount; ++i)
 			this.spawn();
 
 		View view = this.net.display(false).getDefaultView();
-		view.setBackLayerRenderer(new BackgroundRenderer(this.sensorRadius));
+		view.setBackLayerRenderer(new BackgroundRenderer(this));
 
 		Camera camera = view.getCamera();
 		camera.setViewCenter(0, 0, 0);
-		camera.setViewPercent(1.5);
+		camera.setAutoFitView(false);
+		camera.setViewPercent(1);
+
+		this.net.setAttribute("ui.antialias", true);
 	}
 
 	private void spawn() {
@@ -64,8 +83,8 @@ public class Simulation {
 		double y_new = y_old == null ? y : y + y_old;
 
 		// Apply.
-		sensor.setAttribute("x", x_new + x);
-		sensor.setAttribute("y", y_new + y);
+		sensor.setAttribute("x", x_new);
+		sensor.setAttribute("y", y_new);
 	}
 
 	private double distance(Node s1, Node s2) {
@@ -101,21 +120,36 @@ public class Simulation {
 
 	private void update() {
 
-		this.checkForNeighbors();
+		HashMap<String, Vector2> displacements = new HashMap<String, Vector2>();
 
 		for(Node sensor : this.net)
-			this.updatePosition(sensor);
+			displacements.put(sensor.getId(), this.displacementVector(sensor));
+
+		for(Node sensor : this.net) {
+
+			Vector2 displacement = displacements.get(sensor.getId());
+			this.move(sensor, displacement.at(0), displacement.at(1));
+		}
 
 		this.checkForNeighbors();
 	}
 
-	private void updatePosition(Node sensor) {
+	private Vector2 displacementVector(Node sensor) {
 
 		Double x = sensor.getAttribute("x");
 		Double y = sensor.getAttribute("y");
 		Vector2 position = new Vector2(x, y);
 
 		Vector2 displacement = new Vector2();
+
+		if(sensor.getDegree() == 0) {
+
+			position.scalarMult(-1);
+			position.normalize();
+			position.scalarMult(Simulation.sensorSpeed);
+
+			return position;
+		}
 
 		for(Edge link : sensor.getEachEdge()) {
 
@@ -125,16 +159,37 @@ public class Simulation {
 			Double yNeighbor = neighbor.getAttribute("y");
 			Vector2 positionNeighbor = new Vector2(xNeighbor, yNeighbor);
 
-			double d = distance(sensor, neighbor);
+			Double distance = link.getAttribute("distance");
 
-			Vector2 repulsion = new Vector2(position);
-			repulsion.sub(positionNeighbor);
-			repulsion.scalarDiv(d);
+			Vector2 force = new Vector2();
 
-			displacement.add(repulsion);
+			if(distance < this.repulsionRadius) {
+
+				force.add(position);
+				force.sub(positionNeighbor);
+				force.scalarDiv(distance);
+				force.scalarMult(this.repulsionRadius - distance);
+				force.scalarMult(neighbor.getDegree());
+			}
+			else if(distance > this.attractionRadius) {
+
+				force.add(positionNeighbor);
+				force.sub(position);
+				force.scalarMult(this.attractionRadius / distance);
+				force.scalarDiv(5000*neighbor.getDegree());
+			}
+
+			displacement.add(force);
 		}
 
-		this.move(sensor, displacement.at(0), displacement.at(1));
+		// Limit the sensor speed.
+		double length = displacement.length();
+		if(length > Simulation.sensorSpeed) {
+			double ratio = 1 / (length / Simulation.sensorSpeed);
+			displacement.scalarMult(ratio);
+		}
+
+		return displacement;
 	}
 
 	private void checkForNeighbors() {
@@ -152,12 +207,12 @@ public class Simulation {
 				// If the sensors are already linked.
 				if(s1.hasEdgeBetween(s2)) {
 
-					if(d > this.sensorRadius)
+					if(d > this.communicationRadius)
 						this.net.removeEdge(s1, s2);
 				}
 				// If the sensors are not linked yet.
-				else if(d <= this.sensorRadius)
-					this.net.addEdge(s1.getId() + "_" + s2.getId(), s1, s2);
+				else if(d <= this.communicationRadius)
+					this.net.addEdge(s1.getId() + "_" + s2.getId(), s1, s2).addAttribute("distance", d);
 			}
 	}
 
