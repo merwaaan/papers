@@ -1,10 +1,13 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 
+import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.ui.swingViewer.View;
 import org.graphstream.ui.swingViewer.util.Camera;
+import org.graphstream.ui.geom.Vector2;
 
 public class Simulation {
 
@@ -14,7 +17,7 @@ public class Simulation {
 	private int sensorCount;
 	private int sensorRadius;
 
-	private int frameLength = 1000 / 60;
+	private int frameLength = 100;//1000 / 60;
 
 	private static String style =
 		"node { size: 7px; }" +
@@ -98,6 +101,8 @@ public class Simulation {
 
 	private void update() {
 
+		this.checkForNeighbors();
+
 		for(Node sensor : this.net)
 			this.updatePosition(sensor);
 
@@ -106,7 +111,30 @@ public class Simulation {
 
 	private void updatePosition(Node sensor) {
 
-		this.move(sensor, 0, 0);
+		Double x = sensor.getAttribute("x");
+		Double y = sensor.getAttribute("y");
+		Vector2 position = new Vector2(x, y);
+
+		Vector2 displacement = new Vector2();
+
+		for(Edge link : sensor.getEachEdge()) {
+
+			Node neighbor = link.getOpposite(sensor);
+
+			Double xNeighbor = neighbor.getAttribute("x");
+			Double yNeighbor = neighbor.getAttribute("y");
+			Vector2 positionNeighbor = new Vector2(xNeighbor, yNeighbor);
+
+			double d = distance(sensor, neighbor);
+
+			Vector2 repulsion = new Vector2(position);
+			repulsion.sub(positionNeighbor);
+			repulsion.scalarDiv(d);
+
+			displacement.add(repulsion);
+		}
+
+		this.move(sensor, displacement.at(0), displacement.at(1));
 	}
 
 	private void checkForNeighbors() {
