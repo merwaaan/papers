@@ -3,6 +3,8 @@ import java.util.ArrayList;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.ui.swingViewer.View;
+import org.graphstream.ui.swingViewer.util.Camera;
 
 public class Simulation {
 
@@ -15,6 +17,7 @@ public class Simulation {
 	private int frameLength = 1000 / 60;
 
 	private static String style =
+		"node { size: 7px; }" +
 		"edge { size: 1px; }";
 
 	public Simulation() {
@@ -23,13 +26,18 @@ public class Simulation {
 		this.net.addAttribute("ui.stylesheet", Simulation.style);
 
 		this.worldSize = 1000;
-		this.sensorCount = 500;
-		this.sensorRadius = 100;
+		this.sensorCount = 50;
+		this.sensorRadius = 200;
 
 		for(int i = 0; i < this.sensorCount; ++i)
 			this.spawn();
 
-		this.net.display(false);
+		View view = this.net.display(false).getDefaultView();
+		view.setBackLayerRenderer(new BackgroundRenderer(this.sensorRadius));
+
+		Camera camera = view.getCamera();
+		camera.setViewCenter(0, 0, 0);
+		camera.setViewPercent(1.5);
 	}
 
 	private void spawn() {
@@ -37,8 +45,9 @@ public class Simulation {
 		// Add a new sensor.
 		Node sensor = this.net.addNode(Integer.toString(this.net.getNodeCount()));
 
-		// Give it a random starting positioN.
-		this.move(sensor, Math.random() * this.worldSize, Math.random() * this.worldSize);
+		// Give it a random starting position.
+		int halfWorldSize = this.worldSize / 2;
+		this.move(sensor, Math.random() * this.worldSize - halfWorldSize, Math.random() * this.worldSize - halfWorldSize);
 	}
 
 	private void move(Node sensor, double x, double y) {
@@ -97,7 +106,7 @@ public class Simulation {
 
 	private void updatePosition(Node sensor) {
 
-		this.move(sensor, Math.random(), Math.random());
+		this.move(sensor, 0, 0);
 	}
 
 	private void checkForNeighbors() {
@@ -111,7 +120,7 @@ public class Simulation {
 				Node s2 = (Node)sensors[j];
 
 				double d = this.distance(s1, s2);
-				//System.out.println(s1.getId()+" "+s2.getId()+" "+d+" "+s1.hasEdgeBetween(s2));
+
 				// If the sensors are already linked.
 				if(s1.hasEdgeBetween(s2)) {
 
@@ -122,6 +131,11 @@ public class Simulation {
 				else if(d <= this.sensorRadius)
 					this.net.addEdge(s1.getId() + "_" + s2.getId(), s1, s2);
 			}
+	}
+
+	public static void main(String[] args) {
+
+		new Simulation().run();
 	}
 
 }

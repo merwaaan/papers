@@ -5,7 +5,7 @@ CP=$(LIB):$(SRC)
 all: compile execute
 
 execute: compile
-	java -classpath $(CP) Test
+	java -classpath $(CP) Simulation
 
-compile: Test.java Simulation.java
+compile: Simulation.java BackgroundRenderer.java
 	javac -classpath $(CP) *.java
