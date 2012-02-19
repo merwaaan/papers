@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -6,6 +7,7 @@ import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
+import org.graphstream.stream.file.FileSinkImages;
 import org.graphstream.ui.swingViewer.View;
 import org.graphstream.ui.swingViewer.util.Camera;
 import org.graphstream.ui.geom.Vector2;
@@ -27,13 +29,14 @@ public class Simulation {
 
 	private static double sensorSpeed = 2;
 
-	private static int frameLength = 1000 / 60;
+	private int frameLength;
+	private FileSinkImages fileSink;
 
 	private static String style =
 		"node { size: 7px; }" +
 		"edge { size: 1px; }";
 
-	public Simulation(int sensorCount, int worldSize, boolean displayRadii) {
+	public Simulation(int sensorCount, int worldSize, boolean displayRadii, String capturePrefix) {
 
 		this.net = new SingleGraph("sensor network");
 		this.net.addAttribute("ui.stylesheet", Simulation.style);
@@ -58,6 +61,17 @@ public class Simulation {
 		camera.setViewPercent(1);
 
 		this.net.setAttribute("ui.antialias", true);
+
+		this.frameLength = 1000 / 60;
+
+		if(capturePrefix != null) {
+			this.fileSink = new FileSinkImages(capturePrefix,
+			                                   FileSinkImages.OutputType.PNG,
+			                                   FileSinkImages.Resolutions.HD720,
+			                                   FileSinkImages.OutputPolicy.NONE);
+			this.fileSink.setQuality(FileSinkImages.Quality.HIGH);
+			this.net.addSink(this.fileSink);
+		}
 
 		for(int i = 0; i < this.sensorCount; ++i)
 			this.spawn();
@@ -104,7 +118,11 @@ public class Simulation {
 		while(true) {
 
 			this.update();
+
 			this.pause(this.frameLength);
+
+			if(this.fileSink != null)
+				this.fileSink.outputNewImage();
 		}
 	}
 
@@ -279,8 +297,9 @@ public class Simulation {
 		int sensors = args[0] == null ? 200 : Integer.parseInt(args[0]);
 		int size = args[1] == null ? 1000 : Integer.parseInt(args[1]);
 		boolean displayRadii = args[2] == null ? false : Boolean.parseBoolean(args[2]);
+		String capturePrefix = args[3] == null || args[3].length() == 0 ? null : args[3];
 
-		new Simulation(sensors, size, displayRadii).run();
+		new Simulation(sensors, size, displayRadii, capturePrefix).run();
 	}
 
 }
