@@ -1,8 +1,9 @@
-\documentclass[11pt]{article}
+\documentclass[10pt]{article}
 
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
 \usepackage{multicol}
+\usepackage{float}
 \usepackage{graphicx}
 \usepackage{tikz}
 
@@ -20,44 +21,211 @@
 \author{Merwan Achibet}
 \date{}
 
+\newcommand{\drawSensor}[4]{
+  \draw[fill=#4] (#1,#2) circle (0.1);
+  \draw[dashed,#4] (#1,#2) circle (#3);
+}
+
 \begin{document}
 
 \maketitle
 
 \begin{multicols}{2}
 
-\section{Lorem}
+\section{Introduction}
 
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum
+On imagine le problème suivant : un groupe de $n$ capteurs mobiles est
+réparti aléatoirement dans un espace à deux dimensions. Un capteur ne
+peut communiquer avec un autre capteur que si la distance les séparant
+est inférieure à un seuil donné.
 
-\section{Ipsum}
+Cette contrainte de communication nous oblige à former un réseau
+connexe de capteurs car on souhaite que toute information puisse être
+partagée de capteur en capteur. Spatialement, cela signifie que l'on
+doit positionner les capteurs afin qu'ils appartiennent tous à la même
+composante connexe via leur rayon de communication. Cependant, une
+agglomération naïve de tous les capteurs dans une zone est inadapté à
+ce problème car on souhaite que les capteurs couvrent une zone
+importante, leur but étant avant tout de relever le plus de données
+possibles.
 
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum  Lorem ipsum
- \cite{Lafferriere2005899}
- \cite{Yang2010390}
- \cite{Cheng2011497}
+La décentralité du réseau implique que chaque capteur n'a pas de vue
+globale du système mais peut construire progressivement une vue, au
+début partielle et approximative puis plus précises, à l'aide des
+données de ses voisins.
+
+Deux questions interdépendantes se posent donc :
+
+\begin{enumerate}
+  \item{Comment déterminer de manière décentralisée la connexité du
+    réseau ?}
+  \item{Comment déplacer les capteurs pour rendre le réseau connexe ?}
+\end{enumerate}
+
+Dans la section 2, nous nous attelerons à proposer un algorithme
+simple permettant d'évaluer si un réseau de capteurs est connexe de
+manière décentralisée. Ensuite, nous envisagerons une méthode de
+guidage des capteurs inspirées des boïds et des systèmes
+particulaires.
+
+\begin{figure}[H]
+
+  \centering
+
+  \begin{tikzpicture}
+
+    \draw (0,0) -- (0,1);
+
+    \drawSensor{0}{0}{2}{red}
+    \drawSensor{0}{1}{2}{blue}
+    \drawSensor{3}{1}{2}{green}
+
+  \end{tikzpicture}
+
+  \caption{}
+  \label{}
+
+\end{figure}
+
+\section{Déterminer si le réseau est connexe}
+
+\section{Rendre le réseau connexe}
+
+On présente une méthode de guidage décentralisée permettant au
+déplacement de chaque capteur de participer à l'émergence d'une
+connexité globale.
+
+Ce guidage, inspiré des boïds \cite{Reynolds1987} et des essaims
+particulaires gazeux \cite{Cheng2011497}, est dépendant de trois
+forces combinées en un seul mouvement. La première force,
+l'attraction, va associer à chaque capteur une force attirant les
+autres capteurs. La seconde force, la répulsion, va assurer que les
+capteurs ne soit pas tous regroupés dans la même zone et permet donc
+d'occuper un espace plus large. La dernière force, la gravité, permet
+de donner, aussi bien aux capteurs isolés qu'aux composantes connexes
+de capteurs, un mouvement global vers le center de l'espace à
+analyser.
+
+\subsection{Position connue ou approximée}
+
+Puisque l'on souhaite que chaque capteur se déplace indépendamment
+tout en participant à une évolution commune du réseau menant à la
+connexité, la connaissance de sa position propre ainsi que de la
+position de ses voisins est importante. Deux hypothèses sont
+envisageables : 1) les capteurs sont équippés pour connaître leur
+position absolue dans l'espace 2) les capteurs n'ont pas connaissance
+de leur position absolue.
+
+Dans le premier cas, la tâche est plus aisée car un capteur peut de
+lui même se rendre à une position donnée, grâce à une position propre
+connue et précise. Cette hypothèse est envisageable puisqu'avec la
+diminution continue de la taille des composants électroniques, des
+instruments de localisation pourraient facilement être embarqués dans
+un capteur.
+
+Dans le second cas, TRILATERATION !
+
+\subsection{Attraction}
+
+\`A la lecture de ce problème, la nécessité de rapprocher les capteurs
+les uns des autres afin qu'un réseau de communication ininterrompu se
+forme vient naturellement à l'esprit. En effet, la condition
+\textit{sine qua non} au bon fonctionnement du réseau est la
+communication, un capteur isolé est inutile, puisque son information
+n'est pas partagée.
+
+Pour les calculs de positionnement qui suivront, on part de
+l'hypothèse qu'un capteur $C$ peut obtenir les positions exactes de
+ses voisins et qu'il connaît la sienne.
+
+On associe à $C$ un rayon d'attraction $R_a$ donc le but sous-jacent
+est d'attirer les capteurs se trouvant à la fois dans le rayon de
+communication de $C$ et à l'extérieur de $R_a$.
+
+\begin{figure}[H]
+
+  \centering
+
+  \begin{tikzpicture}
+
+    \drawSensor{0}{0}{2}{black}
+    \draw (0,0) circle (1.5);
+
+    \draw[fill=black] (200:1.8) circle (0.1);
+    \draw[->] (200:1.8) -- (200:1);
+
+  \end{tikzpicture}
+
+  \caption{}
+  \label{}
+
+\end{figure}
+
+$$
+\vec{a} = \vec{p}_c - \vec{p}_v
+$$
+
+\subsection{Répulsion}
+
+\begin{figure}[H]
+
+  \centering
+
+  \begin{tikzpicture}
+
+    \drawSensor{0}{0}{2}{black}
+    \draw (0,0) circle (1.5);
+
+    \draw[fill=black] (150:0.5) circle (0.1);
+    \draw[->] (150:0.5) -- (150:1.3);
+
+  \end{tikzpicture}
+
+  \caption{}
+  \label{}
+
+\end{figure}
+
+$$
+\vec{r} =
+$$
+
+\subsection{Gravité}
+
+\begin{figure}[H]
+
+  \centering
+
+  \begin{tikzpicture}
+
+    \node[path picture={
+        \draw[black] (path picture bounding box.south east) -- (path
+        picture bounding box.north west);
+        \draw[black] (path picture bounding box.north east) -- (path
+        picture bounding box.south west);}] at (0,0) {};
+
+    \draw[fill=black] (120:3) circle (0.1);
+    \draw[->] (120:3) -- (120:2.5);
+
+    \draw[fill=black] (180:3) circle (0.1);
+    \draw[->] (180:3) -- (180:2.5);
+
+    \draw[fill=black] (10:3) circle (0.1);
+    \draw[->] (10:3) -- (10:2.5);
+
+  \end{tikzpicture}
+
+  \caption{}
+  \label{}
+
+\end{figure}
+
+$$
+\vec{g} =
+$$
+
+\subsection{Composition d'une force nette}
+
 
 \end{multicols}
 
