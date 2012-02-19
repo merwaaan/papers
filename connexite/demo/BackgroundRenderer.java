@@ -34,13 +34,13 @@ public class BackgroundRenderer implements LayerRenderer {
 			g.setColor(Color.ORANGE);
 			g.drawOval(x_s - cr_s, y_s - cr_s, 2 * cr_s, 2 * cr_s);
 
-			// Draw the outline of the repulsion radius.
-			g.setColor(Color.RED);
-			g.drawOval(x_s - rr_s, y_s - rr_s, 2 * rr_s, 2 * rr_s);
-
 			// Draw the outline of the attraction radius.
 			g.setColor(Color.GREEN);
 			g.drawOval(x_s - ar_s, y_s - ar_s, 2 * ar_s, 2 * ar_s);
+
+			// Draw the outline of the repulsion radius.
+			g.setColor(Color.RED);
+			g.drawOval(x_s - rr_s, y_s - rr_s, 2 * rr_s, 2 * rr_s);
 		}
 	}
 }

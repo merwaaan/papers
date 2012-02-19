@@ -25,9 +25,9 @@ public class Simulation {
 	public int repulsionRadius;
 	public int attractionRadius;
 
-	private static int sensorSpeed = 50;
+	private static double sensorSpeed = 10;
 
-	private static int frameLength = 1000 / 20;
+	private static int frameLength = 1000 / 60;
 
 	private static String style =
 		"node { size: 7px; }" +
@@ -38,12 +38,12 @@ public class Simulation {
 		this.net = new SingleGraph("sensor network");
 		this.net.addAttribute("ui.stylesheet", Simulation.style);
 
-		this.worldSize = 40000;
-		this.sensorCount = 100;
+		this.worldSize = 5000;
+		this.sensorCount = 50;
 
-		this.communicationRadius = 3000;
-		this.separationRadius = 2500;
-		this.neutralInterval = 0;
+		this.communicationRadius = 450;
+		this.separationRadius = 400;
+		this.neutralInterval = 30;
 
 		this.repulsionRadius = this.separationRadius - this.neutralInterval;
 		this.attractionRadius = this.separationRadius + this.neutralInterval;
@@ -52,7 +52,7 @@ public class Simulation {
 			this.spawn();
 
 		View view = this.net.display(false).getDefaultView();
-		view.setBackLayerRenderer(new BackgroundRenderer(this));
+		//view.setBackLayerRenderer(new BackgroundRenderer(this));
 
 		Camera camera = view.getCamera();
 		camera.setViewCenter(0, 0, 0);
@@ -103,7 +103,6 @@ public class Simulation {
 		while(true) {
 
 			this.update();
-
 			this.pause(this.frameLength);
 		}
 	}
@@ -128,7 +127,7 @@ public class Simulation {
 		for(Node sensor : this.net) {
 
 			Vector2 displacement = displacements.get(sensor.getId());
-			this.move(sensor, displacement.at(0), displacement.at(1));
+			this.move(sensor, displacement.x(), displacement.y());
 		}
 
 		this.checkForNeighbors();
@@ -136,60 +135,118 @@ public class Simulation {
 
 	private Vector2 displacementVector(Node sensor) {
 
+		Vector2 attraction = this.attraction(sensor);
+		Vector2 repulsion = this.repulsion(sensor);
+		Vector2 gravity = this.gravity(sensor);
+
+		Vector2 force = new Vector2();
+
+		/*
+		// Average
+		force.add(attraction);
+		force.add(repulsion);
+		force.add(gravity);
+		force.scalarDiv(3);
+		*/
+
+		// Proritize forces.
+		Vector2[] forces = new Vector2[] {repulsion, attraction, gravity};
+		for(int i = 0; i < forces.length; ++i) {
+			forces[i] = this.limitToSpeed(forces[i], Simulation.sensorSpeed - force.length());
+			force.add(forces[i]);
+		}
+
+		return force;
+	}
+
+	private Vector2 getPosition(Node sensor) {
+
 		Double x = sensor.getAttribute("x");
 		Double y = sensor.getAttribute("y");
-		Vector2 position = new Vector2(x, y);
 
-		Vector2 displacement = new Vector2();
+		return new Vector2(x, y);
+	}
 
-		if(sensor.getDegree() == 0) {
+	private Vector2 limitToSpeed(Vector2 force, double speed) {
 
-			position.scalarMult(-1);
-			position.normalize();
-			position.scalarMult(Simulation.sensorSpeed);
+		double length = force.length();
 
-			return position;
+		if(length > speed) {
+
+			double ratio = 1 / (length / speed);
+			force.scalarMult(ratio);
 		}
+
+		return force;
+	}
+
+	private Vector2 attraction(Node sensor) {
+
+		Vector2 position = this.getPosition(sensor);
+		Vector2 force = new Vector2();
 
 		for(Edge link : sensor.getEachEdge()) {
 
 			Node neighbor = link.getOpposite(sensor);
+			Vector2 positionNeighbor = this.getPosition(neighbor);
 
-			Double xNeighbor = neighbor.getAttribute("x");
-			Double yNeighbor = neighbor.getAttribute("y");
-			Vector2 positionNeighbor = new Vector2(xNeighbor, yNeighbor);
+			Double distance = this.distance(sensor, neighbor);
 
-			Double distance = link.getAttribute("distance");
+			if(distance > this.attractionRadius) {
 
-			Vector2 force = new Vector2();
+				Vector2 force_sub = new Vector2(positionNeighbor);
+				force_sub.sub(position);
+				force_sub.scalarMult(distance);
+				force_sub.scalarDiv(distance - this.attractionRadius);
+
+				force.add(force_sub);
+			}
+		}
+
+		this.limitToSpeed(force, Simulation.sensorSpeed);
+
+		return force;
+	}
+
+	private Vector2 repulsion(Node sensor) {
+
+		Vector2 position = this.getPosition(sensor);
+		Vector2 force = new Vector2();
+
+		for(Edge link : sensor.getEachEdge()) {
+
+			Node neighbor = link.getOpposite(sensor);
+			Vector2 positionNeighbor = this.getPosition(neighbor);
+
+			Double distance = this.distance(sensor, neighbor);
 
 			if(distance < this.repulsionRadius) {
 
-				force.add(position);
-				force.sub(positionNeighbor);
-				force.scalarDiv(distance);
-				force.scalarMult(this.repulsionRadius - distance);
-				force.scalarMult(neighbor.getDegree());
-			}
-			else if(distance > this.attractionRadius) {
+				Vector2 force_sub = new Vector2(position);
+				force_sub.sub(positionNeighbor);
+				force_sub.scalarDiv(distance);
+				force_sub.scalarMult(this.repulsionRadius - distance);
 
-				force.add(positionNeighbor);
-				force.sub(position);
-				force.scalarMult(this.attractionRadius / distance);
-				force.scalarDiv(5000*neighbor.getDegree());
+				force.add(force_sub);
 			}
-
-			displacement.add(force);
 		}
 
-		// Limit the sensor speed.
-		double length = displacement.length();
-		if(length > Simulation.sensorSpeed) {
-			double ratio = 1 / (length / Simulation.sensorSpeed);
-			displacement.scalarMult(ratio);
-		}
+		this.limitToSpeed(force, Simulation.sensorSpeed);
 
-		return displacement;
+		return force;
+	}
+
+	private Vector2 gravity(Node sensor) {
+
+		Vector2 position = this.getPosition(sensor);
+
+		Vector2 force = new Vector2(position);
+		force.scalarMult(-1);
+		force.scalarDiv(position.length() / this.worldSize * 0.5);
+
+		this.limitToSpeed(force, Simulation.sensorSpeed);
+
+		return force;
 	}
 
 	private void checkForNeighbors() {
