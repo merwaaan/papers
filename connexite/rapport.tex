@@ -4,7 +4,6 @@
 \usepackage[francais]{babel}
 \usepackage{multicol}
 \usepackage{float}
-\usepackage{graphicx}
 \usepackage{tikz}
 
 \setlength{\textwidth}{39pc}
@@ -22,7 +21,7 @@
 \date{}
 
 \newcommand{\drawSensor}[4]{
-  \draw[fill=#4] (#1,#2) circle (0.1);
+  \draw[fill=#4,#4] (#1,#2) circle (0.1);
   \draw[dashed,#4] (#1,#2) circle (#3);
 }
 

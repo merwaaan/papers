@@ -1,0 +1,215 @@
+\documentclass{beamer}
+
+\usepackage[utf8]{inputenc}
+\usepackage[francais]{babel}
+\usepackage{tikz}
+
+\title{Recherche décentralisée de connexité pour réseaux de capteurs mobiles}
+\author{Merwan Achibet}
+\institute{Université du Havre}
+\date{Jeudi 16 février 2012}
+
+\newcommand{\drawSensor}[4]{
+  \draw[fill=#4,#4] (#1,#2) circle (0.1);
+  \draw[dashed,#4] (#1,#2) circle (#3);
+}
+
+\usetheme{Warsaw}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+
+\definecolor{Backdrop}{RGB}{85, 98, 112}
+\definecolor{Foreground}{RGB}{238, 238, 238}
+\definecolor{Fabulous}{RGB}{210, 111, 127}
+
+\usecolortheme[named=Backdrop]{structure}
+\setbeamerfont{title}{series=\bfseries}
+\setbeamercolor{title}{bg=Backdrop}
+\setbeamercolor{frametitle}{fg=white, bg=Backdrop}
+\setbeamercolor{normal text}{fg=Backdrop, bg=white}
+\setbeamerfont{alerted text}{series=\bfseries}
+\setbeamercolor{alerted text}{fg=Backdrop!120}
+\setbeamertemplate{blocks}[rounded][shadow=true]
+\setbeamerfont{block title}{series=\bfseries}
+\setbeamercolor{block title}{fg=white, bg=Backdrop!105}
+\setbeamercolor{block body}{fg=Foreground, bg=Backdrop!80}
+\setbeamertemplate{items}[circle]
+\setbeamercolor{item}{fg=Fabulous!50}
+\setbeamerfont{footline}{size=\small}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\begin{frame}
+
+  \begin{block}{Problème}
+    \begin{itemize}
+    \item{Des capteurs mobiles sont lâchés dans un espace}
+    \item{Pour communiquer, il doivent être proches}
+    \item{Pour être efficaces, ils doivent être dispersés}
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  Deux questions :
+  \begin{enumerate}
+  \item{Comment savoir si le réseau est connexe ?}
+  \item{Comment rendre le réseau connexe ?}
+  \end{enumerate}
+
+  \vfill
+
+  \alert{Et ce, de manière décentralisée !}
+
+\end{frame}
+
+\newcommand{\tikzbullet}[1]{
+  \begin{tikzpicture}
+    \draw[fill=#1,#1] (0,0) circle (0.1);
+  \end{tikzpicture}
+}
+
+\begin{frame}
+
+  \begin{figure}
+    \input{communication.tikz}
+  \end{figure}
+
+  \vfill
+
+  \begin{itemize}
+  \item[$\blacktriangleright$]{\tikzbullet{blue} et \tikzbullet{red} sont connectés}
+  \item[$\blacktriangleright$]{\tikzbullet{green} est isolé}
+  \end{itemize}
+
+\end{frame}
+
+\section{Déterminer la connexité}
+
+\begin{frame}
+
+\end{frame}
+
+\section{Créer la connexité}
+
+\begin{frame}
+
+  \frametitle{Inspirations}
+
+  \begin{block}{Boids}
+    \begin{itemize}
+    \item{Craig W. Reynolds, 1987}
+    \item{Un jeu de règles simple}
+    \item{Les actions locales...}
+    \item{... aboutissent à un comportement global}
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Systèmes particulaires}
+    \begin{itemize}
+    \item{Cheng, Cheng et Nagpal, 2005}
+    \item{Forces de répulsion}
+    \item{Répartition de particules dans des formes géométriques}
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{L'attraction}
+
+  \begin{figure}
+    \input{attraction.tikz}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{La répulsion}
+
+  \begin{figure}
+    \input{repulsion.tikz}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{La gravité}
+
+  \begin{figure}
+    \input{repulsion.tikz}
+  \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Combiner les différentes influences}
+
+  \begin{equation}
+    \vec{f} = \frac{\vec{a} + \vec{r} + \vec{g}}{3}
+  \end{equation}
+
+  \vfill
+
+  \begin{block}{}
+    \begin{itemize}
+    \item{Chaque force a la même importance}
+    \item{Au début de la simulation, acceptable}
+    \item{Ensuite, le maillage s'affaisse}
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  $\rightarrow$ Démonstration
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Combiner les différentes influences}
+
+  \begin{block}{Prioritiser les forces}
+
+    \begin{itemize}
+    \item{Répulsion $\rightarrow$ Attration $\rightarrow$ Gravité}
+    \item{Chaque capteur a une vitesse maximale}
+    \end{itemize}
+
+    \begin{enumerate}
+      \item{On applique la 1ère force}
+      \item{S'il reste de la magnitude, on applique la 2nde force}
+      \item{S'il reste de la magnitude, on applique la 3ème force}
+    \end{enumerate}
+  \end{block}
+
+  \vfill
+
+  $\rightarrow$ Démonstration
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Test avec répartition sérrée}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Test avec répartition large}
+
+\end{frame}
+
+\end{document}
