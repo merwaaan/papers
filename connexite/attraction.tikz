@@ -1,0 +1,9 @@
+\begin{tikzpicture}
+
+  \drawSensor{0}{0}{2}{black}
+  \draw (0,0) circle (1.5);
+
+  \draw[fill=black] (200:1.8) circle (0.1);
+  \draw[->] (200:1.8) -- (200:1);
+
+\end{tikzpicture}

@@ -1,0 +1,8 @@
+\begin{tikzpicture}
+
+  \draw (0,0) -- (0,1);
+
+  \drawSensor{0}{0}{2}{red} \drawSensor{0}{1}{2}{blue}
+  \drawSensor{3}{1}{2}{green}
+
+\end{tikzpicture}

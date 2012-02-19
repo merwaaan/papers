@@ -1,0 +1,18 @@
+\begin{tikzpicture}
+
+  \node[path picture={
+      \draw[black] (path picture bounding box.south east) -- (path
+      picture bounding box.north west);
+      \draw[black] (path picture bounding box.north east) -- (path
+      picture bounding box.south west);}] at (0,0) {};
+
+  \draw[fill=black] (120:3) circle (0.1);
+  \draw[->] (120:3) -- (120:2.5);
+
+  \draw[fill=black] (180:3) circle (0.1);
+  \draw[->] (180:3) -- (180:2.5);
+
+  \draw[fill=black] (10:3) circle (0.1);
+  \draw[->] (10:3) -- (10:2.5);
+
+\end{tikzpicture}
