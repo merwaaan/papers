@@ -25,7 +25,7 @@ public class Simulation {
 	public int repulsionRadius;
 	public int attractionRadius;
 
-	private static double sensorSpeed = 10;
+	private static double sensorSpeed = 2;
 
 	private static int frameLength = 1000 / 60;
 
@@ -33,13 +33,13 @@ public class Simulation {
 		"node { size: 7px; }" +
 		"edge { size: 1px; }";
 
-	public Simulation() {
+	public Simulation(int sensorCount, int worldSize, boolean displayRadii) {
 
 		this.net = new SingleGraph("sensor network");
 		this.net.addAttribute("ui.stylesheet", Simulation.style);
 
-		this.worldSize = 5000;
-		this.sensorCount = 50;
+		this.worldSize = worldSize;
+		this.sensorCount = sensorCount;
 
 		this.communicationRadius = 450;
 		this.separationRadius = 400;
@@ -48,11 +48,9 @@ public class Simulation {
 		this.repulsionRadius = this.separationRadius - this.neutralInterval;
 		this.attractionRadius = this.separationRadius + this.neutralInterval;
 
-		for(int i = 0; i < this.sensorCount; ++i)
-			this.spawn();
-
 		View view = this.net.display(false).getDefaultView();
-		//view.setBackLayerRenderer(new BackgroundRenderer(this));
+		if(displayRadii)
+			view.setBackLayerRenderer(new BackgroundRenderer(this));
 
 		Camera camera = view.getCamera();
 		camera.setViewCenter(0, 0, 0);
@@ -60,6 +58,9 @@ public class Simulation {
 		camera.setViewPercent(1);
 
 		this.net.setAttribute("ui.antialias", true);
+
+		for(int i = 0; i < this.sensorCount; ++i)
+			this.spawn();
 	}
 
 	private void spawn() {
@@ -275,7 +276,11 @@ public class Simulation {
 
 	public static void main(String[] args) {
 
-		new Simulation().run();
+		int sensors = args[0] == null ? 200 : Integer.parseInt(args[0]);
+		int size = args[1] == null ? 1000 : Integer.parseInt(args[1]);
+		boolean displayRadii = args[2] == null ? false : Boolean.parseBoolean(args[2]);
+
+		new Simulation(sensors, size, displayRadii).run();
 	}
 
 }
