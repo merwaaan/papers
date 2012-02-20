@@ -1,9 +1,21 @@
 \begin{tikzpicture}
 
-  \drawSensor{0}{0}{2}{black}
-  \draw (0,0) circle (1.5);
+  \colorlet{mgreenlight}{mgreen!40}
 
-  \draw[fill=black] (200:1.8) circle (0.1);
-  \draw[->] (200:1.8) -- (200:1);
+  \pgfdeclareradialshading{gradient}
+                          {\pgfpoint{0}{0}}
+                          {color(0cm)=(mgreenlight);color(0.5cm)=(mgreenlight);color(1cm)=(mgreen)}
+
+  \draw[fill=black,draw=none] (0,0) circle (0.1);
+
+  \shadedraw[draw=none,even odd rule,shading=gradient]
+     (0, 0) circle (2)
+     (0, 0) circle (1.4);
+  \draw[dashed,green,very thick] (0,0) circle (1.4);
+
+  \draw[dashed,black,thick] (0,0) circle (2);
+
+  \draw[fill=black,draw=none] (200:1.7) circle (0.1);
+  \draw[->,black,thick] (200:1.7) -- (200:1);
 
 \end{tikzpicture}

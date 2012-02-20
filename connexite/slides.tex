@@ -4,15 +4,10 @@
 \usepackage[francais]{babel}
 \usepackage{tikz}
 
-\title{Recherche décentralisée de connexité pour réseaux de capteurs mobiles}
-\author{Merwan Achibet}
-\institute{Université du Havre}
-\date{Jeudi 16 février 2012}
-
-\newcommand{\drawSensor}[4]{
-  \draw[fill=#4,#4] (#1,#2) circle (0.1);
-  \draw[dashed,#4] (#1,#2) circle (#3);
-}
+% FAMFAMFAM.com colors
+\definecolor{mpink}{RGB}{255,11,91}
+\definecolor{mblue}{RGB}{11,206,255}
+\definecolor{mgreen}{RGB}{123,255,45}
 
 \usetheme{Warsaw}
 
@@ -37,6 +32,11 @@
 \setbeamertemplate{items}[circle]
 \setbeamercolor{item}{fg=Fabulous!50}
 \setbeamerfont{footline}{size=\small}
+
+\title{Recherche décentralisée de connexité pour réseaux de capteurs mobiles}
+\author{Merwan Achibet}
+\institute{Université du Havre}
+\date{Jeudi 16 février 2012}
 
 \begin{document}
 
@@ -83,8 +83,8 @@
   \vfill
 
   \begin{itemize}
-  \item[$\blacktriangleright$]{\tikzbullet{blue} et \tikzbullet{red} sont connectés}
-  \item[$\blacktriangleright$]{\tikzbullet{green} est isolé}
+  \item[$\blacktriangleright$]{\tikzbullet{mpink} et \tikzbullet{mblue} sont connectés}
+  \item[$\blacktriangleright$]{\tikzbullet{mgreen} est isolé}
   \end{itemize}
 
 \end{frame}
@@ -147,7 +147,7 @@
   \frametitle{La gravité}
 
   \begin{figure}
-    \input{repulsion.tikz}
+    \input{gravite.tikz}
   \end{figure}
 
 \end{frame}

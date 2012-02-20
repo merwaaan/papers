@@ -1,9 +1,20 @@
 \begin{tikzpicture}
 
-  \drawSensor{0}{0}{2}{black}
-  \draw (0,0) circle (1.5);
+  \colorlet{mpinklight}{mpink!70}
+  \colorlet{mpinklighter}{mpink!30}
 
-  \draw[fill=black] (150:0.5) circle (0.1);
-  \draw[->] (150:0.5) -- (150:1.3);
+  \pgfdeclareradialshading{gradient}
+                          {\pgfpoint{0}{0}}
+                          {color(0cm)=(mpinklight);color(1cm)=(mpinklighter)}
+
+  \shadedraw[draw=none,shading=gradient]
+     (0, 0) circle (0.8);
+  \draw[dashed,red,very thick] (0,0) circle (0.8);
+
+  \draw[fill=black,draw=none] (0,0) circle (0.1);
+  \draw[dashed,black,thick] (0,0) circle (2);
+
+  \draw[fill=black,draw=none] (320:0.4) circle (0.1);
+  \draw[->,black,thick] (320:0.4) -- (320:1.1);
 
 \end{tikzpicture}
