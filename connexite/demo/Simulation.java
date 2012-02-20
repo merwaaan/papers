@@ -41,17 +41,20 @@ public class Simulation {
 
 		public Vector2 position;
 		public int radius;
+		public int securityDistance;
 
 		public Obstacle(double x, double y, int radius) {
 
 			this.position = new Vector2(x, y);
 			this.radius = radius;
+			this.securityDistance = 200;
 		}
 	}
 
+	public boolean obstaclesEnabled;
 	public ArrayList<Obstacle> obstacles;
 
-	public Simulation(int sensorCount, int obstacleCount, int worldSize, boolean displayRadii, String capturePrefix) {
+	public Simulation(int sensorCount, boolean obstacles, int worldSize, boolean displayRadii, String capturePrefix) {
 
 		this.net = new SingleGraph("sensor network");
 		this.net.addAttribute("ui.stylesheet", Simulation.style);
@@ -67,14 +70,12 @@ public class Simulation {
 		this.attractionRadius = this.separationRadius + this.neutralInterval;
 
 		// Spawn obstacles
+		this.obstaclesEnabled = obstacles;
 		this.obstacles = new ArrayList<Obstacle>();
-		for(int i = 0; i < obstacleCount; ++i) {
-
-			double x = Math.random() * this.worldSize - this.worldSize / 2;
-			double y = Math.random() * this.worldSize - this.worldSize / 2;
-			int radius = (int)(Math.random() * 500 + 200);
-
-			this.obstacles.add(new Obstacle(x, y, radius));
+		if(this.obstaclesEnabled) {
+			this.obstacles.add(new Obstacle(0, 0, 200));
+			this.obstacles.add(new Obstacle(1000, 400, 400));
+			this.obstacles.add(new Obstacle(-2000, -1000, 800));
 		}
 
 		this.displayRadii = displayRadii;
@@ -83,8 +84,8 @@ public class Simulation {
 		view.setBackLayerRenderer(new BackgroundRenderer(this));
 
 		Camera camera = view.getCamera();
-		camera.setViewCenter(0, 0, 0);
-		camera.setAutoFitView(false);
+		//camera.setViewCenter(0, 0, 0);
+		//camera.setAutoFitView(false);
 		camera.setViewPercent(1);
 
 		this.net.setAttribute("ui.antialias", true);
@@ -181,8 +182,9 @@ public class Simulation {
 
 	private Vector2 displacementVector(Node sensor) {
 
-		Vector2 attraction = this.attraction(sensor);
+		Vector2 avoidance = this.avoidance(sensor);
 		Vector2 repulsion = this.repulsion(sensor);
+		Vector2 attraction = this.attraction(sensor);
 		Vector2 gravity = this.gravity(sensor);
 
 		Vector2 force = new Vector2();
@@ -196,7 +198,7 @@ public class Simulation {
 		*/
 
 		// Proritize forces.
-		Vector2[] forces = new Vector2[] {repulsion, attraction, gravity};
+		Vector2[] forces = new Vector2[] {avoidance, repulsion, attraction, gravity};
 		for(int i = 0; i < forces.length; ++i) {
 			forces[i] = this.limitToSpeed(forces[i], Simulation.sensorSpeed - force.length());
 			force.add(forces[i]);
@@ -226,24 +228,24 @@ public class Simulation {
 		return force;
 	}
 
-	private Vector2 attraction(Node sensor) {
+	private Vector2 avoidance(Node sensor) {
 
 		Vector2 position = this.getPosition(sensor);
 		Vector2 force = new Vector2();
 
-		for(Edge link : sensor.getEachEdge()) {
+		for(Obstacle o : this.obstacles) {
 
-			Node neighbor = link.getOpposite(sensor);
-			Vector2 positionNeighbor = this.getPosition(neighbor);
+			Vector2 positionObstacle = o.position;
 
-			Double distance = this.distance(sensor, neighbor);
+			Vector2 distanceVec = new Vector2(position);
+			distanceVec.sub(positionObstacle);
+			double distance = distanceVec.length();
 
-			if(distance > this.attractionRadius) {
+			if(distance < o.radius + o.securityDistance) {
 
-				Vector2 force_sub = new Vector2(positionNeighbor);
-				force_sub.sub(position);
-				force_sub.scalarMult(distance);
-				force_sub.scalarDiv(distance - this.attractionRadius);
+				Vector2 force_sub = distanceVec;
+				force_sub.scalarDiv(distance);
+				force_sub.scalarMult(o.radius + o.securityDistance - distance);
 
 				force.add(force_sub);
 			}
@@ -272,6 +274,34 @@ public class Simulation {
 				force_sub.sub(positionNeighbor);
 				force_sub.scalarDiv(distance);
 				force_sub.scalarMult(this.repulsionRadius - distance);
+
+				force.add(force_sub);
+			}
+		}
+
+		this.limitToSpeed(force, Simulation.sensorSpeed);
+
+		return force;
+	}
+
+	private Vector2 attraction(Node sensor) {
+
+		Vector2 position = this.getPosition(sensor);
+		Vector2 force = new Vector2();
+
+		for(Edge link : sensor.getEachEdge()) {
+
+			Node neighbor = link.getOpposite(sensor);
+			Vector2 positionNeighbor = this.getPosition(neighbor);
+
+			Double distance = this.distance(sensor, neighbor);
+
+			if(distance > this.attractionRadius) {
+
+				Vector2 force_sub = new Vector2(positionNeighbor);
+				force_sub.sub(position);
+				force_sub.scalarMult(distance);
+				force_sub.scalarDiv(distance - this.attractionRadius);
 
 				force.add(force_sub);
 			}
@@ -322,7 +352,7 @@ public class Simulation {
 	public static void main(String[] args) {
 
 		int sensors = args[0] == null ? 200 : Integer.parseInt(args[0]);
-		int obstacles = args[1] == null ? 0 : Integer.parseInt(args[1]);
+		boolean obstacles = args[1] == null ? false : Boolean.parseBoolean(args[1]);
 		int size = args[2] == null ? 1000 : Integer.parseInt(args[2]);
 		boolean displayRadii = args[3] == null ? false : Boolean.parseBoolean(args[3]);
 		String capturePrefix = args[4] == null || args[4].length() == 0 ? null : args[4];
