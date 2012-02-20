@@ -3,6 +3,7 @@ SRC=.
 CP=$(LIB):$(SRC)
 
 SENSORS=200
+OBSTACLES=0
 SIZE=1000
 RADII=false
 CAPTURE=""
@@ -10,7 +11,7 @@ CAPTURE=""
 all: compile execute
 
 execute: compile
-	java -classpath $(CP) Simulation $(SENSORS) $(SIZE) $(RADII) $(CAPTURE)
+	java -classpath $(CP) Simulation $(SENSORS) $(OBSTACLES) $(SIZE) $(RADII) $(CAPTURE)
 
 compile: Simulation.java BackgroundRenderer.java
 	javac -classpath $(CP) *.java

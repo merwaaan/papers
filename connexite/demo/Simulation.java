@@ -29,6 +29,7 @@ public class Simulation {
 
 	private static double sensorSpeed = 2;
 
+	public boolean displayRadii;
 	private int frameLength;
 	private FileSinkImages fileSink;
 
@@ -36,7 +37,21 @@ public class Simulation {
 		"node { size: 7px; }" +
 		"edge { size: 1px; }";
 
-	public Simulation(int sensorCount, int worldSize, boolean displayRadii, String capturePrefix) {
+	class Obstacle {
+
+		public Vector2 position;
+		public int radius;
+
+		public Obstacle(double x, double y, int radius) {
+
+			this.position = new Vector2(x, y);
+			this.radius = radius;
+		}
+	}
+
+	public ArrayList<Obstacle> obstacles;
+
+	public Simulation(int sensorCount, int obstacleCount, int worldSize, boolean displayRadii, String capturePrefix) {
 
 		this.net = new SingleGraph("sensor network");
 		this.net.addAttribute("ui.stylesheet", Simulation.style);
@@ -51,9 +66,21 @@ public class Simulation {
 		this.repulsionRadius = this.separationRadius - this.neutralInterval;
 		this.attractionRadius = this.separationRadius + this.neutralInterval;
 
+		// Spawn obstacles
+		this.obstacles = new ArrayList<Obstacle>();
+		for(int i = 0; i < obstacleCount; ++i) {
+
+			double x = Math.random() * this.worldSize - this.worldSize / 2;
+			double y = Math.random() * this.worldSize - this.worldSize / 2;
+			int radius = (int)(Math.random() * 500 + 200);
+
+			this.obstacles.add(new Obstacle(x, y, radius));
+		}
+
+		this.displayRadii = displayRadii;
+
 		View view = this.net.display(false).getDefaultView();
-		if(displayRadii)
-			view.setBackLayerRenderer(new BackgroundRenderer(this));
+		view.setBackLayerRenderer(new BackgroundRenderer(this));
 
 		Camera camera = view.getCamera();
 		camera.setViewCenter(0, 0, 0);
@@ -295,11 +322,12 @@ public class Simulation {
 	public static void main(String[] args) {
 
 		int sensors = args[0] == null ? 200 : Integer.parseInt(args[0]);
-		int size = args[1] == null ? 1000 : Integer.parseInt(args[1]);
-		boolean displayRadii = args[2] == null ? false : Boolean.parseBoolean(args[2]);
-		String capturePrefix = args[3] == null || args[3].length() == 0 ? null : args[3];
+		int obstacles = args[1] == null ? 0 : Integer.parseInt(args[1]);
+		int size = args[2] == null ? 1000 : Integer.parseInt(args[2]);
+		boolean displayRadii = args[3] == null ? false : Boolean.parseBoolean(args[3]);
+		String capturePrefix = args[4] == null || args[4].length() == 0 ? null : args[4];
 
-		new Simulation(sensors, size, displayRadii, capturePrefix).run();
+		new Simulation(sensors, obstacles, size, displayRadii, capturePrefix).run();
 	}
 
 }
