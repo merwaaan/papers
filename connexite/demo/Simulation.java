@@ -84,7 +84,7 @@ public class Simulation {
 		view.setBackLayerRenderer(new BackgroundRenderer(this));
 
 		Camera camera = view.getCamera();
-		camera.setGraphViewport(-10000, 0, 0, 0);
+		camera.setGraphViewport(-15000, 0, 0, 0);
 
 		this.net.setAttribute("ui.antialias", true);
 
@@ -298,8 +298,7 @@ public class Simulation {
 
 				Vector2 force_sub = new Vector2(positionNeighbor);
 				force_sub.sub(position);
-				force_sub.scalarMult(distance);
-				force_sub.scalarDiv(distance - this.attractionRadius);
+				force_sub.scalarMult(distance * distance);
 
 				force.add(force_sub);
 			}

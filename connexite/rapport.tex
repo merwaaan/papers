@@ -34,18 +34,19 @@
 \section{Introduction}
 
 On imagine le problème suivant : un groupe de $n$ capteurs mobiles est
-réparti aléatoirement dans un environnement à deux dimensions. On part
-de l'hypothèse qu'un capteur connaît uniquement le nombre total de
-capteurs du système ainsi que sa position dans l'espace. Les capteurs
-peuvent communiquer deux à deux et s'échanger des informations mais
-uniquement à condition que la distance les séparant soit inférieure à
-un seuil donné.
+réparti aléatoirement dans un espace aérien. On part de l'hypothèse
+qu'un capteur connaît uniquement le nombre total de capteurs de ce
+système et qu'il est assez sophistiqué pour pouvoir déterminer
+précisément sa position absolue. Les capteurs sont dotés de matériel
+de communication sans fil et peuvent s'envoyer des messages à
+condition que la distance les séparant soit inférieure à un seuil
+donné.
 
-Ce réseau d'appareils volants forme un graphe dynamique dont les n\oe
-uds sont les capteurs. Deux n\oe uds étant reliés par un arc si les
-capteurs qui leur sont associés sont en mesure de communiquer
-i.e. s'ils sont assez proches. La figure \ref{communication} illustre
-un scénario impliquant trois capteurs.
+Le réseau constitué par cet essaim d'appareils volants forme un graphe
+dynamique dont les n\oe uds sont les capteurs. Deux n\oe uds sont
+reliés par un arc si les capteurs qui leur sont associés sont en
+mesure de communiquer, id est s'ils sont assez proches. La figure
+\ref{communication} illustre un scénario impliquant trois capteurs.
 
 \begin{figure}[H]
 
@@ -59,7 +60,26 @@ un scénario impliquant trois capteurs.
 
 \end{figure}
 
-QUE VA T ON FAIRE ?
+On considère un capteur comme un agent autonome capable de se mouvoir
+dans l'espace. Afin de ne pas se ??? de considérations géométriques
+superflues, il est supposé qu'un capteur conserve toujours la même
+altitude et donc qu'il évolue dans un espace euclidien de dimension
+2. La contrainte principale de cet exercice est que l'on refuse toute
+forme de contrôle global sur l'essaim de capteurs. Toutes les actions
+entreprises par un appareil seront uniquement dû à ses décisions
+propres; décisions dépendants de la vision réduite du système que sa
+périphérie
+
+La possibilité pour un capteur de communiquer avec ses semblables est
+au centre de nos préoccupations car on considère qu'un capteur isolé
+est inutile puiqu'incapable de transmettre des données.
+
+Deux questions se posent :
+
+\begin{enumerate}
+\item{Comment déterminer si le réseau de capteurs est connexe ?}
+\item{Comment guider les capteurs de façon à ce qu'il le devienne ?}
+\end{enumerate}
 
 \section{Déterminer si le réseau est connexe}
 
@@ -142,7 +162,7 @@ $R_a$, la force d'attraction que ce capteur devra subir est calculée
 par la formule suivante :
 
 $$
-\vec{a} = (\vec{p}_c - \vec{p}_v) ???
+\vec{a} = \frac{(\vec{p}_c - \vec{p}_v)}{\vec{p}_c - \vec{p}_v}
 $$
 
 Dans le phéomène d'attraction réel, l'action est réciproque et
@@ -166,24 +186,25 @@ l'attraction à suivre, il en subisse l'action réciproque.
 
 \subsection{Répulsion}
 
-L'attraction a pour effet d'agglomérer en un groupe serré tous les
+L'attraction a pour effet d'agglomérer en groupes serrés tous les
 capteurs démarrant la simulation dans une même zone. Mais même si de
 cette façon la communication est assurée, les capteurs finissent par
-tous être superposés sur la même position et la contrainte de
-couverture n'est absolument pas satisfaite.
+tous être superposés sur la même position au bout d'un certain nombre
+d'itérations et la contrainte de couverture n'est absolument pas
+satisfaite.
 
 Pour pallier cette déconvenue, on introduit une nouvelle force,
 opposée à l'attraction : la répulsion. La rayon $R_r$ définit une
-nouvelle zone qui contrairement à la loi précédente, expulsera les
-capteurs envahissants vers l'extérieur. Il est bien sûr nécessaire que
-$R_r < R_c$. De plus, on prend $R_r = R_c + \varepsilon$, o\'u
-$varepsilon$ correspond à la largeur d'une bande neutre entourant
-chaque capteur (voir figure \ref{repulsion}).
-VRAI POSITION PRES DU BORD
-ATTENTION COMM
+nouvelle zone radiale qui, contrairement à la loi précédente,
+expulsera les capteurs envahissants vers l'extérieur. Il est bien sûr
+nécessaire que $R_r < R_c$. De plus, on prend $R_r = R_c -
+\varepsilon$, o\`u $\varepsilon$ correspond à la largeur d'une bande
+neutre entourant chaque capteur (voir figure \ref{repulsion}). Les
+capteurs auront naturellement tendance à s'installer dans les bandes
+neutres des autres capteurs.
 
 $$
-\vec{r} = (\vec{p} - \vec{p_v}) \frac{R_r - d}{d}
+\vec{r} = (\vec{p} - \vec{p_v}) ???
 $$
 
 
@@ -219,9 +240,29 @@ $$
 
 \subsection{Composition d'une force nette}
 
+Une fois ces trois forces calculées, il est nécéssaire de les ajouter
+à la position actuelle du capteur concerné pour créer un
+mouvement. Néanmoins, on passe par une phase de transformation des
+forces.
+
+Tout d'abord, et bien que notre simulation se limite au déplacement
+d'entités virtuelles, un véritable capteur est un objet physique
+soumis à des limitations quant à sa vitesse de déplacement. Simplement
+additionner les trois influences que l'environnement impose à un
+capteur serait peu réaliste.
 
 \subsection{Obstacles}
 
+\begin{figure}[H]
+
+  \centering
+
+  \includegraphics[width=7cm]{obstacles.png}
+
+  \caption{}
+  \label{obstacles}
+
+\end{figure}
 
 \section{Conclusion}
 
