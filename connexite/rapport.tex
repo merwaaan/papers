@@ -39,14 +39,15 @@ qu'un capteur connaît uniquement le nombre total de capteurs de ce
 système et qu'il est assez sophistiqué pour pouvoir déterminer
 précisément sa position absolue. Les capteurs sont dotés de matériel
 de communication sans fil et peuvent s'envoyer des messages à
-condition que la distance les séparant soit inférieure à un seuil
-donné.
+condition que la distance les séparant soit inférieure à leur rayon
+d'émission $R_c$.
 
 Le réseau constitué par cet essaim d'appareils volants forme un graphe
 dynamique dont les n\oe uds sont les capteurs. Deux n\oe uds sont
 reliés par un arc si les capteurs qui leur sont associés sont en
 mesure de communiquer, id est s'ils sont assez proches. La figure
-\ref{communication} illustre un scénario impliquant trois capteurs.
+\ref{communication} décrit un exemple de scénario impliquant trois
+capteurs.
 
 \begin{figure}[H]
 
@@ -61,27 +62,62 @@ mesure de communiquer, id est s'ils sont assez proches. La figure
 \end{figure}
 
 On considère un capteur comme un agent autonome capable de se mouvoir
-dans l'espace. Afin de ne pas se ??? de considérations géométriques
-superflues, il est supposé qu'un capteur conserve toujours la même
-altitude et donc qu'il évolue dans un espace euclidien de dimension
-2. La contrainte principale de cet exercice est que l'on refuse toute
-forme de contrôle global sur l'essaim de capteurs. Toutes les actions
-entreprises par un appareil seront uniquement dû à ses décisions
-propres; décisions dépendants de la vision réduite du système que sa
-périphérie
+dans l'espace. Afin de ne pas se préoccuper de considérations
+géométriques superflues, il est supposé qu'un capteur conserve
+toujours la même altitude et donc on limite son déplacement à deux
+dimensions. La contrainte principale de cet exercice est que l'on
+refuse toute forme de contrôle global sur l'essaim de capteurs. Toutes
+les actions entreprises par un appareil seront uniquement dû à ses
+décisions propres; décisions dépendants de la vue réduite du système
+dont il dispose.
 
 La possibilité pour un capteur de communiquer avec ses semblables est
 au centre de nos préoccupations car on considère qu'un capteur isolé
-est inutile puiqu'incapable de transmettre des données.
-
-Deux questions se posent :
+est inutile puiqu'incapable de partager des données. Dans le contexte
+de l'étude décentralisée d'un graphe dynamique, deux questions se
+posent :
 
 \begin{enumerate}
 \item{Comment déterminer si le réseau de capteurs est connexe ?}
-\item{Comment guider les capteurs de façon à ce qu'il le devienne ?}
+\item{Comment déplacer les capteurs de façon à ce qu'il le devienne ?}
 \end{enumerate}
 
+Pour répondre à la première question, on se concentrera sur les
+communications de capteur à capteur en proposant une méthode pour
+laquelle chaque agent diffuse sa vision de la connexité du réseau,
+étiquettée en fonction de l'origine de l'information et de sa date. Un
+mécanisme de filtrage autorégulant sera mis en place pour
+répandre rapidement les informations critiques telles que l'ajout d'un
+nouveau n\oe ud à une composante connexe ou la disparation d'un autre.
+
+La réponse à la seconde question s'attachera à l'aspect mobile d'un
+capteur. On proposera un guidage décentralisé se basant sur
+l'imitation de plusieurs lois physiques de la nature afin de former un
+maillage à la fois connexe, équilibré et étalé dans
+l'espace. Finalement, on envisagera une extension de ce système pour
+permettre aux capteurs d'éviter naturellement les obstacles.
+
 \section{Déterminer si le réseau est connexe}
+
+Le réseau de capteur est hautement dynamique. Sa connexité dépend du
+mouvement des capteurs et de leur état de fonctionnement
+
+Une étiquette correspond à une information de connexité, relayée de
+capteur en capteur. Son information principale est le n\oe ud du
+réseau qu'elle concerne mais elle comprend aussi la date à laquelle
+l'information est entrée dans le système et le n\oe ud à son origine.
+
+Si l'on traduisait le message d'un capteur à un autre en langue
+humaine, on pourrait entendre Bonjour, je suis le capteur D, selon moi
+A et B sont connectés et j'ai des doutes sur F
+
+Un message contient deux listes
+
+\begin{itemize}
+\item{La liste des n\oe uds dont on est certain qu'ils appartiennent
+  au réseau}
+\item{La liste des n\oe uds en situation douteuse}
+\end{itemize}
 
 \section{Rendre le réseau connexe}
 
@@ -93,12 +129,12 @@ et dans l'interêt de leurs utilisateurs, ils doivent s'étaler dans
 l'espace afin d'effectuer des mesures sur la plus grande superficie
 possible. Nous sommes donc dans une situation de compromis, dans
 laquelle une contrainte technique (la portée de communication) force à
-agglomérer les capteurs en une même zone, tandis que leur but
-intrinsèque est de ramasser des données en masse et donc,
-rationnellement, de s'éloigner les uns des autres pour couvrir le plus
-de terrain possible. La seule issue favorable à ce problème est donc
-d'aboutir à une situation d'équilibre satisfaisant ces deux
-contraintes diamétralement opposées.
+agglomérer les capteurs en une même zone, tandis que leur but premier
+est de ramasser des données en masse et donc, rationnellement, de
+s'éloigner les uns des autres pour couvrir le plus de terrain
+possible. La seule issue favorable à ce problème est donc d'aboutir à
+une situation d'équilibre satisfaisant ces deux contraintes
+diamétralement opposées.
 
 Le cadre de cet exercice s'accorde parfaitement avec la problèmatique
 de la prise de décision dans un réseau décentralisé puisque chaque
@@ -108,22 +144,18 @@ que soit l'état d'un capteur, la vision du système dont il dispose est
 locale et doit servir seule à déterminer quelles actions il
 entreprend. L'objectif est donc ici de proposer une méthode de guidage
 que chaque capteur peut adopter et qui, par émergence d'une dynamique
-globale, résoudra notre problème en répartissant les capteurs de façon
-équilibrée dans l'espace.
+globale, résoudra notre problème en répartissant les capteurs dans
+l'espace de façon satisfaisante.
 
-Ce guidage, inspiré des boïds \cite{Reynolds1987} et de ???
-\cite{Cheng2011497}, détermine le déplacement que va suivre un agent
-en fonction de la configuration de son voisinage, plus précisément en
-fonction de la position de ses éventuels voisins et de sa propre
-position absolue. L'évolution de chaque agent du système, et en
-conséquence son évolution globale, se fait par le calcul et
-l'application de trois influences physiques, que l'on peut assimiler à
-des forces puisqu'elles s'apparentent fortement à l'attraction, la
-répulsion et la gravité. Dans la suite, le rôle de chaque force ainsi
-que la façon dont elles sont calculées est décrit. Nous verrons
-ensuite comment combiner ces différentes influences en une unique
-\textit{force nette} décrivant un déplacement discret de notre
-capteur.
+Les boïds de Craig Reynolds \cite{Reynolds1987} sont reconnus pour
+simuler un comportement de groupe a priori complexe et synchronisé à
+partir d'un jeu de règles simples. On s'en inspire, ainsi que d'un
+modèle de mouvement particulaire \cite{Cheng2011497} se basant sur la
+répulsion entre molécules de gaz, pour concevoir les trois règles qui
+gouverneront notre système. Chacune de ces lois, que l'on présente
+séparément par la suite, va engendrer une influence sur le déplacement
+de nos capteurs; influence dont la composition sera détaillée en
+dernière partie.
 
 \subsection{Attraction}
 
@@ -134,43 +166,33 @@ condition \textit{sine qua non} au bon fonctionnement du réseau est la
 communication. Un capteur isolé est inutile puisque son
 information n'est pas partagée.
 
-Par sa loi de l'attraction universelle, Isaac Newton décrit la force
+Par sa loi de la gravitation universelle, Isaac Newton décrit la force
 qui attire toute paire de corps comme étant proportionnelle à leur
 masse respective et à la distance les séparant. Nous nous permettons
 de simplifier quelque peu son équation et d'en retirer l'aspect
 massique pour obtenir une règle qui a tout couple de corps associe une
-force de cohésion proportionnelle à leur distance. S'ils obéissaient à
-cette loi, nos capteurs auraient naturellement tendance à se grouper,
-et donc à se mettre à portée de communication les uns des autres.
+attraction proportionnelle à leur distance. S'ils obéissaient à cette
+loi, nos capteurs auraient naturellement tendance à se grouper, et
+donc à se mettre à portée de communication les uns des autres.
 
-Dans notre système, et contrairement à la loi de Newton, cette
-influence n'est pas universelle. Nous ne pouvons malheureusement pas
-rééecrire les règles de ce monde et inventer une attirance magique
-entre toute paire capteur. On peut néanmoins la simuler. Si deux
-capteurs sont à portée et peuvent échanger leur positions repectives,
-la détermination de la distance les séparant est aisée. \`A partir de
-là, on peut imiter un phénomène d'attration. Il est à noter que le
-rôle de cette force n'est pas d'approcher deux capteurs pour qu'ils
-communiquent, puiqu'avant de pouvoir être attirés ils doivent
-communiquer, mais plutôt de les approcher pour obtenir des groupements
-solides de capteurs.
+\`A l'échelle de notre système, le cadre est différent de celui de la
+loi de Newtion, et cette influence n'est pas universelle. Nous ne
+pouvons malheureusement pas réécrire les règles de ce monde et
+inventer une attirance magique entre toute paire de capteurs. On peut
+néanmoins la simuler. Si deux capteurs sont à portée et peuvent
+échanger leur positions respectives alors la détermination de la
+distance les séparant est aisée. \`A partir de là, on peut imiter un
+phénomène d'attration.
 
 Concrètement, on associe à tout capteur $c$ un rayon d'attraction
 $R_a$ (voir figure \ref{attraction}). Si un capteur voisin se trouve à
-la fois dans le rayon de communication de $c$ et à l'extérieur de
-$R_a$, la force d'attraction que ce capteur devra subir est calculée
+la fois dans le rayon de communication $R_c$ de $c$ et à l'extérieur
+de $R_a$, la force d'attraction que ce capteur devra subir est fournie
 par la formule suivante :
 
 $$
-\vec{a} = \frac{(\vec{p}_c - \vec{p}_v)}{\vec{p}_c - \vec{p}_v}
+\vec{a} = \frac{\vec{p}_c - \vec{p}_v}{|\vec{p}_c - \vec{p}_v|^2}
 $$
-
-Dans le phéomène d'attraction réel, l'action est réciproque et
-instantanée mais dans notre cas elle est unidirectionnelle. Un capteur
-est attiré par tous ses voisins mais le processus décrit ne modifie
-pas directement la position du voisin et il n'en subit aucune
-influence. Il est néanmoins à prévoir que lorsque ce voisin calculera
-l'attraction à suivre, il en subisse l'action réciproque.
 
 \begin{figure}[H]
 
@@ -184,6 +206,18 @@ l'attraction à suivre, il en subisse l'action réciproque.
 
 \end{figure}
 
+On note que l'attraction n'a pas pour but d'approcher des capteurs
+trop éloignés pour communiquer puisque l'existence d'une connexion
+entre deux capteurs est un prérequis à l'application de la force
+d'attraction. ???
+
+Dans le phénomène d'attraction réel, l'action est réciproque et
+instantanée mais dans notre cas elle est unidirectionnelle. Un capteur
+est attiré par tous ses voisins mais le processus décrit ne modifie
+pas directement la position du voisin et il n'en subit aucune
+influence. Il est néanmoins à prévoir que lorsque ce voisin calculera
+les influences qui s'appliquent à lui, il en subira la réciproque.
+
 \subsection{Répulsion}
 
 L'attraction a pour effet d'agglomérer en groupes serrés tous les
@@ -193,20 +227,15 @@ tous être superposés sur la même position au bout d'un certain nombre
 d'itérations et la contrainte de couverture n'est absolument pas
 satisfaite.
 
-Pour pallier cette déconvenue, on introduit une nouvelle force,
-opposée à l'attraction : la répulsion. La rayon $R_r$ définit une
-nouvelle zone radiale qui, contrairement à la loi précédente,
-expulsera les capteurs envahissants vers l'extérieur. Il est bien sûr
-nécessaire que $R_r < R_c$. De plus, on prend $R_r = R_c -
-\varepsilon$, o\`u $\varepsilon$ correspond à la largeur d'une bande
-neutre entourant chaque capteur (voir figure \ref{repulsion}). Les
-capteurs auront naturellement tendance à s'installer dans les bandes
-neutres des autres capteurs.
+Pour pallier cette déconvenue, on introduit une nouvelle force opposée
+à l'attraction, la répulsion. Le rayon $R_r$ définit une nouvelle zone
+radiale qui, contrairement à la loi précédente, expulsera les capteurs
+envahissants vers l'extérieur. Il est bien sûr nécessaire que $R_r <
+R_c$.
 
 $$
 \vec{r} = (\vec{p} - \vec{p_v}) ???
 $$
-
 
 \begin{figure}[H]
 
@@ -220,7 +249,47 @@ $$
 
 \end{figure}
 
+On prend $R_r = R_a - \varepsilon$, o\`u $\varepsilon$ correspond à la
+largeur d'une bande neutre entourant chaque capteur (voir figure
+\ref{repulsion}). Les capteurs auront naturellement tendance à
+s'installer dans ces zones libre de toute influence et à se verouiller
+???. Nous verrons par la pratique que la conséquence principale de ce
+positionnement forcé est un maillage régulier et géométrique. La
+régularité spatiale du réseau de capteur est ici un bonus
+appréciable. ???
+
 \subsection{Gravité}
+
+Les deux règles présentées permettant aux capteurs proches de
+s'agglomérer en composantes connexes équilibrées mais notre objectif
+est d'obtenir une unique composante connexe. Dans cette optique, on
+introduit une dernière influence inspirée du physique, la gravité.
+
+Comme spécifié en introduction, on part de l'hypothèse que les
+capteurs sont munis de moyens de localisation dans l'espace et nous en
+avons allègrement profiter pour les calculs de distances des formules
+précédentes. Toujours dans cette ???, on peut supposer que tous les
+capteurs connaissent le centre de l'environnement dans lequel ils sont
+largués. Cette position peut être la position de laquelle ils ont été
+largués, une position pré-programmée ou un point calculée de façon
+commune par moyenne de toutes leur position(sujet intéréssant
+!). L'important est que cette position soit connu de tous et servent
+d'origine dans leur repère.
+
+La gravité est la force qui va attirer tous les capteurs vers le
+centre de l'environnement. \`A première vue, une telle règle semble
+dangereuse car on imagine qu'elle forcera les capteurs à se déplacer
+vers le centre de leur environnement au risque de sacrifier la
+couverture dont nous fait disposer l'effet répulsif
+inter-particulaire. Néanmoins, on compte sur l'effet combiné des
+différentes forces pour résister à cet effet.
+
+Son intérêt est d'amener vers le centre les composantes connexes et
+les capteurs isolés pour tous les assembler en un unique réseau.
+
+$$
+\vec{g} = -\vec{p} ???
+$$
 
 \begin{figure}[H]
 
@@ -234,24 +303,54 @@ $$
 
 \end{figure}
 
-$$
-\vec{g} =
-$$
-
 \subsection{Composition d'une force nette}
 
-Une fois ces trois forces calculées, il est nécéssaire de les ajouter
-à la position actuelle du capteur concerné pour créer un
-mouvement. Néanmoins, on passe par une phase de transformation des
-forces.
+Une fois ces trois forces calculées, on ne peut pas les appliquer
+naïvement sur le capteur concerné car il s'agit d'un objet physique
+soumis à des limitations quant à sa vitesse de déplacement. On associe
+donc à chaque capteur une vitesse de déplacement maximale qui servira
+de borne supérieure à la magnitude des trois forces combinées.
 
-Tout d'abord, et bien que notre simulation se limite au déplacement
-d'entités virtuelles, un véritable capteur est un objet physique
-soumis à des limitations quant à sa vitesse de déplacement. Simplement
-additionner les trois influences que l'environnement impose à un
-capteur serait peu réaliste.
+Puisque l'on dispose de trois influences différentes, chacune tenant
+un rôle particulier dans la résolution du problème, l'idée la plus
+intuitive est d'en déduire une influence moyenne.
+
+$$
+\vec{f} = \frac{\vec{a} + \vec{r} + \vec{g}}{3}
+$$
+
+En pratique, on observe que ce choix montre vite ses limites. Dans
+certains cas, deux forces seront opposées et par ce type de
+combinaison, elles s'annulleront mutuellement et on obtiendra au final
+un mouvement nul. Et l'immobilité n'est pas une solution envisageable
+à ce problème. Dans d'autre cas encore plus fréquents, les trois
+forces semblents adaptées : on observe des capteurs éparses flotter
+lentement vers le centre de leur environnement et s'assembler en
+composante connexe de plus en plus grande au fur et à mesure de leur
+traversée de l'espace. Mais une fois que le maillage est complet et
+qu'une situation d'équilibre semble avoir été atteinte, le centre du
+réseau commence à trembler, les capteurs se rapprochent dangereusement
+et force le passage vers le centre en ignorant les rayons de
+répulsions de leur voisin. Ce problème est dû au nombre elevé de
+tensions s'opérant au centre du réseau, résultant en une pression
+intense qui fait s'effondrer le réseau jusqu'à ce que tous les
+capteurs occupent la même position. Moyenner les forces est donc une
+fausse bonne idée.
+
+MEILLEURE SOLUTION
+
+DEMO EN TROIS IMAGES
 
 \subsection{Obstacles}
+
+On propose d'étendre ce modèle de guidage afin de permettre aux
+capteurs d'éviter automatiquement les obstacles par l'ajout d'une
+nouvelle force virtuelle. Ici, un obstacle est défini comme étant une
+zone non traversable. En réalité, il peut s'agir d'un bâtiment, d'une
+zone dont les relevés ne nous intéressent pas, ou d'une zone interdite
+au appareils volants.
+
+REPULSION
 
 \begin{figure}[H]
 
@@ -265,6 +364,7 @@ capteur serait peu réaliste.
 \end{figure}
 
 \section{Conclusion}
+
 
 
 \end{multicols}
