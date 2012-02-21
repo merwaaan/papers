@@ -84,8 +84,7 @@ public class Simulation {
 		view.setBackLayerRenderer(new BackgroundRenderer(this));
 
 		Camera camera = view.getCamera();
-		camera.setAutoFitView(false);
-		camera.setViewPercent(1.1);
+		camera.setGraphViewport(-10000, 0, 0, 0);
 
 		this.net.setAttribute("ui.antialias", true);
 

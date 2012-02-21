@@ -7,6 +7,7 @@
 \usepackage{pgfgantt}
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{verbatim}
 
 \newcommand{\mmax}{\ensuremath{\operatorname{max}}}
 \newcommand{\mpred}{\ensuremath{\operatorname{PRED}}}
@@ -183,8 +184,86 @@ suivant :
   \includegraphics[width=14cm]{gantt.png}
 \end{figure}
 
+\newpage
+
 \section{Problème 2}
 
+\verbatiminput{pseudocode.txt}
 
+Dans cet algorithme, le processeur maître ne réalise pas de calcul
+mais répartit les données sur les quatres processeurs
+esclaves. Puisqu'il y a 4 processeurs et que la matrice est de
+dimension 8, on envoie deux lignes de A à chaque processeur. Par
+exemple, le processeur 1 va traîter les ligne 1 et 2 tandis que le
+processeur 2 va traîter les lignes 3 et 4.
+
+Après chaque série de calcul, les processeurs esclaves envoient leurs
+deux valeurs de $x$ aux autres. De cette façon, les solutions locales
+de chaque P sont continuellement mises à jour.
+
+Le test de convergence est effectué de façon décentralisée dans chaque
+processeur esclave. Une fois qu'un processeur a convergé, il envoie
+son résultat au processeur maître qui affiche le résultat final
+lorsque tous ses esclave ont convergé.
+
+Le graphe suivant illustre les premières itérations de l'algorithme.
+
+\begin{figure}[H]
+
+  \centering
+
+  \begin{tikzpicture}
+
+    \node[draw,circle] (P0) at (0,0) {P0};
+
+    \node[draw,circle] (P1_1) at (3,3) {P1};
+    \node[draw,circle] (P2_1) at (3,1) {P2};
+    \node[draw,circle] (P3_1) at (3,-1) {P3};
+    \node[draw,circle] (P4_1) at (3,-3) {P4};
+
+    \path (P0) edge[->] (P1_1);
+    \path (P0) edge[->] (P2_1);
+    \path (P0) edge[->] (P3_1);
+    \path (P0) edge[->] (P4_1);
+
+    \node[draw,circle] (P1_2) at (6,3) {P1};
+    \node[draw,circle] (P2_2) at (6,1) {P2};
+    \node[draw,circle] (P3_2) at (6,-1) {P3};
+    \node[draw,circle] (P4_2) at (6,-3) {P4};
+
+    \path (P1_1) edge[->] (P2_2);
+    \path (P1_1) edge[->] (P3_2);
+    \path (P1_1) edge[->] (P4_2);
+    \path (P2_1) edge[->] (P1_2);
+    \path (P2_1) edge[->] (P3_2);
+    \path (P2_1) edge[->] (P4_2);
+    \path (P3_1) edge[->] (P1_2);
+    \path (P3_1) edge[->] (P2_2);
+    \path (P3_1) edge[->] (P4_2);
+    \path (P4_1) edge[->] (P1_2);
+    \path (P4_1) edge[->] (P2_2);
+    \path (P4_1) edge[->] (P3_2);
+
+    \node (P1_3) at (9,3) {};
+    \node (P2_3) at (9,1) {};
+    \node (P3_3) at (9,-1) {};
+    \node (P4_3) at (9,-3) {};
+
+    \path (P1_2) edge[dashed] (P2_3);
+    \path (P1_2) edge[dashed] (P3_3);
+    \path (P1_2) edge[dashed] (P4_3);
+    \path (P2_2) edge[dashed] (P1_3);
+    \path (P2_2) edge[dashed] (P3_3);
+    \path (P2_2) edge[dashed] (P4_3);
+    \path (P3_2) edge[dashed] (P1_3);
+    \path (P3_2) edge[dashed] (P2_3);
+    \path (P3_2) edge[dashed] (P4_3);
+    \path (P4_2) edge[dashed] (P1_3);
+    \path (P4_2) edge[dashed] (P2_3);
+    \path (P4_2) edge[dashed] (P3_3);
+
+  \end{tikzpicture}
+
+\end{figure}
 
 \end{document}

@@ -1,0 +1,99 @@
+entrée :
+       matrice A (de taille n*n)
+       vecteur b (de taille n)
+       entier n
+
+sortie :
+       vecteur solution x
+
+DEBUT
+
+      // Initialisation du vecteur solution.
+      x = [0,0,0,0,0,0,0,0]
+
+      // Le processeur maître distribue les données.
+      SI moi = 0 ALORS
+
+         POUR i = 1 à P
+
+              // On envoie uniquement les lignes utiles de A.
+              // Chaque processeur en traîte deux.
+              envoyer(moi, i, A[2*(i-1)], n)
+              envoyer(moi, i, A[2*(i-1)+1], n)
+
+              // On envoie b en entier à tout le monde.
+              envoyer(moi, i, b, n)
+
+        FIN POUR
+
+        // Attend les 2 solutions de chaque esclave
+        // (une fois qu'ils ont convergé).
+        POUR i = 1 à P
+              recevoir(moi, i, x[2*(i-1)], 1);
+              recevoir(moi, i, x[2*(i-1)+1], 1);
+
+        // Affiche la solution.
+        affiche(x)
+
+      // Les processeurs esclaves éxécutent les calculs.
+      SINON
+
+        convergence = faux
+
+        a1 : première ligne de A à traîter
+        a2 : seconde ligne de A à traîter
+        b : vecteur b
+
+        recevoir(moi, 0, a1, n)
+        recevoir(moi, 0, a2, n)
+        recevoir(moi, 0, b, n)
+
+        TANT QUE convergence = faux
+
+             // Calcule l'indice de la ligne en fonction
+             // du numéro du processeur.
+             i = 2*(moi-1)
+
+             // Calcule les nouvelles valeurs de X
+             x[i] = calculer(i, x, b)
+             x[i+1] = calculer(i+1, x, b)
+
+             // Diffuser les résultats et recevoir
+             // ceux des autres processeurs.
+             POUR i = 1 à P différent de moi
+                 envoyer(moi, i, x, n);
+                 recevoir(moi, i, x2, n);
+                 x[2*(i-1)] = x2[2*(i-1)]
+                 x[2*(i-1)+1] = x2[2*(i-1)+1]
+
+             // Vérifie la convergence du calcul.
+             convergence = t(x,y)
+
+             // Enregistre x pour comparer à la prochaine itération.
+             y = x;
+
+        FIN TANT QUE
+
+      FIN SINON
+
+FIN
+
+PROCEDURE calculer : i, x, b
+
+         xi = 0
+
+         SI i = 1 ALORS
+            xi = (b[1] - x[2] - x[3]) / 2
+         SINON SI i = 2 ALORS
+            xi = (b[2] - x[1] - x[3] - x[4]) / 2
+         SINON SI i = 7 ALORS
+            xi = (b[7] - x[5] - x[6] - x[8]) / 2
+         SINON SI i = 8 ALORS
+            xi = (b[8] - x[6] - x[7]) / 2
+         SINON
+            xi = ([i] - x[i-2] - x[i-1] - x[i+1] - x[i+2]) / 2
+         FIN SI
+
+         retourner xi
+
+FIN PROCEDURE
