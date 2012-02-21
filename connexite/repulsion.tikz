@@ -1,13 +1,23 @@
 \begin{tikzpicture}
 
+  \colorlet{mgreenlight}{mgreen!40}
   \colorlet{mpinklight}{mpink!70}
   \colorlet{mpinklighter}{mpink!30}
 
-  \pgfdeclareradialshading{gradient}
+  \pgfdeclareradialshading{gradientg}
+                          {\pgfpoint{0}{0}}
+                          {color(0cm)=(mgreenlight);color(0.5cm)=(mgreenlight);color(1cm)=(mgreen)}
+
+  \pgfdeclareradialshading{gradientp}
                           {\pgfpoint{0}{0}}
                           {color(0cm)=(mpinklight);color(1cm)=(mpinklighter)}
 
-  \shadedraw[draw=none,shading=gradient]
+  \shadedraw[draw=none,even odd rule,shading=gradient]
+     (0, 0) circle (2)
+     (0, 0) circle (1.4);
+  \draw[dashed,green,very thick] (0,0) circle (1.4);
+
+  \shadedraw[draw=none,shading=gradientp]
      (0, 0) circle (0.8);
   \draw[dashed,red,very thick] (0,0) circle (0.8);
 
