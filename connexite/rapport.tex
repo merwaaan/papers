@@ -35,7 +35,7 @@
 
 On imagine le problème suivant : un groupe de $n$ capteurs mobiles est
 réparti aléatoirement dans un espace aérien. On part de l'hypothèse
-qu'un capteur connaît uniquement le nombre total de capteurs de ce
+qu'un capteur connaît uniquement le nombre total de capteurs du
 système et qu'il est assez sophistiqué pour pouvoir déterminer
 précisément sa position absolue. Les capteurs sont dotés de matériel
 de communication sans fil et peuvent s'envoyer des messages à
@@ -45,9 +45,9 @@ d'émission $R_c$.
 Le réseau constitué par cet essaim d'appareils volants forme un graphe
 dynamique dont les n\oe uds sont les capteurs. Deux n\oe uds sont
 reliés par un arc si les capteurs qui leur sont associés sont en
-mesure de communiquer, id est s'ils sont assez proches. La figure
-\ref{communication} décrit un exemple de scénario impliquant trois
-capteurs.
+mesure de communiquer, c'est à dire s'ils sont assez proches. La
+figure \ref{communication} décrit un exemple de scénario impliquant
+trois capteurs.
 
 \begin{figure}[H]
 
@@ -68,8 +68,8 @@ toujours la même altitude et donc on limite son déplacement à deux
 dimensions. La contrainte principale de cet exercice est que l'on
 refuse toute forme de contrôle global sur l'essaim de capteurs. Toutes
 les actions entreprises par un appareil seront uniquement dû à ses
-décisions propres; décisions dépendants de la vue réduite du système
-dont il dispose.
+décisions propres et dépendront de la vue réduite du système dont il
+dispose.
 
 La possibilité pour un capteur de communiquer avec ses semblables est
 au centre de nos préoccupations car on considère qu'un capteur isolé
@@ -82,42 +82,105 @@ posent :
 \item{Comment déplacer les capteurs de façon à ce qu'il le devienne ?}
 \end{enumerate}
 
-Pour répondre à la première question, on se concentrera sur les
+Pour répondre à la première question, on se concentre sur les
 communications de capteur à capteur en proposant une méthode pour
 laquelle chaque agent diffuse sa vision de la connexité du réseau,
 étiquettée en fonction de l'origine de l'information et de sa date. Un
-mécanisme de filtrage autorégulant sera mis en place pour
-répandre rapidement les informations critiques telles que l'ajout d'un
-nouveau n\oe ud à une composante connexe ou la disparation d'un autre.
+mécanisme de filtrage autorégulant sera mis en place pour répandre
+rapidement les informations critiques telles que l'ajout d'un nouveau
+n\oe ud à une composante connexe.
 
-La réponse à la seconde question s'attachera à l'aspect mobile d'un
-capteur. On proposera un guidage décentralisé se basant sur
+La réponse à la seconde question s'attache à l'aspect mobile d'un
+capteur. On propose une méthode de guidage décentralisé se basant sur
 l'imitation de plusieurs lois physiques de la nature afin de former un
 maillage à la fois connexe, équilibré et étalé dans
-l'espace. Finalement, on envisagera une extension de ce système pour
+l'espace. Finalement, on envisage une extension de ce système pour
 permettre aux capteurs d'éviter naturellement les obstacles.
 
 \section{Déterminer si le réseau est connexe}
 
-Le réseau de capteur est hautement dynamique. Sa connexité dépend du
-mouvement des capteurs et de leur état de fonctionnement
+Dans cette section, on se place du point de vue d'un capteur $c$ et
+l'on considère que le réseau est connexe lorsque $c$ le pense connexe.
 
-Une étiquette correspond à une information de connexité, relayée de
-capteur en capteur. Son information principale est le n\oe ud du
-réseau qu'elle concerne mais elle comprend aussi la date à laquelle
-l'information est entrée dans le système et le n\oe ud à son origine.
+Les capteurs étant mobiles, le réseau de communication qu'ils forment
+est hautement dynamique et des événements impromptus, comme le
+déplacement d'un capteur ou une panne, peuvent à tout moment faire
+varier la connexité du graphe résultant. Comme énoncé précédemment,
+$c$ a connaissance du nombre de capteurs $n$ du système. Déterminer la
+connexité du réseau revient donc à un problème de comptage
+décentralisé, o\`u $\tilde{n}$ est le nombre de capteurs que $c$ sait
+connectés à sa propre composante connexe et le graphe est connexe si
+$\tilde{n} = n$.
 
-Si l'on traduisait le message d'un capteur à un autre en langue
-humaine, on pourrait entendre Bonjour, je suis le capteur D, selon moi
-A et B sont connectés et j'ai des doutes sur F
+La méthode que l'on présente repose sur un partage régulier, entre les
+capteurs, des informations qu'ils entretiennent à propos de leur
+voisinage direct. Si l'on pouvait traduire en langue humaine un
+message de $c$ à $c'$, on entendrait :
 
-Un message contient deux listes
+\begin{quote}
+  \textit{Je suis $c$ et je sais de façon certaine que $x$ et $y$ sont
+    dans mon voisinage. Par contre, je n'ai pas eu de nouvelles de $z$
+    depuis un certain temps, je doute qu'ils soit toujours présent
+    dans le réseau}
+\end{quote}
 
-\begin{itemize}
-\item{La liste des n\oe uds dont on est certain qu'ils appartiennent
-  au réseau}
-\item{La liste des n\oe uds en situation douteuse}
-\end{itemize}
+L'objectif de notre méthode est d'autoriser la diffusion de tels
+messages tout en gérant les conflits potentiels d'information et en
+répercutant sur le système les informations valides uniquement. Pour
+ce faire, on introduit trois mécanismes : la surveillance, le balisage
+et le filtrage.
+
+\subsection*{Surveillance}
+
+Dans notre système, on suppose que $c$ dispose d'une mémoire interne
+suffisante pour stocker plusieurs listes. La première représente le
+voisinage de $c$ et contient uniquement les identifiants des n\oe uds
+en liaison directe avec ce dernier. Un n\oe ud est ajouté à cette
+liste si $c$ en reçoit un message et qu'il n'était pas déja dans la
+liste. Un n\oe ud est retiré de cette liste si $c$ n'en a pas reçu de
+message depuis un certain temps, c'est le mécanisme de surveillance.
+
+On choisit ici de rendre les capteurs proactifs : leurs messages sont
+envoyés à intervalle régulier afin d'informer de leur présence et l'on
+considère qu'un capteur a disparu s'il n'envoie plus de message.
+
+\subsection*{Balisage}
+
+La seconde liste entretenue par un capteur représente sa vision de la
+connexité du réseau, c'est à dire tous les n\oe uds qui y sont
+connectés de son point de vue. Chacune de ses entrées est un triplet
+$(x,t,s)$ avec $x$ l'identifiant du n\oe ud que l'on sait connecté,
+$t$ le dernier temps auquel $x$ a été détecté et $s$ le n\oe ud à
+l'origine de cette information.
+
+Par exemple, si $c$ a dans sa liste de connexité l'entrée $(y,52,z)$,
+cela signifie qu'il sait que le capteur $y$ fait partie de la même
+composante connexe car il a été détecté au temps 52 et l'information a
+été relayée par $z$. Le n\oe ud à l'origine de l'information, ici $z$,
+apparaît nécéssairement dans la liste de voisins de $c$ puisque seuls
+les voisins peuvent échanger des messages. Il est important de
+différencier ce n\oe ud du n\oe ud distant qui a détecté $y$ au temps
+52 (et dont on ne se préoccupe pas de l'identité).
+
+La troisième liste contient des données à propos des capteurs dont $c$
+n'est plus certain de la connexité. Un n\oe ud $c'$ y est ajouté
+lorsqu'il est présent dans la liste de connexité et que, par
+surveillance, on se rend compte qu'il n'a pas communiqué depuis un
+certain temps. \`A l'inverse, $c'$ migre de la liste de doutes vers la
+liste de connexité si une nouvelle communication est plus tard
+détectée. Il est évident qu'un n\oe ud ne peut être présent que dans
+une des deux listes à la fois et ce constat nous permet d'évaluer
+l'espace mémoire nécessaire à $2n$ informations ($n$ informations dans
+la liste de voisins si le graphe est complet, $n$ informations
+réparties dans la liste de connexité et la liste de doutes au
+maximum).
+
+Le balisage est l'action, pour un capteur, de régulièrement partager
+sa liste de connexité et sa liste de doutes avec ses voisins.
+
+\subsection*{\'Evaluation des rumeurs}
+
+
 
 \section{Rendre le réseau connexe}
 
@@ -157,7 +220,7 @@ séparément par la suite, va engendrer une influence sur le déplacement
 de nos capteurs; influence dont la composition sera détaillée en
 dernière partie.
 
-\subsection{Attraction}
+\subsection*{Attraction}
 
 \`A la lecture de l'énoncé de ce problème, la nécessité de rapprocher
 les capteurs les uns des autres, afin qu'un réseau de communication
@@ -218,7 +281,7 @@ pas directement la position du voisin et il n'en subit aucune
 influence. Il est néanmoins à prévoir que lorsque ce voisin calculera
 les influences qui s'appliquent à lui, il en subira la réciproque.
 
-\subsection{Répulsion}
+\subsection*{Répulsion}
 
 L'attraction a pour effet d'agglomérer en groupes serrés tous les
 capteurs démarrant la simulation dans une même zone. Mais même si de
@@ -258,7 +321,7 @@ positionnement forcé est un maillage régulier et géométrique. La
 régularité spatiale du réseau de capteur est ici un bonus
 appréciable. ???
 
-\subsection{Gravité}
+\subsection*{Gravité}
 
 Les deux règles présentées permettant aux capteurs proches de
 s'agglomérer en composantes connexes équilibrées mais notre objectif
@@ -303,7 +366,7 @@ $$
 
 \end{figure}
 
-\subsection{Composition d'une force nette}
+\subsection*{Composition d'une force nette}
 
 Une fois ces trois forces calculées, on ne peut pas les appliquer
 naïvement sur le capteur concerné car il s'agit d'un objet physique
@@ -341,7 +404,7 @@ MEILLEURE SOLUTION
 
 DEMO EN TROIS IMAGES
 
-\subsection{Obstacles}
+\subsection*{Obstacles}
 
 On propose d'étendre ce modèle de guidage afin de permettre aux
 capteurs d'éviter automatiquement les obstacles par l'ajout d'une
