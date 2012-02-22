@@ -1,9 +1,6 @@
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 
-import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.SingleGraph;
@@ -15,12 +12,15 @@ public class Simulation {
 
 	public Graph net;
 
+	public int step;
 	public int worldSize;
-	public double sensorSpeed = 2;
+	public double sensorSpeed;
 
 	public int communicationRadius;
 	public int repulsionRadius;
 	public int attractionRadius;
+
+	public int sensorCount;
 
 	public ArrayList<Obstacle> obstacles;
 
@@ -29,7 +29,7 @@ public class Simulation {
 	private FileSinkImages fileSink;
 
 	private static String style =
-		"node { size: 7px; }" +
+		"node { size: 7px; fill-mode: dyn-plain; fill-color: black, red; }" +
 		"edge { size: 1px; }";
 
 	public Simulation(int sensorCount, boolean enableObstacles, int worldSize, boolean displayRadii, String capturePrefix) {
@@ -38,7 +38,9 @@ public class Simulation {
 		this.net = new SingleGraph("sensor network");
 		this.net.addAttribute("ui.stylesheet", Simulation.style);
 
+		this.step = 0;
 		this.worldSize = worldSize;
+		this.sensorSpeed = 2;
 
 		this.communicationRadius = 450;
 		this.repulsionRadius = 400 - 30;
@@ -58,7 +60,7 @@ public class Simulation {
 		view.setBackLayerRenderer(new BackgroundRenderer(this));
 
 		Camera camera = view.getCamera();
-		camera.setGraphViewport(-7000, 0, 0, 0);
+		//camera.setGraphViewport(-7000, 0, 0, 0);
 
 		this.net.setAttribute("ui.antialias", true);
 
@@ -76,6 +78,7 @@ public class Simulation {
 		this.net.setNodeFactory(new SensorFactory(this));
 
 		// Spawn sensors.
+		this.sensorCount = sensorCount;
 		for(int i = 0; i < sensorCount; ++i)
 			this.net.addNode("" + (this.net.getNodeCount() + 1));
 	}
@@ -98,17 +101,32 @@ public class Simulation {
 
 	private void update() {
 
-		// FIRST: compute the next move.
+		/******
+		GUIDING
+		*******/
+
+		// First, compute the next move.
 		for(Node sensor : this.net)
 			((Sensor)sensor).computeNextMove();
 
-		// THEN : move.
+		// Then move.
 		for(Node sensor : this.net)
 			((Sensor)sensor).move();
 
 		// Check for new neighbors when the moves are over.
 		for(Node sensor : this.net)
 			((Sensor)sensor).checkForNeighbors();
+
+		/******
+		COUNTING
+		*******/
+
+		for(Node sensor : this.net) {
+			((Sensor)sensor).count();
+			((Sensor)sensor).color();
+		}
+
+		++this.step;
 	}
 
 	private void pause(int ms) {

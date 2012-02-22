@@ -1,6 +1,7 @@
+import java.util.ArrayList;
+
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Graph;
-import org.graphstream.graph.implementations.AbstractEdge;
 import org.graphstream.graph.implementations.AbstractGraph;
 import org.graphstream.graph.implementations.SingleNode;
 import org.graphstream.ui.geom.Vector2;
@@ -9,11 +10,27 @@ public class Sensor extends SingleNode {
 
 	private Simulation sim;
 
+	private Vector2 nextMove;
+
 	private int communicationRadius;
 	private int repulsionRadius;
 	private int attractionRadius;
 
-	private Vector2 nextMove;
+	private int sensorCount;
+
+	private ArrayList<Sensor> N_subjects;
+	private ArrayList<Integer> N_times;
+
+	private ArrayList<Sensor> C_subjects;
+	private ArrayList<Sensor> C_sources;
+	private ArrayList<Integer> C_times;
+
+	private ArrayList<Sensor> D_subjects;
+	private ArrayList<Integer> D_times;
+
+	private int nextMessageCountdown;
+	private int maxMessageCountdown;
+	private int neighborAlarm;
 
 	public Sensor(Graph graph, String id, Simulation sim) {
 
@@ -25,8 +42,24 @@ public class Sensor extends SingleNode {
 		this.repulsionRadius = this.sim.repulsionRadius;
 		this.attractionRadius = this.sim.attractionRadius;
 
+		this.sensorCount = this.sim.sensorCount;
+
 		int halfWorldSize = this.sim.worldSize / 2;
 		this.setPosition(Math.random() * this.sim.worldSize - halfWorldSize, Math.random() * this.sim.worldSize - halfWorldSize);
+
+		this.N_subjects = new ArrayList<Sensor>();
+		this.N_times = new ArrayList<Integer>();
+
+		this.C_subjects = new ArrayList<Sensor>();
+		this.C_sources = new ArrayList<Sensor>();
+		this.C_times = new ArrayList<Integer>();
+
+		this.D_subjects = new ArrayList<Sensor>();
+		this.D_times = new ArrayList<Integer>();
+
+		this.maxMessageCountdown = 200;
+		this.nextMessageCountdown = (int)(Math.random() * maxMessageCountdown);
+		this.neighborAlarm = 100000;
 	}
 
 	private double getDistanceFrom(Sensor s) {
@@ -66,6 +99,10 @@ public class Sensor extends SingleNode {
 
 		return force;
 	}
+
+	/******
+	       GUIDING
+	*******/
 
 	public void computeNextMove() {
 
@@ -220,7 +257,6 @@ public class Sensor extends SingleNode {
 
 			// If the sensors are already linked.
 			if(this.hasEdgeBetween(sensor)) {
-
 				if(distance > this.communicationRadius)
 					this.sim.net.removeEdge(this, sensor);
 			}
@@ -230,5 +266,166 @@ public class Sensor extends SingleNode {
 		}
 	}
 
-}
+	/******
+	       COUNTING
+	*******/
 
+	public void count() {
+
+		--this.nextMessageCountdown;
+
+		// Send a message to every neighbor.
+		if(this.nextMessageCountdown == 0) {
+
+			// Check if recorded neighbors are still connected.
+			for(int i = 0, l = N_subjects.size(); i < l; ++i)
+				if(this.sim.step - N_times.get(i) > this.neighborAlarm) {
+
+					// N -> D
+					Sensor s = N_subjects.remove(i);
+					N_times.remove(i);
+					D_subjects.add(s);
+					D_times.add(new Integer(this.sim.step));
+
+					// C ->
+					int j = C_subjects.indexOf(s);
+					if(j > -1) {
+						C_subjects.remove(j);
+						C_sources.remove(j);
+						C_times.remove(j);
+					}
+
+					--i;
+					--l;
+				}
+
+			// Send our lists to each connected sensor.
+			for(Edge link : this.getEachEdge()) {
+				Sensor neighbor = link.getOpposite(this);
+				neighbor.receive(this, C_subjects, C_sources, C_times, D_subjects, D_times);
+			}
+
+			this.nextMessageCountdown = (int)(Math.random() * maxMessageCountdown);
+		}
+	}
+
+	public void receive(Sensor source,
+	                    ArrayList<Sensor> OC_subjects,
+	                    ArrayList<Sensor> OC_sources,
+	                    ArrayList<Integer> OC_times,
+	                    ArrayList<Sensor> OD_subjects,
+	                    ArrayList<Integer> OD_times) {
+
+		/*
+		System.out.println(this.getId()+" <- "+source.getId());
+		System.out.println(this.N_subjects);
+		System.out.println(this.N_times);
+		System.out.println(this.C_subjects);
+		System.out.println(this.C_sources);
+		System.out.println(this.C_times);
+		System.out.println(this.D_subjects);
+		System.out.println(this.D_times);
+		*/
+
+		// Add the source to the connectivity list if it's not yet registered.
+		if(!N_subjects.contains(source)) {
+			// -> N
+			N_subjects.add(source);
+			N_times.add(new Integer(this.sim.step));
+		}
+		if(!C_subjects.contains(source)) {
+			// -> C
+			C_subjects.add(source);
+			C_sources.add(source);
+			C_times.add(new Integer(this.sim.step));
+		}
+		if(D_subjects.contains(source)) {
+			int k = D_subjects.indexOf(source);
+			D_subjects.remove(k);
+			D_times.remove(k);
+		}
+
+		for(int i = 0, l = OC_subjects.size(); i < l; ++i) {
+
+			if(OC_subjects.get(i) == this)
+				continue;
+
+			if(!C_subjects.contains(OC_subjects.get(i))) {
+				if(!D_subjects.contains(OC_subjects.get(i))) {
+					// -> C
+					C_subjects.add(OC_subjects.get(i));
+					C_sources.add(source); // change source
+					C_times.add(OC_times.get(i));
+				}
+				else {
+					int j = D_subjects.indexOf(OC_subjects.get(i));
+
+					if(j > -1 && OC_times.get(i) > D_times.get(j)) {
+						// D -> C
+						Sensor s = D_subjects.remove(j);
+						D_times.remove(j);
+						C_subjects.add(s);
+						C_sources.add(source);
+						C_times.add(OC_times.get(i));
+					}
+				}
+			}
+			else {
+				int j = C_subjects.indexOf(OC_subjects.get(i));
+				if(j > -1 && OC_times.get(i) > C_times.get(j))
+					C_times.set(j, OC_times.get(i));
+			}
+		}
+
+		for(int i = 0, l = OD_subjects.size(); i < l; ++i) {
+
+			//if(OD_subjects.get(i) == this)
+			//	continue;
+
+			// Doubt is not present.
+			if(!D_subjects.contains(OD_subjects.get(i))) {
+				if(!C_subjects.contains(OD_subjects.get(i))) {
+					// -> D
+					D_subjects.add(OD_subjects.get(i));
+					D_times.add(OD_times.get(i));
+				}
+				else {
+					int j = C_subjects.indexOf(OD_subjects.get(i));
+					if(j > -1 && OD_times.get(i) > C_times.get(j)) {
+						// C -> D
+						Sensor s = C_subjects.remove(j);
+						C_sources.remove(j);
+						C_times.remove(j);
+						D_subjects.add(s);
+						D_times.add(OD_times.get(i));
+					}
+				}
+			}
+			// Doubt is already present.
+			else {
+				int j = D_subjects.indexOf(OD_subjects.get(i));
+				if(j > -1 && OD_times.get(i) > D_times.get(j))
+					D_times.set(j, OD_times.get(i));
+			}
+		}
+	}
+
+	public boolean isNetworkConnected() {
+
+		return this.C_subjects.size() + 1 == this.sensorCount;
+	}
+
+	public double getNetworkConnectivity() {
+
+		return (double)(this.C_subjects.size() + 1) / this.sensorCount;
+	}
+
+	public void color() {
+
+		double connectivity = this.getNetworkConnectivity();
+
+		this.setAttribute("ui.color", connectivity);
+		this.setAttribute("ui.label", connectivity);
+	}
+
+}
