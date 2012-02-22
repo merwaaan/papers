@@ -45,21 +45,20 @@ public class BackgroundRenderer implements LayerRenderer {
 			}
 
 		// Draw obstacles.
-		if(this.sim.obstaclesEnabled)
-			for(Simulation.Obstacle o : this.sim.obstacles) {
+		for(Obstacle o : this.sim.obstacles) {
 
-				double x_gu = o.position.x();
-				double y_gu = o.position.y();
+			double x_gu = o.position.x();
+			double y_gu = o.position.y();
 
-				int x_s = (int)(w / 2 + x_gu * ratio);
-				int y_s = h - (int)(h / 2 + y_gu * ratio);
+			int x_s = (int)(w / 2 + x_gu * ratio);
+			int y_s = h - (int)(h / 2 + y_gu * ratio);
 
-				int r = (int)(o.radius * ratio);
-				int hr = r / 2;
+			int r = (int)(o.radius * ratio);
+			int hr = r / 2;
 
-				g.setColor(Color.GRAY);
-				g.fillOval(x_s - r, y_s - r, 2 * r, 2 * r);
-			}
+			g.setColor(Color.GRAY);
+			g.fillOval(x_s - r, y_s - r, 2 * r, 2 * r);
+		}
 	}
 
 }

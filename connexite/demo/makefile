@@ -13,5 +13,5 @@ all: compile execute
 execute: compile
 	java -Dsun.java2d.opengl=True -classpath $(CP) Simulation $(SENSORS) $(OBSTACLES) $(SIZE) $(RADII) $(CAPTURE)
 
-compile: Simulation.java BackgroundRenderer.java
+compile: Simulation.java Sensor.java SensorFactory.java Obstacle.java BackgroundRenderer.java
 	javac -classpath $(CP) *.java
