@@ -1,0 +1,4 @@
+\draw (180:2) node[draw,circle] (a) {A};
+\draw (270:1) node[draw,circle] (d) {D};
+\draw (0:2) node[draw,circle] (c) {C};
+\draw (90:1) node[draw,circle] (b) {B};

@@ -1,0 +1,24 @@
+\begin{tikzpicture}
+
+  \input{connexite_base.tikz}
+
+  \draw[thick] (b) -- (c);
+  \draw[thick] (c) -- (d);
+
+  \draw (0,1.8) node {$D = \{\}$}
+  ++(0,0.5) node {$C = \{(C,3)\}$}
+  ++(0,0.5) node {$N = \{C\}$};
+
+  \draw (2.3,0.7) node {$\{\}$}
+  ++(0,0.5) node {$\{(C,3)\}$}
+  ++(0,0.5) node {$\{C\}$};
+
+  \draw (0,-2.8) node {$\{\}$}
+  ++(0,0.5) node {$\{(C,3)\}$}
+  ++(0,0.5) node {$\{C\}$};
+
+  \draw (-2.3,0.7) node {$\{\}$}
+  ++(0,0.5) node {$\{(C,3)\}$}
+  ++(0,0.5) node {$\{C\}$};
+
+\end{tikzpicture}

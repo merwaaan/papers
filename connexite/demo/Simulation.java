@@ -60,7 +60,7 @@ public class Simulation {
 		view.setBackLayerRenderer(new BackgroundRenderer(this));
 
 		Camera camera = view.getCamera();
-		//camera.setGraphViewport(-7000, 0, 0, 0);
+		camera.setGraphViewport(-7000, 0, 0, 0);
 
 		this.net.setAttribute("ui.antialias", true);
 
@@ -121,6 +121,7 @@ public class Simulation {
 		COUNTING
 		*******/
 
+		if(true) return;
 		for(Node sensor : this.net) {
 			((Sensor)sensor).count();
 			((Sensor)sensor).color();

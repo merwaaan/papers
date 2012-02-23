@@ -3,7 +3,9 @@
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
 \usepackage{multicol}
+\usepackage{subfig}
 \usepackage{float}
+\usepackage{nonfloat}
 \usepackage{tikz}
 
 % FAMFAMFAM.com colors
@@ -31,7 +33,7 @@
 
 \begin{multicols}{2}
 
-\section{Introduction}
+\section*{Introduction}
 
 On imagine le problème suivant : un groupe de $n$ capteurs mobiles est
 réparti aléatoirement dans un espace aérien. On part de l'hypothèse
@@ -86,9 +88,9 @@ Pour répondre à la première question, on se concentre sur les
 communications de capteur à capteur en proposant une méthode pour
 laquelle chaque agent diffuse sa vision de la connexité du réseau,
 étiquettée en fonction de l'origine de l'information et de sa date. Un
-mécanisme de filtrage autorégulant sera mis en place pour répandre
-rapidement les informations critiques telles que l'ajout d'un nouveau
-n\oe ud à une composante connexe.
+mécanisme de filtrage autorégulant sera mis en place pour répandre les
+informations critiques telles que l'ajout d'un nouveau n\oe ud à une
+composante connexe.
 
 La réponse à la seconde question s'attache à l'aspect mobile d'un
 capteur. On propose une méthode de guidage décentralisé se basant sur
@@ -109,78 +111,137 @@ varier la connexité du graphe résultant. Comme énoncé précédemment,
 $c$ a connaissance du nombre de capteurs $n$ du système. Déterminer la
 connexité du réseau revient donc à un problème de comptage
 décentralisé, o\`u $\tilde{n}$ est le nombre de capteurs que $c$ sait
-connectés à sa propre composante connexe et le graphe est connexe si
+connectés à sa propre composante connexe, et le graphe est connexe si
 $\tilde{n} = n$.
 
-La méthode que l'on présente repose sur un partage régulier, entre les
-capteurs, des informations qu'ils entretiennent à propos de leur
-voisinage direct. Si l'on pouvait traduire en langue humaine un
-message de $c$ à $c'$, on entendrait :
+L'idée que l'on présente ici repose sur un partage permanent, entre
+voisins, de la vision du réseau que chaque capteur entretient. Si l'on
+pouvait traduire en langue humaine un message de $c$ à $c'$, on
+entendrait :
 
 \begin{quote}
-  \textit{Je suis $c$ et je sais de façon certaine que $x$ et $y$ sont
-    dans mon voisinage. Par contre, je n'ai pas eu de nouvelles de $z$
-    depuis un certain temps, je doute qu'ils soit toujours présent
-    dans le réseau}
+  \textit{Je suis $c$ et je sais que $x$ à été vu dans le réseau il y
+    a 14 secondes. Par contre, je n'ai pas eu de nouvelles de mon
+    voisin $y$ depuis un certain temps, je doute qu'il soit toujours
+    présent dans le réseau.}
 \end{quote}
 
-L'objectif de notre méthode est d'autoriser la diffusion de tels
-messages tout en gérant les conflits potentiels d'information et en
-répercutant sur le système les informations valides uniquement. Pour
-ce faire, on introduit trois mécanismes : la surveillance, le balisage
-et le filtrage.
+Dans notre méthode, un capteur transmet régulièrement à ses voisins
+son avis sur la présence ou non d'un n\oe ud dans leur composante
+connexe. Afin de permettre de gérer des informations contradictoires,
+une date et dans certains cas, une source, sont associées à chaque
+information de n\oe ud. L'objectif envisagé est de concevoir un
+système dans lequel les données sont diffusées par transmission entre
+voisins, fusion des informations de présence et filtrage des
+informations contradictoires.
 
-\subsection*{Surveillance}
+Un message adopte toujours la même structure
 
-Dans notre système, on suppose que $c$ dispose d'une mémoire interne
-suffisante pour stocker plusieurs listes. La première représente le
-voisinage de $c$ et contient uniquement les identifiants des n\oe uds
-en liaison directe avec ce dernier. Un n\oe ud est ajouté à cette
-liste si $c$ en reçoit un message et qu'il n'était pas déja dans la
-liste. Un n\oe ud est retiré de cette liste si $c$ n'en a pas reçu de
-message depuis un certain temps, c'est le mécanisme de surveillance.
+On présente d'abord les trois structure de données qui peupleront la
+mémoire à chaque capteur.
+
+\subsection*{Liste de voisins directs}
+
+La première liste, $N$, représente le voisinage de $c$ et contient
+uniquement les identifiants des n\oe uds en liaison directe avec ce
+dernier.
+
+Un n\oe ud est ajouté à $N$ si $c$ en reçoit un message et qu'il
+n'était pas déja présent dans la liste. Un n\oe ud est retiré de $N$
+si $c$ n'en a pas reçu de message depuis un certain temps, c'est le
+mécanisme de surveillance.
 
 On choisit ici de rendre les capteurs proactifs : leurs messages sont
-envoyés à intervalle régulier afin d'informer de leur présence et l'on
-considère qu'un capteur a disparu s'il n'envoie plus de message.
+envoyés volontairement à intervalle régulier afin d'informer leurs
+voisins de leur présence. Ainsi, on considère qu'un capteur a
+potentiellement disparu s'il n'envoie plus de message.
 
-\subsection*{Balisage}
+\subsection*{Liste de n\oe uds connectés}
 
-La seconde liste entretenue par un capteur représente sa vision de la
-connexité du réseau, c'est à dire tous les n\oe uds qui y sont
-connectés de son point de vue. Chacune de ses entrées est un triplet
-$(x,t,s)$ avec $x$ l'identifiant du n\oe ud que l'on sait connecté,
-$t$ le dernier temps auquel $x$ a été détecté et $s$ le n\oe ud à
-l'origine de cette information.
+La seconde liste entretenue par un capteur est $C$. Elle représente sa
+vision de la connexité du réseau, soit concrètement, tous les n\oe uds
+qui, de son point de vue, y sont connectés directement (par la liaison
+sans-fil) ou indirectement (par l'intermédiaire d'autres capteurs). On
+peut donc en déduire que tous les n\oe uds de $N$ apparaissent dans
+$C$.
 
-Par exemple, si $c$ a dans sa liste de connexité l'entrée $(y,52,z)$,
+Cependant, et contrairement à $N$, $C$ ne contient pas que des
+identifiants. Ses entrées sont de la forme $(x,t,s)$ avec $x$
+l'identifiant du n\oe ud dont l'on veut exprimer la présence sur la
+composante connexe, $t$ le dernier temps auquel $x$ a été détecté et
+$s$ le n\oe ud à l'origine de cette information.
+
+Par exemple, si un capteur a dans sa liste $C$ l'entrée $(y,52,z)$,
 cela signifie qu'il sait que le capteur $y$ fait partie de la même
-composante connexe car il a été détecté au temps 52 et l'information a
-été relayée par $z$. Le n\oe ud à l'origine de l'information, ici $z$,
-apparaît nécéssairement dans la liste de voisins de $c$ puisque seuls
-les voisins peuvent échanger des messages. Il est important de
-différencier ce n\oe ud du n\oe ud distant qui a détecté $y$ au temps
-52 (et dont on ne se préoccupe pas de l'identité).
+composante connexe que lui car il a été détecté au temps 52 et
+l'information a été relayée par $z$. Il est important de différencier
+$z$, le n\oe ud qui a transmis l'information au capteur courant (un
+voisin donc) du n\oe ud distant qui a détecté $y$ au temps 52 et dont
+l'identité ne nous importe pas.
 
-La troisième liste contient des données à propos des capteurs dont $c$
-n'est plus certain de la connexité. Un n\oe ud $c'$ y est ajouté
-lorsqu'il est présent dans la liste de connexité et que, par
-surveillance, on se rend compte qu'il n'a pas communiqué depuis un
-certain temps. \`A l'inverse, $c'$ migre de la liste de doutes vers la
-liste de connexité si une nouvelle communication est plus tard
-détectée. Il est évident qu'un n\oe ud ne peut être présent que dans
-une des deux listes à la fois et ce constat nous permet d'évaluer
-l'espace mémoire nécessaire à $2n$ informations ($n$ informations dans
-la liste de voisins si le graphe est complet, $n$ informations
-réparties dans la liste de connexité et la liste de doutes au
-maximum).
+\subsection*{Liste de doutes}
 
-Le balisage est l'action, pour un capteur, de régulièrement partager
-sa liste de connexité et sa liste de doutes avec ses voisins.
+La troisième et dernière liste, $D$, contient une liste de capteurs
+dont $c$ n'est plus certain de la connexité. Ses entrées prennent la
+forme de paires $(x,t)$ o\`u $x$ est le n\oe ud sur lequel le doute se
+pose et $t$ la date à laquelle l'absence de $x$ a été dernièrement
+remarquée.
 
-\subsection*{\'Evaluation des rumeurs}
+On ajoute une entrée $(c',t)$ à $D$ lorsque $c'$ est présent dans la
+liste $N$ des voisins mais que, par surveillance, on se rend compte au
+temps $t$ qu'il n'a pas communiqué depuis un certain temps. \`A
+l'inverse, cette même paire migre de la liste de doutes vers la liste
+de connexité si une nouvelle communication est plus tard détectée (le
+$t$ est alors mis à jour pour réfléter ce changement).
 
+Il est évident qu'un n\oe ud ne peut être présent à la fois dans $C$
+et $D$. Ce constat nous permet d'évaluer l'espace mémoire nécessaire à
+$2n$ informations ($n$ informations dans la liste de voisins si le
+graphe est complet, $n$ informations au maximum réparties dans la
+liste de connexité et la liste de doutes).
 
+\subsection*{\'Echange, fusion et filtrage}
+
+Pour l'instant les seuls événements ayant amené à modifier les listes
+du capteur $c$ étaient liés à son voisinage direct (un message d'un
+nouveau voisin est détecté et le voisin est ajouté à $N$, par
+exemple). Le balisage est l'action, pour un capteur, de régulièrement
+partager sa liste de connexité et sa liste de doutes avec ses
+voisins. Les voisins recevant ce message fusionnent les listes reçues
+avec les leurs en suivant quelques règles simples.
+
+En l'absence de conflit, les informations du message de l'émetteur
+sont intégrées à la mémoire interne du récepteur. Par exemple, si $c$
+envoie sa liste $C = \{\dots,(d,27,e),\dots\}$ à $c'$ et que ce capteur
+n'a pas d'entrée relative au n\oe ud $d$ dans ses listes alors on lui
+ajoute, tout en mettant à jour la source de l'information. $c'$ aura
+donc comme nouvelle liste $\{\dots,(d,27,c)\}$.
+
+En cas de conflits par contre, on se base toujours sur la date $t$
+liée à l'information pour déterminer quel capteur à raison et choisir
+ou non d'intégrer l'information provenant de l'émetteur. Par exemple,
+si $c$ envoie sa liste $C = \{\dots,(f,12,g),\dots\}$ à $c'$ ayant
+comme liste $D' = \{\dots,(f,16,h),\dots\}$ alors cela signifie que la
+présence de $f$ a été mise en doute au temps 16 et l'on ignore
+l'information de $c$ car on préfère faire confiance aux données les
+plus récentes.
+
+\end{multicols}
+
+\begin{figure}[p]
+
+  \centering
+
+  \subfloat[]{\input{connexite1.tikz}}\\
+  \subfloat[]{\input{connexite1.tikz}}\\
+  \subfloat[]{\input{connexite1.tikz}}\\
+
+  \caption{???}
+  \label{test}
+
+\end{figure}
+
+\begin{multicols}{2}
 
 \section{Rendre le réseau connexe}
 
@@ -193,7 +254,7 @@ l'espace afin d'effectuer des mesures sur la plus grande superficie
 possible. Nous sommes donc dans une situation de compromis, dans
 laquelle une contrainte technique (la portée de communication) force à
 agglomérer les capteurs en une même zone, tandis que leur but premier
-est de ramasser des données en masse et donc, rationnellement, de
+est de relever des données en masse et donc, rationnellement, de
 s'éloigner les uns des autres pour couvrir le plus de terrain
 possible. La seule issue favorable à ce problème est donc d'aboutir à
 une situation d'équilibre satisfaisant ces deux contraintes
@@ -231,12 +292,12 @@ information n'est pas partagée.
 
 Par sa loi de la gravitation universelle, Isaac Newton décrit la force
 qui attire toute paire de corps comme étant proportionnelle à leur
-masse respective et à la distance les séparant. Nous nous permettons
-de simplifier quelque peu son équation et d'en retirer l'aspect
-massique pour obtenir une règle qui a tout couple de corps associe une
-attraction proportionnelle à leur distance. S'ils obéissaient à cette
-loi, nos capteurs auraient naturellement tendance à se grouper, et
-donc à se mettre à portée de communication les uns des autres.
+masse respective et à la distance les séparant \cite{newton}. Nous
+nous permettons de simplifier quelque peu son équation et d'en retirer
+l'aspect massique pour obtenir une règle qui a tout couple de corps
+associe une attraction proportionnelle à leur distance. S'ils
+obéissaient à cette loi, nos capteurs auraient naturellement tendance
+à se grouper, et donc à se mettre à portée de communication.
 
 \`A l'échelle de notre système, le cadre est différent de celui de la
 loi de Newtion, et cette influence n'est pas universelle. Nous ne
@@ -269,17 +330,18 @@ $$
 
 \end{figure}
 
+Dans le phénomène d'attraction réel, l'action est réciproque mais dans
+notre cas elle est unidirectionnelle. Un capteur est attiré par tous
+ses voisins mais le processus décrit ne modifie pas directement la
+position du voisin en question et il n'en subit aucune influence. Il
+est néanmoins à prévoir que lorsque ce voisin calculera les influences
+qui s'appliquent à lui, il en subira la réciproque.
+
 On note que l'attraction n'a pas pour but d'approcher des capteurs
 trop éloignés pour communiquer puisque l'existence d'une connexion
 entre deux capteurs est un prérequis à l'application de la force
-d'attraction. ???
-
-Dans le phénomène d'attraction réel, l'action est réciproque et
-instantanée mais dans notre cas elle est unidirectionnelle. Un capteur
-est attiré par tous ses voisins mais le processus décrit ne modifie
-pas directement la position du voisin et il n'en subit aucune
-influence. Il est néanmoins à prévoir que lorsque ce voisin calculera
-les influences qui s'appliquent à lui, il en subira la réciproque.
+d'attraction. Son interêt majeur se révélera en conjonction avec la
+seconde force présentée.
 
 \subsection*{Répulsion}
 
@@ -294,10 +356,13 @@ Pour pallier cette déconvenue, on introduit une nouvelle force opposée
 à l'attraction, la répulsion. Le rayon $R_r$ définit une nouvelle zone
 radiale qui, contrairement à la loi précédente, expulsera les capteurs
 envahissants vers l'extérieur. Il est bien sûr nécessaire que $R_r <
-R_c$.
+R_c$. L'influence qui en découle est dirigée vers l'extérieur du
+capteur envahi et est inversement proportionnelle à la distance les
+séparant, de façon à engendrer une répulsion plus forte vers le centre
+\cite{Cheng2011497} :
 
 $$
-\vec{r} = (\vec{p} - \vec{p_v}) ???
+\vec{r} = \frac{\vec{p} - \vec{p_v}}{|\vec{p} - \vec{p_v}|^2}(R_r - |\vec{p} - \vec{p_v}|)
 $$
 
 \begin{figure}[H]
@@ -315,43 +380,46 @@ $$
 On prend $R_r = R_a - \varepsilon$, o\`u $\varepsilon$ correspond à la
 largeur d'une bande neutre entourant chaque capteur (voir figure
 \ref{repulsion}). Les capteurs auront naturellement tendance à
-s'installer dans ces zones libre de toute influence et à se verouiller
-???. Nous verrons par la pratique que la conséquence principale de ce
-positionnement forcé est un maillage régulier et géométrique. La
-régularité spatiale du réseau de capteur est ici un bonus
-appréciable. ???
+s'installer dans ces zones libre de toute influence. Nous verrons dans
+les démonstrations que la conséquence principale de ce positionnement
+fortement dirigé est un maillage régulier et géométrique. La
+régularité qu'adopte la structure de notre réseau est un plus à ne pas
+négliger puisqu'il permet des mesures homogènes par les capteurs.
 
 \subsection*{Gravité}
 
-Les deux règles présentées permettant aux capteurs proches de
-s'agglomérer en composantes connexes équilibrées mais notre objectif
-est d'obtenir une unique composante connexe. Dans cette optique, on
-introduit une dernière influence inspirée du physique, la gravité.
+Les deux règles présentées permettent aux capteurs de s'agglomérer en
+composantes connexes équilibrées mais ces composantes prennent la
+forme d'îlots et la connexité totale du réseau n'est toujours pas
+garantie. Dans cette optique, on introduit une dernière influence
+inspirée du physique, la gravité.
 
 Comme spécifié en introduction, on part de l'hypothèse que les
 capteurs sont munis de moyens de localisation dans l'espace et nous en
-avons allègrement profiter pour les calculs de distances des formules
-précédentes. Toujours dans cette ???, on peut supposer que tous les
-capteurs connaissent le centre de l'environnement dans lequel ils sont
-largués. Cette position peut être la position de laquelle ils ont été
-largués, une position pré-programmée ou un point calculée de façon
-commune par moyenne de toutes leur position(sujet intéréssant
-!). L'important est que cette position soit connu de tous et servent
-d'origine dans leur repère.
+avons jusque là allègrement profité pour les calculs de distance
+nécéssaires aux formules précédentes. Dans la continuité de cette
+hypothèse, on peut supposer que tous les capteurs connaissent le
+centre géométrique de l'environnement dans lequel ils évoluent. Cette
+position peut être la position de laquelle ils ont été largués, une
+position pré-programmée ou un point calculée de façon façon
+décentralisée par moyenne de toutes leur positions. Le point important
+est que cette position est connue de tous et sert d'origine dans leur
+système de coordonnées.
 
 La gravité est la force qui va attirer tous les capteurs vers le
 centre de l'environnement. \`A première vue, une telle règle semble
-dangereuse car on imagine qu'elle forcera les capteurs à se déplacer
-vers le centre de leur environnement au risque de sacrifier la
-couverture dont nous fait disposer l'effet répulsif
-inter-particulaire. Néanmoins, on compte sur l'effet combiné des
-différentes forces pour résister à cet effet.
+dangereuse car on imagine qu'elle poussera les capteurs à se déplacer
+vers le centre de la zone au risque de sacrifier l'étendue de la
+superficie couverte. Néanmoins, on compte sur l'effet combiné des
+différentes forces, notamment la répulsion, pour résister à cet effet.
 
-Son intérêt est d'amener vers le centre les composantes connexes et
-les capteurs isolés pour tous les assembler en un unique réseau.
+L'interêt de la gravité est d'attirer vers un même espace les capteurs
+isolés et les composantes connexes chanceuses formées par l'attraction
+et équilibrées par la répulsion. On la calcule de façon uniforme,
+comme un vecteur unitaire dirigé vers le centre de l'environnement.
 
 $$
-\vec{g} = -\vec{p} ???
+\vec{g} = -\frac{\vec{p}}{|\vec{p}|}
 $$
 
 \begin{figure}[H]
@@ -368,7 +436,7 @@ $$
 
 \subsection*{Composition d'une force nette}
 
-Une fois ces trois forces calculées, on ne peut pas les appliquer
+Une fois ces trois forces évaluées, on ne peut pas les appliquer
 naïvement sur le capteur concerné car il s'agit d'un objet physique
 soumis à des limitations quant à sa vitesse de déplacement. On associe
 donc à chaque capteur une vitesse de déplacement maximale qui servira
@@ -382,38 +450,74 @@ $$
 \vec{f} = \frac{\vec{a} + \vec{r} + \vec{g}}{3}
 $$
 
-En pratique, on observe que ce choix montre vite ses limites. Dans
-certains cas, deux forces seront opposées et par ce type de
-combinaison, elles s'annulleront mutuellement et on obtiendra au final
-un mouvement nul. Et l'immobilité n'est pas une solution envisageable
-à ce problème. Dans d'autre cas encore plus fréquents, les trois
-forces semblents adaptées : on observe des capteurs éparses flotter
-lentement vers le centre de leur environnement et s'assembler en
-composante connexe de plus en plus grande au fur et à mesure de leur
-traversée de l'espace. Mais une fois que le maillage est complet et
+En pratique, on observe que ce choix montre vite ses limites. En
+effet, sous certaines configurations, deux forces prendront des
+directions opposées opposées et les combiner de la sorte annulera tout
+mouvement. Or l'inaction est rarement une solution. Dans d'autre cas
+encore plus fréquents, les trois forces semblents correctement
+pondérées : on observe des capteurs isolés flotter lentement vers le
+centre de leur environnement et s'assembler en composantes connexes de
+plus en plus grandes. Mais une fois que le maillage est complet et
 qu'une situation d'équilibre semble avoir été atteinte, le centre du
-réseau commence à trembler, les capteurs se rapprochent dangereusement
-et force le passage vers le centre en ignorant les rayons de
-répulsions de leur voisin. Ce problème est dû au nombre elevé de
-tensions s'opérant au centre du réseau, résultant en une pression
+réseau commence à trembler, les capteurs centraux se rapprochent
+dangereusement et se superposent sur l'origine de l'univers, ignorant
+totalement la règle de répulsivité. Ce problème est dû au nombre elevé
+de tensions s'opérant au centre du réseau, résultant en une pression
 intense qui fait s'effondrer le réseau jusqu'à ce que tous les
 capteurs occupent la même position. Moyenner les forces est donc une
 fausse bonne idée.
 
-MEILLEURE SOLUTION
+On préférera prioritiser les forces, c'est à dire leur donner un ordre
+d'importance. Le mode opératoire est le suivant :
 
-DEMO EN TROIS IMAGES
+\begin{enumerate}
+\item{On définit l'ordre des forces, dans notre cas répulsion puis
+  attraction puis gravité.}
+\item{On calcule la force de répulsion et on l'applique en bornant par
+  la vitesse maximale des capteurs.}
+\item{S'il reste de la marge de man\oe uvre, on recommence avec cette
+  opération avec l'attraction}
+\item{S'il reste de la marge de man\oe uvre, on recommence avec cette
+  opération avec la gravité}
+\end{enumerate}
 
-\subsection*{Obstacles}
+De cette façon, les situations d'urgence telles que l'écartement
+rapide de deux capteurs trop proches prennent le pas sur des
+mouvements de composition, tels que celui d'un capteur isolé flottant
+vers l'origine. Ce procédé est d'ailleurs utilisé pour les boïds afin
+de prioritiser l'évitement des obstacles face aux forces de cohésion
+du groupe.
 
-On propose d'étendre ce modèle de guidage afin de permettre aux
-capteurs d'éviter automatiquement les obstacles par l'ajout d'une
-nouvelle force virtuelle. Ici, un obstacle est défini comme étant une
-zone non traversable. En réalité, il peut s'agir d'un bâtiment, d'une
-zone dont les relevés ne nous intéressent pas, ou d'une zone interdite
-au appareils volants.
+\end{multicols}
 
-REPULSION
+\begin{figure}[p]
+
+  \centering
+
+  \subfloat[]{\includegraphics[width=7cm]{demo1.png}}
+  \subfloat[]{\includegraphics[width=7cm]{demo2.png}}\\
+  \subfloat[]{\includegraphics[width=7cm]{demo3.png}}
+  \subfloat[]{\includegraphics[width=7cm]{demo4.png}}\\
+  \subfloat[]{\includegraphics[width=7cm]{demo5.png}}
+
+  \caption{Différentes étapes de la construction d'un réseau connexe.}
+  \label{demo}
+
+\end{figure}
+
+\begin{multicols}{2}
+
+Pour prouver la versatilité de notre système, on propose finalement
+d'étendre ce modèle de guidage afin de permettre aux capteurs d'éviter
+automatiquement les obstacles par l'ajout d'une nouvelle force
+virtuelle. Ici, un obstacle est défini comme étant une zone non
+traversable. En réalité, il peut s'agir d'un bâtiment, d'une zone dont
+les relevés ne nous intéressent pas, ou d'un espace interdit au
+appareils volants.
+
+Dans un soucis de simplicité (et de délais !), on limite les obstacles
+à des formes circulaires afin de mieux s'accorder à l'aspect radial
+des différentes forces introduites jusqu'à présent.
 
 \begin{figure}[H]
 
@@ -426,9 +530,7 @@ REPULSION
 
 \end{figure}
 
-\section{Conclusion}
-
-
+\section*{Conclusion}
 
 \end{multicols}
 
