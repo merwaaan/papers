@@ -3,6 +3,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage[francais]{babel}
 \usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{listings}
 
 \usetheme{Warsaw}
 
@@ -28,7 +30,7 @@
 \setbeamercolor{item}{fg=Fabulous!50}
 \setbeamerfont{footline}{size=\small}
 
-\title{Scala + akka machin truc}
+\title{Modèle acteur et Scala}
 \author{Merwan Achibet}
 \institute{Université du Havre}
 \date{Vendredi 24 février 2012}
@@ -37,9 +39,185 @@
 
 \maketitle
 
+\section{Le modèle acteur}
 
 \begin{frame}
 
+  \begin{block}{Acteurs}
+    Processus concurrent communiquant avec d'autres acteurs par
+    échange de messages. Un acteur peut répondre à un message
+    asynchrone en créant un nouvel acteur, en envoyant des messages ou
+    en changeant de comportement. \cite{haller}
+  \end{block}
+
+  \vfill
+
+  Idées conductrices :
+
+  \begin{itemize}
+  \item{Tout est acteur}
+  \item{Asynchronisme}
+  \item{Fault tolerance}
+  \end{itemize}
+
 \end{frame}
+
+\begin{frame}
+
+  \begin{block}{Motivations}
+    \begin{itemize}
+    \item{Parallélisation croissante du matériel}
+    \item{Distribution des calculs}
+    \item{Un paradigme structuré autour de ces idées}
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  \begin{figure}
+
+    \centering
+
+    \begin{tikzpicture}
+    
+      \def \n {5}
+      \def \radius {2cm}
+      \def \margin {8}
+    
+      \foreach \s in {1,...,\n}
+      {
+        \node[draw, circle] (\s) at ({360/\n * (\s - 1)}:\radius) {$\s$};
+        \draw[->, >=latex] ({360/\n * (\s - 1)+\margin}:\radius) 
+        arc ({360/\n * (\s - 1)+\margin}:{360/\n * (\s)-\margin}:\radius);
+      }
+
+      \draw (3) edge[->,>=latex,bend right] (1);
+      \draw (1) edge[->,>=latex,bend right] (5);
+
+    \end{tikzpicture}
+
+    \end{figure}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Modèle acteur au sens strict \cite{rajesh}}
+
+  \begin{block}{State encapsulation}
+    Aucun partage de donnée hormis les messages.
+  \end{block}
+
+  \begin{block}{Safe-messaging}
+    Les messages contiennent des copies strictes.
+  \end{block}
+
+  \begin{block}{Mobility}
+    Le code et l'état d'un agent peuvent se déplacer entre
+    processeurs, n\oe uds d'un réseau...
+  \end{block}
+
+  \begin{block}{Location transparency}
+    Quelle que soit sa position, un agent dispose de la même adresse
+    et tout message l'atteindra.
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{JVM et concurrence}
+
+  \begin{columns}
+
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Thread-based}
+        \begin{itemize}
+        \item[+]{Simple}
+        \item[-]{Lourd}
+        \item[-]{Deadlock}
+        \end{itemize}
+      \end{block}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Event-based}
+        \begin{itemize}
+        \item[+]{Performant}
+        \item[-]{Vite tortueux}
+        \end{itemize}
+      \end{block}
+    \end{column}
+
+  \end{columns}
+  
+\end{frame}
+
+\section{Scala}
+
+\begin{frame}
+
+  \frametitle{Le langage Scala}
+
+  \begin{block}{Origines}
+    \begin{itemize}
+    \item{Créé en 2003 à l'EPFL}
+    \item{Académique}
+    \item{Pragmatique}
+    \item{Versatile}
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  \begin{columns}
+
+    \begin{column}{0.5\textwidth}
+      %\begin{lstlisting}
+      %d
+      %\end{lstlisting}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=6cm]{scala.png}
+      \end{figure}
+    \end{column}
+
+  \end{columns}
+  
+\end{frame}
+
+\begin{frame}
+  
+  \frametitle{Un langage mixte}
+
+  \begin{columns}
+
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Aspect OO}
+
+      \end{block}
+    \end{column}
+    
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Aspect fonctionnel}
+
+      \end{block}
+    \end{column}
+
+  \end{columns}
+  
+\end{frame}
+
+\begin{frame}
+
+  
+
+\end{frame}
+
+\bibliographystyle{alpha}
+\bibliography{references}
 
 \end{document}
