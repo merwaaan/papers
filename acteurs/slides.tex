@@ -5,6 +5,45 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{listings}
+\usepackage{ucs}
+
+% Scala highlighting definition
+% From http://tihlde.org/~eivindw/latex-listings-for-scala/
+\lstdefinelanguage{Scala}{
+  morekeywords={abstract,case,catch,class,def,%
+    do,else,extends,false,final,finally,%
+    for,if,implicit,import,match,mixin,%
+    new,null,object,override,package,%
+    private,protected,requires,return,sealed,%
+    super,this,throw,trait,true,try,%
+    type,val,var,while,with,yield},
+  otherkeywords={=>,<-,<\%,<:,>:,\#,@},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[n]{/*}{*/},
+  morestring=[b]",
+  morestring=[b]',
+  morestring=[b]"""
+}
+
+\lstset{ %
+  basicstyle=\tiny,
+  extendedchars=\true,
+  inputencoding=utf8x,
+  language=Scala,                % the language of the code
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  tabsize=1,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+  keywordstyle=\color{blue},          % keyword style
+  commentstyle=\color{dkgreen},       % comment style
+  stringstyle=\color{purple},         % string literal style
+  escapeinside={\%*}{*)},            % if you want to add a comment within your code
+  morekeywords={*,...}               % if you want to add more keywords to the set
+}
 
 \usetheme{Warsaw}
 
@@ -79,15 +118,15 @@
     \centering
 
     \begin{tikzpicture}
-    
+
       \def \n {5}
       \def \radius {2cm}
       \def \margin {8}
-    
+
       \foreach \s in {1,...,\n}
       {
         \node[draw, circle] (\s) at ({360/\n * (\s - 1)}:\radius) {$\s$};
-        \draw[->, >=latex] ({360/\n * (\s - 1)+\margin}:\radius) 
+        \draw[->, >=latex] ({360/\n * (\s - 1)+\margin}:\radius)
         arc ({360/\n * (\s - 1)+\margin}:{360/\n * (\s)-\margin}:\radius);
       }
 
@@ -118,8 +157,7 @@
   \end{block}
 
   \begin{block}{Location transparency}
-    Quelle que soit sa position, un agent dispose de la même adresse
-    et tout message l'atteindra.
+    Quelle que soit sa position, un agent dispose de la même adresse.
   \end{block}
 
 \end{frame}
@@ -139,7 +177,7 @@
         \end{itemize}
       \end{block}
     \end{column}
-    
+
     \begin{column}{0.5\textwidth}
       \begin{block}{Event-based}
         \begin{itemize}
@@ -150,14 +188,27 @@
     \end{column}
 
   \end{columns}
-  
+
+  \vfill
+
+   \begin{block}{Une couche supplémentaire}
+     Le langage Scala, de plus haut niveau, cache ces considérations
+     techniques et permet de traiter la concurrence via le modèle
+     agent.
+   \end{block}
+
 \end{frame}
 
-\section{Scala}
+\section{Le langage Scala}
 
-\begin{frame}
+\begin{frame}[containsverbatim]
 
-  \frametitle{Le langage Scala}
+  \begin{figure}
+    \centering
+    \includegraphics[width=2.5cm]{scala.png}
+  \end{figure}
+
+  \vfill
 
   \begin{block}{Origines}
     \begin{itemize}
@@ -170,50 +221,143 @@
 
   \vfill
 
-  \begin{columns}
+  \begin{lstlisting}[frame=single]
+    object HelloWorld {
+      def main(args: Array[String]) {
+        println("Hello, world!")
+      }
+    }
+  \end{lstlisting}
 
-    \begin{column}{0.5\textwidth}
-      %\begin{lstlisting}
-      %d
-      %\end{lstlisting}
-    \end{column}
-    
-    \begin{column}{0.5\textwidth}
-      \begin{figure}
-        \centering
-        \includegraphics[width=6cm]{scala.png}
-      \end{figure}
-    \end{column}
+\end{frame}
 
-  \end{columns}
-  
+\begin{frame}[containsverbatim]
+
+  \frametitle{Un langage orienté objet...}
+
+  \lstinputlisting[frame=single]{personne.scala}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+
+  \frametitle{... mais aussi fonctionnel}
+
+  \lstinputlisting[frame=single]{sort.scala}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+
+  \frametitle{Le modèle acteur avec Scala}
+
+  \begin{lstlisting}[frame=single]
+    class MonActeur extends Actor {
+
+      ...
+
+      def act() {
+
+        ...
+
+      }
+    }
+  \end{lstlisting}
+
+  \vfill
+
+  Un acteur hérite de la classe \texttt{Actor} et doit définir une méthode \texttt{act()}.
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+
+  \frametitle{Communication entre acteurs}
+
+  \begin{lstlisting}[frame=single]
+    class E(r : Actor) extends Actor {
+      def act() {
+        receveur ! "Salut"
+    ...
+  \end{lstlisting}
+
+  \vfill
+
+  \begin{lstlisting}[frame=single]
+    class R() extends Actor {
+      def act() {
+        loop {
+          react {
+            case message : String =>
+              Console.println(message)
+              sender ! "Bonjour"
+        }
+    ...
+  \end{lstlisting}
+
 \end{frame}
 
 \begin{frame}
-  
-  \frametitle{Un langage mixte}
 
-  \begin{columns}
+  \frametitle{Exemple de la partie de dés}
 
-    \begin{column}{0.5\textwidth}
-      \begin{block}{Aspect OO}
+  \begin{block}{Règles du jeu}
+    \begin{itemize}
+    \item{Deux acteurs joueurs}
+    \item{Un acteur arbitre}
+    \item{le joueur qui tire le plus grand $n$ gagne ($1 \geq n \geq 6$)}
+    \end{itemize}
+  \end{block}
 
-      \end{block}
-    \end{column}
-    
-    \begin{column}{0.5\textwidth}
-      \begin{block}{Aspect fonctionnel}
+  \vfill
 
-      \end{block}
-    \end{column}
+  \begin{block}{Déroulement de la partie}
+    \begin{enumerate}
+    \item{L'arbitre informe les joueurs du début de la partie}
+    \item{Les joueurs tirent un $n$ au hasard et l'envoient à l'arbitre}
+    \item{L'arbitre détermine le gagnant}
+    \end{enumerate}
+  \end{block}
 
-  \end{columns}
-  
 \end{frame}
 
-\begin{frame}
+\begin{frame}[containsverbatim]
 
-  
+  On commence par définir les types de messages possibles.
+
+  \vfill
+
+  \lstinputlisting[frame=single]{de_partie1.scala}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+
+  Le comportement des joueurs :
+
+  \vfill
+
+  \lstinputlisting[frame=single]{de_partie2.scala}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+
+  Le comportement de l'arbitre :
+
+  \vfill
+
+  \lstinputlisting[frame=single]{de_partie3.scala}
+
+\end{frame}
+
+\begin{frame}[containsverbatim]
+
+  La fonction principale du programme :
+
+  \vfill
+
+  \lstinputlisting[frame=single]{de_partie4.scala}
 
 \end{frame}
 
