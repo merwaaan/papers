@@ -35,7 +35,7 @@
 
 \section*{Introduction}
 
-On imagine le problème suivant : un groupe de $n$ capteurs mobiles est
+On traite le problème suivant : un groupe de $n$ capteurs mobiles est
 réparti aléatoirement dans un espace aérien. On part de l'hypothèse
 qu'un capteur connaît uniquement le nombre total de capteurs du
 système et qu'il est assez sophistiqué pour pouvoir déterminer
@@ -87,10 +87,10 @@ posent :
 Pour répondre à la première question, on se concentre sur les
 communications de capteur à capteur en proposant une méthode pour
 laquelle chaque agent diffuse sa vision de la connexité du réseau,
-étiquettée en fonction de l'origine de l'information et de sa date. Un
-mécanisme de filtrage autorégulant sera mis en place pour répandre les
-informations critiques telles que l'ajout d'un nouveau n\oe ud à une
-composante connexe.
+étiquettée en fonction de la date de l'information. Un mécanisme de
+filtrage autorégulant sera mis en place pour répandre les informations
+critiques telles que l'ajout d'un nouveau n\oe ud à une composante
+connexe.
 
 La réponse à la seconde question s'attache à l'aspect mobile d'un
 capteur. On propose une méthode de guidage décentralisé se basant sur
@@ -129,16 +129,12 @@ entendrait :
 Dans notre méthode, un capteur transmet régulièrement à ses voisins
 son avis sur la présence ou non d'un n\oe ud dans leur composante
 connexe. Afin de permettre de gérer des informations contradictoires,
-une date et dans certains cas, une source, sont associées à chaque
-information de n\oe ud. L'objectif envisagé est de concevoir un
-système dans lequel les données sont diffusées par transmission entre
-voisins, fusion des informations de présence et filtrage des
-informations contradictoires.
+une date est associée à chaque information de n\oe ud. L'objectif
+envisagé est de concevoir un système dans lequel les données sont
+diffusées par transmission entre voisins, fusion des informations de
+présence et filtrage des informations contradictoires.
 
-Un message adopte toujours la même structure
-
-On présente d'abord les trois structure de données qui peupleront la
-mémoire à chaque capteur.
+On suppose que les capteurs disposent d'une MEMOIRE SYNCHRO
 
 \subsection*{Liste de voisins directs}
 
@@ -154,7 +150,7 @@ mécanisme de surveillance.
 On choisit ici de rendre les capteurs proactifs : leurs messages sont
 envoyés volontairement à intervalle régulier afin d'informer leurs
 voisins de leur présence. Ainsi, on considère qu'un capteur a
-potentiellement disparu s'il n'envoie plus de message.
+potentiellement disparu d'un voisinage s'il n'envoie plus de message.
 
 \subsection*{Liste de n\oe uds connectés}
 
@@ -166,18 +162,16 @@ peut donc en déduire que tous les n\oe uds de $N$ apparaissent dans
 $C$.
 
 Cependant, et contrairement à $N$, $C$ ne contient pas que des
-identifiants. Ses entrées sont de la forme $(x,t,s)$ avec $x$
+identifiants. Ses entrées sont de la forme $(x,t)$ avec $x$
 l'identifiant du n\oe ud dont l'on veut exprimer la présence sur la
-composante connexe, $t$ le dernier temps auquel $x$ a été détecté et
-$s$ le n\oe ud à l'origine de cette information.
+composante connexe et $t$ le dernier temps auquel $x$ a été détecté.
 
-Par exemple, si un capteur a dans sa liste $C$ l'entrée $(y,52,z)$,
+Par exemple, si un capteur a dans sa liste $C$ l'entrée $(y,52)$,
 cela signifie qu'il sait que le capteur $y$ fait partie de la même
-composante connexe que lui car il a été détecté au temps 52 et
-l'information a été relayée par $z$. Il est important de différencier
-$z$, le n\oe ud qui a transmis l'information au capteur courant (un
-voisin donc) du n\oe ud distant qui a détecté $y$ au temps 52 et dont
-l'identité ne nous importe pas.
+composante connexe que lui car il a été détecté au temps 52. Il est
+important de noter que le n\oe ud $y$ peut potentiellement se trouver
+à l'autre bout du réseau et que l'identité du capteur responsable de
+sa détection ne nous est d'aucune utilité.
 
 \subsection*{Liste de doutes}
 
@@ -187,7 +181,7 @@ forme de paires $(x,t)$ o\`u $x$ est le n\oe ud sur lequel le doute se
 pose et $t$ la date à laquelle l'absence de $x$ a été dernièrement
 remarquée.
 
-On ajoute une entrée $(c',t)$ à $D$ lorsque $c'$ est présent dans la
+On ajoute une entrée $(z,t)$ à $D$ lorsque $z$ est présent dans la
 liste $N$ des voisins mais que, par surveillance, on se rend compte au
 temps $t$ qu'il n'a pas communiqué depuis un certain temps. \`A
 l'inverse, cette même paire migre de la liste de doutes vers la liste
@@ -195,70 +189,70 @@ de connexité si une nouvelle communication est plus tard détectée (le
 $t$ est alors mis à jour pour réfléter ce changement).
 
 Il est évident qu'un n\oe ud ne peut être présent à la fois dans $C$
-et $D$. Ce constat nous permet d'évaluer l'espace mémoire nécessaire à
-$2n$ informations ($n$ informations dans la liste de voisins si le
-graphe est complet, $n$ informations au maximum réparties dans la
-liste de connexité et la liste de doutes).
+et $D$. Ce constat nous permet de borner l'espace mémoire nécessaire à
+$2n$ informations : $n$ informations dans la liste de voisins si le
+graphe est complet, $n$ informations au maximum réparties entre la
+liste de connexité et la liste de doutes.
 
-\subsection*{\'Echange, fusion et filtrage}
+\subsection*{Balisage, fusion et filtrage}
 
 Pour l'instant les seuls événements ayant amené à modifier les listes
 du capteur $c$ étaient liés à son voisinage direct (un message d'un
-nouveau voisin est détecté et le voisin est ajouté à $N$, par
-exemple). Le balisage est l'action, pour un capteur, de régulièrement
-partager sa liste de connexité et sa liste de doutes avec ses
-voisins. Les voisins recevant ce message fusionnent les listes reçues
-avec les leurs en suivant quelques règles simples.
+nouveau voisin est reçu ou un ancien voisin disparaît). Le balisage
+est l'action, pour un capteur, de régulièrement partager sa liste de
+connexité et sa liste de doutes avec ses voisins. Le balisage ne
+modifie pas l'état interne du n\oe ud l'éxécutant mais celui des
+voisins le captant; qui fusionnent les listes reçues avec les leurs en
+suivant quelques règles simples.
 
 En l'absence de conflit, les informations du message de l'émetteur
 sont intégrées à la mémoire interne du récepteur. Par exemple, si $c$
-envoie sa liste $C = \{\dots,(d,27,e),\dots\}$ à $c'$ et que ce capteur
-n'a pas d'entrée relative au n\oe ud $d$ dans ses listes alors on lui
-ajoute, tout en mettant à jour la source de l'information. $c'$ aura
-donc comme nouvelle liste $\{\dots,(d,27,c)\}$.
+envoie sa liste $C = \{\dots,(d,27),\dots\}$ à $c'$ et que ce
+capteur n'a pas d'entrée relative au n\oe ud $d$ dans ses listes alors
+on lui ajoute. $c'$ aura donc comme nouvelle liste $C' =
+\{\dots,(d,27)\}$.
 
-En cas de conflits par contre, on se base toujours sur la date $t$
-liée à l'information pour déterminer quel capteur à raison et choisir
-ou non d'intégrer l'information provenant de l'émetteur. Par exemple,
-si $c$ envoie sa liste $C = \{\dots,(f,12,g),\dots\}$ à $c'$ ayant
-comme liste $D' = \{\dots,(f,16,h),\dots\}$ alors cela signifie que la
-présence de $f$ a été mise en doute au temps 16 et l'on ignore
-l'information de $c$ car on préfère faire confiance aux données les
-plus récentes.
+En cas de conflit par contre, on se base toujours sur la date liée à
+l'information pour déterminer quel capteur a raison et choisir ou non
+d'intégrer l'information provenant de l'émetteur. Par exemple, $c$
+envoie sa liste $C = \{\dots,(f,12),\dots\}$ à $c'$ ayant comme liste
+$D' = \{\dots,(f,16),\dots\}$. Cela signifie que $c$ pense que le
+capteur $f$ est présent sur le réseau depuis au moins le temps 12
+tandis que $c'$ pense qu'il a quitté le réseau depuis le temps 16. En
+conséquence, on ignore l'avis de $c$ car on préfère faire confiance
+aux données les plus récentes.
 
-\end{multicols}
+Autre situation envisageable : $c$ envoie $C = \{\dots,(g,35),\dots\}$
+à $c'$ ayant $C' = \{\dots,(g,22),\dots\}$. Ici, les deux capteurs
+partagent le même avis sur la présence de $g$ dans le réseau mais on
+modifie tout de même $C' = \{\dots,(g,35),\dots\}$ afin que la date de
+la dernière détection puisse se propager dans le système.
 
-\begin{figure}[p]
+Ces quelques exemples illustrent l'idée de cette méthode de comptage
+décentralisée basée sur le fait que seuls les voisins directs peuvent
+affirmer avec certitude la présence ou non d'un capteur dans le réseau
+tout en diffusant cette information, en l'étiquettant temporellement,
+de façon à ???.Un exemple graphique est visible sur la figure
+\ref{connexite}.
 
-  \centering
-
-  \subfloat[]{\input{connexite1.tikz}}\\
-  \subfloat[]{\input{connexite1.tikz}}\\
-  \subfloat[]{\input{connexite1.tikz}}\\
-
-  \caption{???}
-  \label{test}
-
-\end{figure}
-
-\begin{multicols}{2}
+DEFAUTS/AVANTAGES
 
 \section{Rendre le réseau connexe}
 
 La résolution de ce problème passe par la satisfaction de deux besoins
-a priori antagonistes. D'une part, il est naturellement nécessaire de
-réunir les capteurs dans un espace réduit, de façon à ce qu'ils
-puissent communiquer et échanger des données en continu. D'autre part,
-et dans l'interêt de leurs utilisateurs, ils doivent s'étaler dans
-l'espace afin d'effectuer des mesures sur la plus grande superficie
-possible. Nous sommes donc dans une situation de compromis, dans
-laquelle une contrainte technique (la portée de communication) force à
-agglomérer les capteurs en une même zone, tandis que leur but premier
-est de relever des données en masse et donc, rationnellement, de
-s'éloigner les uns des autres pour couvrir le plus de terrain
-possible. La seule issue favorable à ce problème est donc d'aboutir à
-une situation d'équilibre satisfaisant ces deux contraintes
-diamétralement opposées.
+\textit{a priori} antagonistes. D'une part, il est naturellement
+nécessaire de réunir les capteurs dans un espace réduit, de façon à ce
+qu'ils puissent communiquer et échanger des données en
+continu. D'autre part, et dans l'interêt de leurs utilisateurs, ils
+doivent s'étaler dans l'espace afin d'effectuer des mesures sur la
+plus grande superficie possible. Nous sommes donc dans une situation
+de compromis, dans laquelle une contrainte technique (la portée de
+communication) force à agglomérer les capteurs en une même zone,
+tandis que leur but premier est de relever des données en masse et
+donc, rationnellement, de s'éloigner les uns des autres pour couvrir
+le plus de terrain possible. La seule issue favorable à ce problème
+est donc d'aboutir à une situation d'équilibre satisfaisant ces deux
+contraintes diamétralement opposées.
 
 Le cadre de cet exercice s'accorde parfaitement avec la problèmatique
 de la prise de décision dans un réseau décentralisé puisque chaque
@@ -475,9 +469,9 @@ d'importance. Le mode opératoire est le suivant :
   attraction puis gravité.}
 \item{On calcule la force de répulsion et on l'applique en bornant par
   la vitesse maximale des capteurs.}
-\item{S'il reste de la marge de man\oe uvre, on recommence avec cette
+\item{S'il reste de la marge de man\oe uvre, on recommence cette
   opération avec l'attraction}
-\item{S'il reste de la marge de man\oe uvre, on recommence avec cette
+\item{S'il reste de la marge de man\oe uvre, on recommence cette
   opération avec la gravité}
 \end{enumerate}
 
@@ -488,36 +482,23 @@ vers l'origine. Ce procédé est d'ailleurs utilisé pour les boïds afin
 de prioritiser l'évitement des obstacles face aux forces de cohésion
 du groupe.
 
-\end{multicols}
-
-\begin{figure}[p]
-
-  \centering
-
-  \subfloat[]{\includegraphics[width=7cm]{demo1.png}}
-  \subfloat[]{\includegraphics[width=7cm]{demo2.png}}\\
-  \subfloat[]{\includegraphics[width=7cm]{demo3.png}}
-  \subfloat[]{\includegraphics[width=7cm]{demo4.png}}\\
-  \subfloat[]{\includegraphics[width=7cm]{demo5.png}}
-
-  \caption{Différentes étapes de la construction d'un réseau connexe.}
-  \label{demo}
-
-\end{figure}
-
-\begin{multicols}{2}
-
 Pour prouver la versatilité de notre système, on propose finalement
 d'étendre ce modèle de guidage afin de permettre aux capteurs d'éviter
 automatiquement les obstacles par l'ajout d'une nouvelle force
 virtuelle. Ici, un obstacle est défini comme étant une zone non
 traversable. En réalité, il peut s'agir d'un bâtiment, d'une zone dont
 les relevés ne nous intéressent pas, ou d'un espace interdit au
-appareils volants.
+appareils volants. Dans un soucis de simplicité (et de délais !), on
+limite les obstacles à des formes circulaires afin de mieux s'accorder
+à l'aspect radial des différentes forces introduites jusqu'à présent.
 
-Dans un soucis de simplicité (et de délais !), on limite les obstacles
-à des formes circulaires afin de mieux s'accorder à l'aspect radial
-des différentes forces introduites jusqu'à présent.
+Une force de répulsion du même type que celle éloignant les capteurs
+les uns des autres est appliquée sur chaque obstacle et est
+inversement proportionnelle à la distance jusqu'à l'obstacle afin de
+provoquer des expulsions rapides. Lors de la composition de la force
+appliquée au capteur, on choisit d'appliquer en priorité la nouvelle
+force d'évitement des obstacles plutôt que la répulsion. Un résultat
+est visible sur la figure \ref{obstacles}.
 
 \begin{figure}[H]
 
@@ -533,6 +514,34 @@ des différentes forces introduites jusqu'à présent.
 \section*{Conclusion}
 
 \end{multicols}
+
+\begin{figure}[p]
+
+  \centering
+
+  \subfloat[]{\input{connexite1.tikz}}\\
+  \subfloat[]{\input{connexite1.tikz}}\\
+  \subfloat[]{\input{connexite1.tikz}}\\
+
+  \caption{???}
+  \label{connexite}
+
+\end{figure}
+
+\begin{figure}[p]
+
+  \centering
+
+  \subfloat[]{\includegraphics[width=7cm]{demo1.png}}
+  \subfloat[]{\includegraphics[width=7cm]{demo2.png}}\\
+  \subfloat[]{\includegraphics[width=7cm]{demo3.png}}
+  \subfloat[]{\includegraphics[width=7cm]{demo4.png}}\\
+  \subfloat[]{\includegraphics[width=7cm]{demo5.png}}
+
+  \caption{Différentes étapes de la formation d'un réseau connexe.}
+  \label{demo}
+
+\end{figure}
 
 \bibliographystyle{alpha}
 \bibliography{references}
