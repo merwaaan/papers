@@ -126,17 +126,31 @@
 
 \begin{frame}
 
-  \begin{block}{Idée}
+  \frametitle{Deux niveaux de certitude}
+
+  \begin{block}{Dans le voisinage}
     \begin{itemize}
-    \item{Chaque capteur surveille son voisinage et entretient sa
-      propre vision du réseau}
-    \item{Chaque information de présence est étiquettée
-      temporellement}
-    \item{Chaque capteur partage régulièrement sa vision du système}
-    \item{\`A chaque partage, on évalue les avis puis soit on intègre,
-      soit on ignore}
+    \item{On est certain de l'arrivée d'un nouveau voisin}
+    \item{On peut surveiller le départ des voisins}
     \end{itemize}
   \end{block}
+
+  \vfill
+
+  \begin{block}{Au loin}
+    \begin{itemize}
+    \item{Aucune certitude}
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  Idée :
+  \begin{itemize}
+  \item{Un capteur partage régulièrement sa vision du réseau}
+  \item{Chaque information de présence (ou d'absence) est datée}
+  \item{On intègre la vision des autres capteurs sous conditions}
+  \end{itemize}
 
 \end{frame}
 
