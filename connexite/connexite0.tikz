@@ -1,0 +1,21 @@
+\begin{tikzpicture}
+
+  \input{connexite_base.tikz}
+
+  \draw (0,1.8) node {$D = \{\}$}
+  ++(0,0.5) node {$C = \{\}$}
+  ++(0,0.5) node {$N = \{\}$};
+
+  \draw (2.3,0.7) node {$D = \{\}$}
+  ++(0,0.5) node {$C = \{\}$}
+  ++(0,0.5) node {$N = \{\}$};
+
+  \draw (0,-2.8) node {$D = \{\}$}
+  ++(0,0.5) node {$C = \{\}$}
+  ++(0,0.5) node {$N = \{\}$};
+
+  \draw (-2.3,0.7) node {$D = \{\}$}
+  ++(0,0.5) node {$C = \{\}$}
+  ++(0,0.5) node {$N = \{\}$};
+
+\end{tikzpicture}

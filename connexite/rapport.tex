@@ -133,7 +133,7 @@ connexe. Afin de permettre de gérer des informations potentiellement
 contradictoires, une date et une source sont associées à chaque
 information de n\oe ud. Par comparaison temporelle et par élagage des
 informations fournies par les n\oe uds eux-mêmes déconnectés, on
-injecte dans le réseau une dynamique globale de comptage qui se
+provoque dans le réseau une dynamique globale de comptage qui se
 stabilise lorsque le graphe devient connexe. On précise par la suite
 les trois structures de données qui serviront de support à ces
 échanges.
@@ -146,9 +146,9 @@ structures de données décrites ci-dessous.
 
 \subsection*{Données propres à un capteur}
 
-Chaque capteur entretient trois listes de données, on décrit la nature
-de leur contenu puis l'on développe la façon dont ce contenu est
-acquis dans la section suivante.
+Chaque capteur entretient trois listes de données. On décrit d'abord
+la nature de leur contenu puis l'on développe la façon dont ce contenu
+est acquis dans la section suivante.
 
 La première liste, $N$, représente le voisinage de $c$ et contient
 uniquement les identifiants des n\oe uds en liaison directe avec ce
@@ -163,7 +163,7 @@ $C$. Contrairement à $N$, $C$ ne contient pas que des identifiants et
 ses entrées sont des triplets $(c',t,s)$ avec $c'$ l'identifiant du
 n\oe ud dont l'on veut exprimer la présence sur la composante connexe,
 $t$ le dernier temps auquel $c'$ a été détecté et $s$ le capteur ayant
-transmis cette information à $c$.
+transmis cette information à $c$ (la \textit{source}).
 
 La troisième et dernière liste, $D$, contient les capteurs dont $c$
 n'est plus certain de la connexité. Ses entrées prennent la forme de
@@ -177,77 +177,109 @@ Les trois listes décrivant la connaissance du réseau dont dispose un
 capteur ont été présentées mais la question de l'origine des
 informations qu'elles contiennent n'a pas encore été abordée. On se
 concentre dans un premier temps sur les modifications qu'un capteur
-applique à sa mémoire à partir de ses propres observations.
+applique à sa propre mémoire à partir de ses propres observations.
 
+Afin de présenter le plus clairement possible ce problème, on imagine
+la situation d'un capteur $c$ fraîchement arrivé dans le système et
+n'ayant encore rencontré aucun autre n\oe ud.
 
+Si $c$ reçoit un message d'un capteur $c'$, il l'ajoute à sa liste de
+voisins $N$ ainsi qu'à sa liste de connexité $C$ tout en y associant
+une date et une source adaptées (ici la source est simplement
+$c'$). La liste $N$ n'est jamais partagée avec les autres capteurs
+mais permet à $c$ de disposer d'une liste séparée contenant uniquement
+ses voisins directs.
+
+On choisit d'aborder le problème de façon proactive : les messages
+d'un capteur sont envoyés volontairement et à intervalle régulier afin
+d'informer ses voisins de sa présence. Ainsi, on considère qu'un
+capteur a potentiellement disparu d'un voisinage s'il n'envoie plus de
+message; ou plus précisément, si les voisins l'ayant enregistré n'en
+ont plus de nouvelle depuis un certain temps. C'est le processus de
+\textit{surveillance}.
+
+Ainsi, si $c$ ne reçoit plus de message de $c'$ pendant un certain
+temps, il supprimera toute référence à $c'$ de ses listes $N$ et $C$
+et l'ajoutera $D$, la liste des doutes. Le changement de statut de
+$c'$ n'est pas définitif et s'il se connecte à nouveau à $c$,
+l'opération inverse sera effectuée.
 
 \subsection*{Modition de l'état interne par propagation des rumeurs}
 
-\subsection*{Quelques situations caractéristiques}
+les modifications de la mémoire décrites concernaient uniquement le
+domaine dont un capteur $c$ est certain, son voisinage. On évoque
+maintenant la façon dont toutes les informations sont diffusées dans
+le réseau afin de comprendre comment un capteur situé à un de ses
+bouts prend connaissance de sa connexité avec un capteur placé à
+l'autre bout.
 
-On choisit ici de rendre les capteurs proactifs : leurs messages sont
-envoyés volontairement à intervalle régulier afin d'informer leurs
-voisins de leur présence. Ainsi, on considère qu'un capteur a
-potentiellement disparu d'un voisinage s'il n'envoie plus de
-message. $N$ contient donc les capteurs à surveiller.
+On a suggéré qu'un capteur prend connaissance de la présence d'un
+voisin en recevant ses messages sans pour autant préciser leur
+nature. Un message est en fait constitué des listes $C$ et $D$ de son
+émetteur. \`A la réception de ces données, un capteur $c$ va traiter
+ces listes et évaluer quelles informations retenir et quelles autres
+informations ignorer en se basant sur les étiquettes temporelles.
 
-On ajoute une entrée $(c',t)$ à $D$ lorsque $c'$ est présent dans la
-liste $N$ des voisins mais que, par surveillance, on se rend compte au
-temps $t$ qu'il n'a pas communiqué depuis un certain temps. \`A
-l'inverse, cette même paire migre de la liste de doutes vers la liste
-de connexité si une nouvelle communication est plus tard détectée (le
-$t$ est alors mis à jour pour réfléter ce changement).
+Par exemple, si $c$ reçoit de $c'$ la liste $C' =
+\{\dots,(x,23,y),\dots\}$ et que le capteur $x$ ne fait partie
+d'aucune des listes de $c$, alors il l'absorbe et $C =
+\{\dots,(x,23,c')\}$. On remarque la source de l'information est
+modifiée car c'est $c'$ qui a transmis l'information à $c$ et $y$ n'a
+joué aucun rôle dans cet échange.
 
-Il est évident qu'un n\oe ud ne peut être présent à la fois dans $C$
-et $D$. Ce constat nous permet de borner l'espace mémoire nécessaire à
-$2n$ informations : $n$ informations dans la liste de voisins si le
-graphe est complet, $n$ informations au maximum réparties entre la
-liste de connexité et la liste de doutes.
+Autre exemple, $c$ possède $C = \{\dots,(x,23,y),\dots\}$ et $c'$ lui
+transmet $C' = \{\dots,(x,37,z),\dots\}$. Le même capteur $x$ est
+présent à la fois dans la liste de connexité de $c$ et dans celle de
+$c'$ ce qui signifie que chacun de ces deux n\oe uds admet que $x$
+fait partie de leur composante connexe. Par contre, la date associée à
+la dernière détection de $x$ est plus récente du côté de $c'$ donc on
+la met à jour dans $c$. On a au final $C = \{\dots,(x,37,c'),\dots\}$.
 
-\subsection*{Balisage, fusion et filtrage}
+La liste de doutes $D$ n'est pas encore entrée en jeu mais elle aussi
+joue un rôle important. Par exemple, $c$ a $C =
+\{\dots,(x,42,y),\dots)\}$ et reçoit de $c'$ la liste $D' =
+\{\dots,(x,56,z),\dots\}$. Puisque $c'$ dispose d'une information plus
+récente établissant que $x$ n'est plus présent dans le système depuis
+le temps 56, alors on lui fait confiance et $C =
+\{\dots,(x,56,c'),\dots\}$ tandis la référence à $x$ est retirée de
+$D$.
 
-Pour l'instant les seuls événements ayant amené à modifier les listes
-du capteur $c$ étaient liés à son voisinage direct (un message d'un
-nouveau voisin est reçu ou un ancien voisin disparaît). Le balisage
-est l'action, pour un capteur, de régulièrement partager sa liste de
-connexité et sa liste de doutes avec ses voisins. Le balisage ne
-modifie pas l'état interne du n\oe ud l'éxécutant mais celui des
-voisins le captant; qui fusionnent les listes reçues avec les leurs en
-suivant quelques règles simples.
-
-En l'absence de conflit, les informations du message de l'émetteur
-sont intégrées à la mémoire interne du récepteur. Par exemple, si $c$
-envoie sa liste $C = \{\dots,(d,27),\dots\}$ à $c'$ et que ce
-capteur n'a pas d'entrée relative au n\oe ud $d$ dans ses listes alors
-on lui ajoute. $c'$ aura donc comme nouvelle liste $C' =
-\{\dots,(d,27)\}$.
-
-En cas de conflit par contre, on se base toujours sur la date liée à
-l'information pour déterminer quel capteur a raison et choisir ou non
-d'intégrer l'information provenant de l'émetteur. Par exemple, $c$
-envoie sa liste $C = \{\dots,(f,12),\dots\}$ à $c'$ ayant comme liste
-$D' = \{\dots,(f,16),\dots\}$. Cela signifie que $c$ pense que le
-capteur $f$ est présent sur le réseau depuis au moins le temps 12
-tandis que $c'$ pense qu'il a quitté le réseau depuis le temps 16. En
-conséquence, on ignore l'avis de $c$ car on préfère faire confiance
-aux données les plus récentes.
-
-Autre situation envisageable : $c$ envoie $C = \{\dots,(g,35),\dots\}$
-à $c'$ ayant $C' = \{\dots,(g,22),\dots\}$. Ici, les deux capteurs
-partagent le même avis sur la présence de $g$ dans le réseau mais on
-modifie tout de même $C' = \{\dots,(g,35),\dots\}$ afin que la date de
-la dernière détection puisse se propager dans le système.
+De plus, $c$ peut être amené à réfuter une partie de ses connaissances
+s'il s'aperçoit qu'un n\oe ud qui en est à l'origine (qui en est la
+source donc) est mis en doute de façon crédible par un voisin. Prenons
+l'exemple de $C = \{\dots,(x,14,y),(y,5,z),\dots\}$ et $D' =
+\{\dots,(y,20,w),\dots\}$. Comme pour l'exemple précédent, les deux
+capteurs ont un avis différent sur la présence de $y$ dans le système
+et c'est $c'$ qui l'emporte car son information est plus récente. On
+passe donc $y$ de $C$ à $D$ tout en mettant à jour la date de
+l'observation de la source de l'observation. En plus de cette
+modification on retire aussi $(x,14,y)$ de $C$ car $y$ qui vient
+d'être jugé comme déconnecté en est la source. C'est ce procédé de
+rétrodiffusion qui permet le comptage dans un graphe dynamique car par
+propagation toutes les connaissance du réseau ayant $y$ comme source
+vont être réévaluées.
 
 Ces quelques exemples illustrent l'idée de cette méthode de comptage
 décentralisée basée sur le fait que seuls les voisins directs peuvent
 affirmer avec certitude la présence ou non d'un capteur dans le réseau
 tout en diffusant cette information, en l'étiquettant temporellement,
-de façon à ???.Un exemple graphique est visible sur la figure
-\ref{connexite}.
+de façon à gérer les conflits, et en précisant sa source, de façon à
+annuler des connaissance potentiellement fausses. Un exemple graphique
+est visible sur la figure \ref{connexite}.
 
-DEFAUTS/AVANTAGES
+Cette algorithme est bien sûr une approximation de la connexité du
+réseau car les informations souffrent d'un temps de propagation
+proportionnel à la distance entre le capteur observant la modification
+de son voisinage et le capteur recevant plus tard l'information passée
+de mains en mains. De plus, une fréquence d'émission trop élevée est
+encline à générer des \textit{broadcast storms} dans une situation
+réelle. Néanmoins, cette méthode permet l'évaluation de la connexité
+d'un graphe dynamique.
 
 \section{Rendre le réseau connexe}
+
+On traite maintenant la seconde interrogation soulevée par ce problème
+: comment déplacer les capteurs pour obtenir un réseau connexe ?
 
 La résolution de ce problème passe par la satisfaction de deux besoins
 \textit{a priori} antagonistes. D'une part, il est naturellement
@@ -530,11 +562,33 @@ comportement obtenu.
 
   \centering
 
+  \subfloat[]{\input{connexite0.tikz}}\\
   \subfloat[]{\input{connexite1.tikz}}\\
-  \subfloat[]{\input{connexite1.tikz}}\\
-  \subfloat[]{\input{connexite1.tikz}}\\
+  \subfloat[]{\input{connexite2.tikz}}
 
-  \caption{???}
+  \label{connexite}
+
+\end{figure}
+
+\begin{figure}[p]
+
+  \centering
+
+  \subfloat[]{\input{connexite3.tikz}}\\
+  \subfloat[]{\input{connexite4.tikz}}\\
+  \subfloat[]{\input{connexite5.tikz}}
+
+  \label{connexite}
+
+\end{figure}
+
+\begin{figure}[p]
+
+  \centering
+
+  \subfloat[]{\input{connexite6.tikz}}\\
+  \subfloat[]{\input{connexite7.tikz}}
+
   \label{connexite}
 
 \end{figure}
