@@ -223,7 +223,7 @@ informations ignorer en se basant sur les étiquettes temporelles.
 Par exemple, si $c$ reçoit de $c'$ la liste $C' =
 \{\dots,(x,23,y),\dots\}$ et que le capteur $x$ ne fait partie
 d'aucune des listes de $c$, alors il l'absorbe et $C =
-\{\dots,(x,23,c')\}$. On remarque la source de l'information est
+\{\dots,(x,23,c')\}$. On remarque que la source de l'information est
 modifiée car c'est $c'$ qui a transmis l'information à $c$ et $y$ n'a
 joué aucun rôle dans cet échange.
 
@@ -240,9 +240,9 @@ joue un rôle important. Par exemple, $c$ a $C =
 \{\dots,(x,42,y),\dots)\}$ et reçoit de $c'$ la liste $D' =
 \{\dots,(x,56,z),\dots\}$. Puisque $c'$ dispose d'une information plus
 récente établissant que $x$ n'est plus présent dans le système depuis
-le temps 56, alors on lui fait confiance et $C =
-\{\dots,(x,56,c'),\dots\}$ tandis la référence à $x$ est retirée de
-$D$.
+le temps 56, alors on lui fait confiance et $D =
+\{\dots,(x,56,c'),\dots\}$ tandis que la référence à $x$ est retirée
+de $C$.
 
 De plus, $c$ peut être amené à réfuter une partie de ses connaissances
 s'il s'aperçoit qu'un n\oe ud qui en est à l'origine (qui en est la
@@ -252,22 +252,22 @@ l'exemple de $C = \{\dots,(x,14,y),(y,5,z),\dots\}$ et $D' =
 capteurs ont un avis différent sur la présence de $y$ dans le système
 et c'est $c'$ qui l'emporte car son information est plus récente. On
 passe donc $y$ de $C$ à $D$ tout en mettant à jour la date de
-l'observation de la source de l'observation. En plus de cette
-modification on retire aussi $(x,14,y)$ de $C$ car $y$ qui vient
-d'être jugé comme déconnecté en est la source. C'est ce procédé de
+l'observation et la source de l'information. En plus de cette
+modification, on retire $(x,14,y)$ de $C$ car $y$, qui vient d'être
+jugé comme déconnecté, en est la source. C'est ce procédé de
 rétrodiffusion qui permet le comptage dans un graphe dynamique car par
 propagation toutes les connaissance du réseau ayant $y$ comme source
 vont être réévaluées.
 
 Ces quelques exemples illustrent l'idée de cette méthode de comptage
-décentralisée basée sur le fait que seuls les voisins directs peuvent
-affirmer avec certitude la présence ou non d'un capteur dans le réseau
-tout en diffusant cette information, en l'étiquettant temporellement,
-de façon à gérer les conflits, et en précisant sa source, de façon à
-annuler des connaissance potentiellement fausses. Un exemple graphique
-est visible sur la figure \ref{connexite}.
+décentralisée basée sur le constat que seuls les voisins directs
+peuvent affirmer avec certitude la présence ou non d'un capteur dans
+leur voisinage. Pour connaître l'état des n\oe uds distants, on compte
+sur la diffusion des données de connexité et le filtrage annulant les
+connaissance potentiellement fausses. Un exemple graphique est visible
+sur la figure \ref{connexite}.
 
-Cette algorithme est bien sûr une approximation de la connexité du
+Cet algorithme fournit uniquement une approximation de la connexité du
 réseau car les informations souffrent d'un temps de propagation
 proportionnel à la distance entre le capteur observant la modification
 de son voisinage et le capteur recevant plus tard l'information passée
@@ -572,6 +572,7 @@ comportement obtenu.
     proches pour communiquer. C émet un message. B et D intègrent
     ses informations.]{\input{connexite1.tikz}}
 
+  \caption{}
   \label{connexite}
 
 \end{figure}
@@ -590,8 +591,6 @@ comportement obtenu.
   \subfloat[\underline{$t$ = 3} B émet un message. A prend
     connaissance de C et réciproquement, C prend connaissance de
     A.]{\input{connexite3.tikz}}
-
-  \label{connexite}
 
 \end{figure}
 
@@ -612,8 +611,6 @@ comportement obtenu.
     que celle de A (car B était la source l'informant de la présence
     de A à t = 3).]{\input{connexite5.tikz}}
 
-  \label{connexite}
-
 \end{figure}
 
 \begin{figure}[p]
@@ -630,8 +627,6 @@ comportement obtenu.
   \subfloat[\underline{$t$ = 12} D émet un message. Le doute de C
     concernant A est balayé car D a constaté sa présence plus
     récemment.]{\input{connexite7.tikz}}
-
-  \label{connexite}
 
 \end{figure}
 
