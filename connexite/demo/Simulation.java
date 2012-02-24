@@ -121,7 +121,6 @@ public class Simulation {
 		COUNTING
 		*******/
 
-		if(true) return;
 		for(Node sensor : this.net) {
 			((Sensor)sensor).count();
 			((Sensor)sensor).color();
