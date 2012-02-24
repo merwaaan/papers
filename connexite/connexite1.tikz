@@ -8,16 +8,16 @@
   \draw[thick] (c) -- (d);
 
   \draw (0,1.8) node {$\{\}$}
-  ++(0,0.5) node {$\{(C,1,C)\}$}
-  ++(0,0.5) node {$\{C\}$};
+  ++(0,0.5) node {$\{\textcolor{red}{(C,1,C)}\}$}
+  ++(0,0.5) node {$\{\textcolor{red}{C}\}$};
 
   \draw (2.3,0.7) node[circle,double] {$\{\}$}
   ++(0,0.5) node {$\{\}$}
   ++(0,0.5) node {$\{\}$};
 
   \draw (0,-2.8) node {$\{\}$}
-  ++(0,0.5) node {$\{(C,1,C)\}$}
-  ++(0,0.5) node {$\{C\}$};
+  ++(0,0.5) node {$\{\textcolor{red}{(C,1,C)}\}$}
+  ++(0,0.5) node {$\{\textcolor{red}{C}\}$};
 
   \draw (-2.3,0.7) node {$\{\}$}
   ++(0,0.5) node {$\{\}$}
