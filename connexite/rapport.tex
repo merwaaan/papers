@@ -562,9 +562,15 @@ comportement obtenu.
 
   \centering
 
-  \subfloat[]{\input{connexite0.tikz}}\\
-  \subfloat[]{\input{connexite1.tikz}}\\
-  \subfloat[]{\input{connexite2.tikz}}
+  \subfloat[\underline{$t$ = 0} Les capteurs sont éloignés et ne sont
+    pas en mesure de communiquer. Aucun capteur n'a connaissance des
+    autres capteurs du système.]{\input{connexite0.tikz}}\\
+
+  \vspace{5cm}
+
+  \subfloat[\underline{$t$ = 1} Les capteurs B, C et D sont assez
+    proches pour communiquer. C émet un message. B et D intègrent
+    ses informations.]{\input{connexite1.tikz}}
 
   \label{connexite}
 
@@ -572,11 +578,18 @@ comportement obtenu.
 
 \begin{figure}[p]
 
+  \ContinuedFloat
   \centering
 
-  \subfloat[]{\input{connexite3.tikz}}\\
-  \subfloat[]{\input{connexite4.tikz}}\\
-  \subfloat[]{\input{connexite5.tikz}}
+  \subfloat[\underline{$t$ = 2} A est désormais à portée de B. A émet
+    un message. B intègre ses
+    informations.]{\input{connexite2.tikz}}\\
+
+  \vspace{5cm}
+
+  \subfloat[\underline{$t$ = 3} B émet un message. A prend
+    connaissance de C et réciproquement C prend connaissance de
+    A.]{\input{connexite3.tikz}}
 
   \label{connexite}
 
@@ -584,10 +597,39 @@ comportement obtenu.
 
 \begin{figure}[p]
 
+  \ContinuedFloat
   \centering
 
-  \subfloat[]{\input{connexite6.tikz}}\\
-  \subfloat[]{\input{connexite7.tikz}}
+  \subfloat[\underline{$t = 4$} A est désormais à portée de D, le
+    réseau forme une boucle. A émet un message. D prend connaissance
+    de A et de B.]{\input{connexite4.tikz}}\\
+
+  \vspace{5cm}
+
+  \subfloat[\underline{$t = 10$} Entre-temps, B s'est éloigné du
+    réseau et est désormais isolé. Par surveillance de son voisinage,
+    C remarque que B a disparu. Il met en doute la présence de B ainsi
+    que celle de A (car B était la source l'informant de la présence
+    de A à t = 3).]{\input{connexite5.tikz}}
+
+  \label{connexite}
+
+\end{figure}
+
+\begin{figure}[p]
+
+  \ContinuedFloat
+  \centering
+
+  \subfloat[\underline{$t$ = 11} A émet un message. Les données de D
+    sont mises à jour (notamment, $(A,4,A)$ devient
+    $(A,11,A)$).]{\input{connexite6.tikz}}\\
+
+  \vspace{5cm}
+
+  \subfloat[\underline{$t$ = 12} D émet un message. Le doute de C
+    concernant A est balayé car D a constaté sa présence plus
+    récemment.]{\input{connexite7.tikz}}
 
   \label{connexite}
 
