@@ -1,5 +1,7 @@
 \begin{tikzpicture}
 
+  \draw[fill=blue,draw=none] (0:2) circle (0.45cm);
+
   \input{connexite_base.tikz}
 
   \draw[thick] (c) -- (d);

@@ -38,6 +38,12 @@
 \institute{Université du Havre}
 \date{Jeudi 16 février 2012}
 
+\AtBeginSection[]{
+  \begin{frame}{Sommaire}
+  \small \tableofcontents[currentsection, hideothersubsections]
+  \end{frame}
+}
+
 \begin{document}
 
 \maketitle
@@ -48,9 +54,11 @@
 
   \begin{block}{Problème}
     \begin{itemize}
-    \item{Des capteurs mobiles sont lâchés dans un espace}
-    \item{Pour communiquer, il doivent être proches}
-    \item{Pour être efficaces, ils doivent être dispersés}
+    \item{Des capteurs sont lâchés dans un espace}
+    \item{Doivent être proches pour communiquer}
+    \item{Sont mobiles}
+    \item{Sont vulnérables aux pannes}
+    \item{$\rightarrow$ Un réseau dynamique}
     \end{itemize}
   \end{block}
 
@@ -93,9 +101,248 @@
 
 \begin{frame}
 
+  \begin{block}{Cadre}
+    \begin{itemize}
+      \item{On se place du point de vue d'un capteur $c$}
+      \item{On considère que le réseau est connexe si $c$ pense que le réseau
+        est connexe}
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  \begin{block}{}
+    \begin{itemize}
+      \item{Peut être ramené à un problème de comptage décentralisé}
+      \item{Les capteurs connaissent $n$}
+      \item{Un capteur sait que $\tilde{n}$ n\oe uds sont sur sa
+        composante connexe}
+      \item{Si $\tilde{n} = n$, le réseau est connexe}
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}
+
+  \begin{block}{Idée}
+    \begin{itemize}
+    \item{Chaque capteur surveille son voisinage et entretient sa
+      propre vision du réseau}
+    \item{Chaque information de présence est étiquettée
+      temporellement}
+    \item{Chaque capteur partage régulièrement sa vision du système}
+    \item{\`A chaque partage, on évalue les avis puis soit on intègre,
+      soit on ignore}
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Dans la mémoire interne de chaque capteur}
+
+  \begin{block}{N}
+    Contient les voisins de $c$.
+  \end{block}
+
+  \vfill
+
+  Exemple : $\{b, f, z\}$
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Dans la mémoire interne de chaque capteur}
+
+  \begin{block}{C}
+    Contient les n\oe uds que $c$ pensent connectés au réseau. Ses
+    entrées sont des triplets $(x,t,s)$ avec
+    \begin{itemize}
+      \item{$x$ le n\oe ud dont l'on suppose la présence}
+      \item{$t$ le temps de sa dernière détection}
+      \item{$s$ le n\oe ud ayant transmis l'information (un voisin)}
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  Exemple : $\{(a,23,c),(f,5,a)\}$
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Dans la mémoire interne de chaque capteur}
+
+  \begin{block}{D}
+    Contient les n\oe uds dont $c$ doute de l'appartenance au
+    réseau. Ses entrées sont des paires $(x,t)$ avec
+    \begin{itemize}
+      \item{$x$ le n\oe ud dont l'on suppose l'absence}
+      \item{$t$ le temps auquel son absence a été détectée}
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  Exemple : $\{(p,103)\}$
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Modification par ses propres observations}
+
+  \begin{block}{$c$ reçoit un message d'un nouveau voisin $c'$}
+    $c' \rightarrow$ N, C
+  \end{block}
+
+  \vfill
+
+  \begin{block}{Pas de message d'un voisin $c'$ enregistré depuis un
+      certain temps (surveillance)}
+    $N, C \rightarrow$ D
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Modification par évaluation des rumeurs}
+
+  \`A chaque réception d'un message, on l'évalue par rapport à nos
+  connaissance pour juger quelles informations intégrer et quelles
+  informations ignorer.
+
+  \vfill
+
+  \begin{block}{Critère d'évaluation}
+    L'étiquette temporelle
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Quelques exemples}
+
+  \begin{block}{$C'=\{\dots,(a,42,e)\}$ et aucune mention de $a$ dans C ou
+    D}
+      $\rightarrow C = \{\dots,(a,42,c')\}$
+  \end{block}
+
+  \vfill
+
+  \begin{block}{$C'=\{\dots,(a,42,e)\}$ et $C=\{\dots,(a,28,f)\}$}
+      $\rightarrow C = \{\dots,(a,42,c')\}$
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{Quelques exemples}
+
+  \begin{block}{$C'=\{\dots,(a,42,e)\}$ et $D=\{\dots(a,78,f)\}$}
+      On ignore l'information
+  \end{block}
+
+  \vfill
+
+  \begin{block}{$D'=\{\dots,(a,42,e)\}$ et $C=\{\dots,(a,28,f)\}$}
+    $C = \{\dots\}$\\
+    $D = \{\dots,(a,42,c')\}$
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+
+  \frametitle{\`A quoi sert la source ?}
+
+  \begin{block}{$D'=\{\dots,(b,54,z)\}$ et
+      $C=\{\dots,(a,23,b),(b,11,c)\}$}
+    $(b,11,c)$ passe de C à D\\
+    $(a,23,b)$ aussi car $b$ en est la source
+  \end{block}
+
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+    \input{connexite0.tikz}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+    \input{connexite1.tikz}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+    \input{connexite2.tikz}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+    \input{connexite3.tikz}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+    \input{connexite4.tikz}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+    \input{connexite5.tikz}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+    \input{connexite6.tikz}
+  \end{figure}
+\end{frame}
+
+\begin{frame}
+  \begin{figure}
+    \centering
+    \input{connexite7.tikz}
+  \end{figure}
 \end{frame}
 
 \section{Créer la connexité}
+
+\begin{frame}
+
+  \begin{block}{Contraintes opposées}
+    \begin{itemize}
+    \item{Pour communiquer, il doivent être proches}
+    \item{Pour être efficaces, ils doivent être dispersés}
+    \end{itemize}
+  \end{block}
+
+  \vfill
+
+  $\rightarrow$ On recherche un compromis équilibré.
+
+\end{frame}
 
 \begin{frame}
 
@@ -132,7 +379,7 @@
 
   \vfill
 
-  \alert{$$\vec{a} = (\vec{p_v} - \vec{p}) ???$$}
+  \alert{$\vec{a} = \frac{\vec{p}_c - \vec{p}_v}{|\vec{p}_c - \vec{p}_v|^2}$}
 
 \end{frame}
 
@@ -146,7 +393,7 @@
 
   \vfill
 
-  \alert{$$\vec{r} = (\vec{p} - \vec{p_v}) \frac{R_r - d}{d}$$}
+  \alert{$\vec{r} = \frac{\vec{p} - \vec{p_v}}{|\vec{p} - \vec{p_v}|}(R_r - |\vec{p} - \vec{p_v}|)$}
 
 \end{frame}
 
@@ -160,7 +407,7 @@
 
   \vfill
 
-  \alert{$$\vec{r} = -\vec{p} ???$$}
+  \alert{$\vec{g} = -\frac{\vec{p}}{|\vec{p}|}$}
 
 \end{frame}
 
@@ -218,13 +465,9 @@
 
 \begin{frame}
 
-  \frametitle{Test avec répartition sérrée}
+  \frametitle{Et les obstacles ?}
 
-\end{frame}
 
-\begin{frame}
-
-  \frametitle{Test avec répartition large}
 
 \end{frame}
 
