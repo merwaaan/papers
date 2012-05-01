@@ -277,7 +277,7 @@ public class Sensor extends SingleNode {
 		// Send a message to every neighbor.
 		if(this.nextMessageCountdown == 0) {
 
-			// Check if recorded neighbors are still connected.
+			// Check if recorded neighbors are still connected (surveillance).
 			for(int i = 0, l = N_subjects.size(); i < l; ++i)
 				if(this.sim.step - N_times.get(i) > this.neighborAlarm) {
 
@@ -316,17 +316,6 @@ public class Sensor extends SingleNode {
 	                    ArrayList<Sensor> OD_subjects,
 	                    ArrayList<Integer> OD_times) {
 
-		/*
-		System.out.println(this.getId()+" <- "+source.getId());
-		System.out.println(this.N_subjects);
-		System.out.println(this.N_times);
-		System.out.println(this.C_subjects);
-		System.out.println(this.C_sources);
-		System.out.println(this.C_times);
-		System.out.println(this.D_subjects);
-		System.out.println(this.D_times);
-		*/
-
 		// Add the source to the connectivity list if it's not yet registered.
 		if(!N_subjects.contains(source)) {
 			// -> N
@@ -345,6 +334,9 @@ public class Sensor extends SingleNode {
 			D_times.remove(k);
 		}
 
+		// General Idea : Only keep an information trnasmitted by a
+		// neighbor if it's more recent. Also, update times and sources whe necesary.
+
 		for(int i = 0, l = OC_subjects.size(); i < l; ++i) {
 
 			if(OC_subjects.get(i) == this)
@@ -354,7 +346,7 @@ public class Sensor extends SingleNode {
 				if(!D_subjects.contains(OC_subjects.get(i))) {
 					// -> C
 					C_subjects.add(OC_subjects.get(i));
-					C_sources.add(source); // change source
+					C_sources.add(source);
 					C_times.add(OC_times.get(i));
 				}
 				else {
@@ -378,9 +370,6 @@ public class Sensor extends SingleNode {
 		}
 
 		for(int i = 0, l = OD_subjects.size(); i < l; ++i) {
-
-			//if(OD_subjects.get(i) == this)
-			//	continue;
 
 			// Doubt is not present.
 			if(!D_subjects.contains(OD_subjects.get(i))) {
@@ -408,6 +397,11 @@ public class Sensor extends SingleNode {
 					D_times.set(j, OD_times.get(i));
 			}
 		}
+
+		// TODO : Remove from C if source has just been removed.
+
+		// ...
+
 	}
 
 	public boolean isNetworkConnected() {
